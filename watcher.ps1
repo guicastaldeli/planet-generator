@@ -19,7 +19,7 @@ while ($true) {
         $sources = ($files | ForEach-Object { $_.FullName }) -join " "
 
         Write-Host "Sources: $sources"
-        $cmd = "emcc $sources -o out/a.out.js -O0 -g -s NO_EXIT_RUNTIME=0 -s USE_GLFW=3 -s ASYNCIFY"
+        $cmd = "emcc $sources -o out/a.out.js -O0 -g -s FETCH=1 -s NO_EXIT_RUNTIME=0 -s USE_GLFW=3 -s ASYNCIFY"
         Write-Host $cmd
         iex $cmd
         Write-Host "Recompiled!" -ForegroundColor Green

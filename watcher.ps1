@@ -19,7 +19,7 @@ while ($true) {
         $sources = ($files | ForEach-Object { $_.FullName }) -join " "
 
         Write-Host "Sources: $sources"
-        $cmd = "emcc $sources -s NO_EXIT_RUNTIME=0"
+        $cmd = "emcc $sources -o out/a.out.js -O0 -g -s NO_EXIT_RUNTIME=0"
 
         Write-Host $cmd
         iex $cmd

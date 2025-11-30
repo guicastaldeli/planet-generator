@@ -13,7 +13,7 @@ class Camera {
         ShaderController* shaderController;
 
         void set();
-
+        void setMatrix();
     public:
         void init();
         void update();

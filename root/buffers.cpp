@@ -40,13 +40,13 @@ void Buffers::set() {
 */
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
-
+    glBindVertexArray(vao);
+    
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, (float)emscripten_get_now() / 1000.f, glm::vec3(0.0f, 1.0f, 0.0f));
+    //model = glm::rotate(model, (float)emscripten_get_now() / 1000.f, glm::vec3(0.0f, 1.0f, 0.0f));
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
 
-    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
 }

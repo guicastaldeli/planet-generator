@@ -1,7 +1,4 @@
-#include "shader_loader.h"
-#include <stdio.h>
-#include <GLFW/glfw3.h>
-#include <emscripten.h>
+#include "main.h"
 
 EM_JS(void, setupCanvas, (int* width, int* height), {
     const canvas = document.getElementById("ctx");
@@ -11,7 +8,7 @@ EM_JS(void, setupCanvas, (int* width, int* height), {
     //console.log("original size %d x %d", canvas.width, canvas.height);
 });
 
-int initGlWindow() {
+int Main::initGlWindow() {
     int width;
     int height;
     setupCanvas(&width, &height);
@@ -38,15 +35,37 @@ int initGlWindow() {
     return GL_TRUE;
 }
 
-void loader() {
-    ShaderLoader shaderLoader;
+/*
+** Init Shader Loader
+*/
+void Main::initShaderLoader() {
     ShaderLoader::setCallback(ShaderLoader::onDataLoaded);
+    ShaderLoader shaderLoader;
     shaderLoader.load();
+}
+
+/*
+** Init Buffers
+*/
+void Main::initBuffers() {
+    Buffers buffers;
+    buffers.init();
+}
+
+/*
+** Main Render
+*/
+void Main::render() {
+    ShaderLoader shaderLoader;
+    shaderLoader.setCallback([] {
+        initBuffers();
+    });
+    initShaderLoader();
 }
 
 int main() {
     initGlWindow();
-    loader();
+    render();
     emscripten_set_main_loop([](){}, 0, 1);
     return 0;
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include <functional>
 #include <string>
 #include <emscripten/fetch.h>
@@ -15,8 +16,8 @@ struct Request {
 class ShaderLoader {
     private:
         static std::unordered_map<Type, std::string> loadedData;
-        static std::function<void()> dataCallback;
         static std::vector<Request> request;
+        static std::function<void()> dataCallback;
         static int pendingLoads;
 
         static void onSuccess(emscripten_fetch_t * fetch);
@@ -25,6 +26,7 @@ class ShaderLoader {
     public:
         static void onDataLoaded();
         static void setCallback(std::function<void()> callback);
+        
         static void addUrl(const std::string& url, Type type);
         void load();
         static const std::string& getShader(Type type);

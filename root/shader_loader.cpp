@@ -19,12 +19,12 @@ void ShaderLoader::onDataLoaded() {
         
         switch(type) {
             case VERTEX:
-                EM_ASM({ console.group("Vertex Shader") });
+                EM_ASM({ console.groupCollapsed("Vertex Shader") });
                 EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
                 EM_ASM({ console.groupEnd(); });
                 break;
             case FRAG:
-                EM_ASM({ console.group("Frag Shader") });
+                EM_ASM({ console.groupCollapsed("Frag Shader") });
                 EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
                 EM_ASM({ console.groupEnd() });
                 break;

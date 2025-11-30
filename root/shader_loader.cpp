@@ -4,6 +4,12 @@
 #include <cstring>
 #include <emscripten/fetch.h>
 #include <emscripten/emscripten.h>
+#include "shader_controller.h"
+
+ShaderLoader::ShaderLoader() {
+    shaderController = new ShaderController();
+}
+ShaderLoader::~ShaderLoader() {}
 
 std::unordered_map<Type, std::string> ShaderLoader::loadedData;
 std::function<void()> ShaderLoader::dataCallback = nullptr;

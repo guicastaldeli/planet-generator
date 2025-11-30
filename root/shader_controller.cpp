@@ -1,4 +1,5 @@
 #include "shader_controller.h"
+#include <emscripten.h>
 #include <GLES3/gl3.h>
 
 void ShaderController::checkStatus() {
@@ -31,6 +32,7 @@ void ShaderController::load() {
 }
 
 void ShaderController::initProgram() {
+    emscripten_log(EM_LOG_CONSOLE, "shader controller!");
     load();
 
     shaderProgram = glCreateProgram();

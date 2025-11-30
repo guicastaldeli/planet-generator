@@ -1,3 +1,5 @@
+#pragma once
+#include "camera.h"
 #include "shader_loader.h"
 #include "buffers.h"
 #include <stdio.h>
@@ -9,11 +11,15 @@ class Main {
         int width;
         int height;
         int fps = 60;
-        Buffers* buffers;
+
+        Camera* camera = nullptr;
+        ShaderLoader* shaderLoader = nullptr;
+        Buffers* buffers = nullptr;
         
         int initGlWindow();
         void initShaderLoader();
         void initBuffers();
+        void initCamera();
         
         void render();
         void loop();

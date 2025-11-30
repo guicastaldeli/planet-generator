@@ -36,20 +36,25 @@ int Main::initGlWindow() {
 /*
 ** Init
 */
+void Main::initCamera() {
+    camera = new Camera(this, shaderLoader->shaderController);
+    camera->init();
+}
+
 void Main::initShaderLoader() {
-    //ShaderLoader::setCallback(ShaderLoader::onDataLoaded);
-    ShaderLoader shaderLoader;
-    shaderLoader.load();
+    shaderLoader = new ShaderLoader();
+    shaderLoader->load();
 }
 
 void Main::initBuffers() {
-    buffers = new Buffers();
+    buffers = new Buffers(shaderLoader->shaderController);
     buffers->init();
 }
 
 void Main::init() {
     ShaderLoader::setCallback([this] {
         this->initBuffers();
+        this->initCamera();
     });
     initShaderLoader();
 }
@@ -58,13 +63,15 @@ void Main::init() {
 ** Render
 */
 void Main::render() {
+    if(camera) camera->update();
     if(buffers) buffers->render();
 }
 
 void Main::loop() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0);
     glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
     render();
 }
 

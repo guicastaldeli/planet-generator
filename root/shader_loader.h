@@ -13,6 +13,7 @@ struct Request {
     Type type;
 };
 
+class ShaderController;
 class ShaderLoader {
     private:
         static std::unordered_map<Type, std::string> loadedData;
@@ -24,6 +25,10 @@ class ShaderLoader {
         static void onError(emscripten_fetch_t *fetch);
         
     public:
+        ShaderLoader();
+        ~ShaderLoader();
+        ShaderController* shaderController;
+
         static void onDataLoaded();
         static void setCallback(std::function<void()> callback);
         

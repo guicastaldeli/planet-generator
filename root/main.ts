@@ -1,5 +1,23 @@
 const canvas = <HTMLCanvasElement>(document.getElementById('ctx'));
 
+/*
+** Disable Context Menu
+*/
+function disableContextMenu() {
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+    canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+}
+disableContextMenu();
+
+/*
+** Resize Window
+*/
 function resize(): void {
     const width = window.innerWidth * window.devicePixelRatio;
     const height = window.innerHeight * window.devicePixelRatio;

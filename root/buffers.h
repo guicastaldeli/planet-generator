@@ -7,6 +7,7 @@ class Buffers {
     private:
         GLuint vao;
         GLuint vbo;
+        GLuint ebo;
         float vertices[6];
         
         ShaderController* shaderController;

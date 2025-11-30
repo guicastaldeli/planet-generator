@@ -30,6 +30,11 @@ void ShaderLoader::onDataLoaded() {
                 break;
         }
     }
+    if(dataCallback) {
+        auto callback = dataCallback;
+        dataCallback = nullptr;
+        callback();
+    }
 
 }
 void ShaderLoader::setCallback(std::function<void()> callback) {

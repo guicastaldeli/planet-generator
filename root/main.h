@@ -8,10 +8,14 @@ class Main {
     public:
         int width;
         int height;
+        int fps = 60;
+        Buffers* buffers;
         
         int initGlWindow();
         void initShaderLoader();
         void initBuffers();
         
         void render();
+        void loop();
+        void init();
 };

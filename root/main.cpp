@@ -9,8 +9,6 @@ EM_JS(void, setupCanvas, (int* width, int* height), {
 });
 
 int Main::initGlWindow() {
-    int width;
-    int height;
     setupCanvas(&width, &height);
     printf("Canvas size: %d x %d\n", width, height);
     if(glfwInit() != GL_TRUE) {
@@ -36,36 +34,47 @@ int Main::initGlWindow() {
 }
 
 /*
-** Init Shader Loader
+** Init
 */
 void Main::initShaderLoader() {
-    ShaderLoader::setCallback(ShaderLoader::onDataLoaded);
+    //ShaderLoader::setCallback(ShaderLoader::onDataLoaded);
     ShaderLoader shaderLoader;
     shaderLoader.load();
 }
 
-/*
-** Init Buffers
-*/
 void Main::initBuffers() {
-    Buffers buffers;
-    buffers.init();
+    buffers = new Buffers();
+    buffers->init();
 }
 
-/*
-** Main Render
-*/
-void Main::render() {
-    ShaderLoader shaderLoader;
-    shaderLoader.setCallback([] {
-        initBuffers();
+void Main::init() {
+    ShaderLoader::setCallback([this] {
+        this->initBuffers();
     });
     initShaderLoader();
 }
 
-int main() {
-    initGlWindow();
+/*
+** Render
+*/
+void Main::render() {
+    if(buffers) buffers->render();
+}
+
+void Main::loop() {
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0);
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT);
     render();
-    emscripten_set_main_loop([](){}, 0, 1);
+}
+
+int main() {
+    static Main app;
+    app.initGlWindow();
+    app.init();
+    emscripten_set_main_loop([]() {
+        static Main* appPtr = &app;
+        appPtr->loop();
+    }, 0, 1);
     return 0;
 }

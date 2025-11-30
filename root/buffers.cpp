@@ -38,6 +38,7 @@ void Buffers::render() {
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
+    printf("Triangle drawn!\n");
 }
 
 /*
@@ -45,6 +46,5 @@ void Buffers::render() {
 */
 void Buffers::init() {
     shaderController->initProgram();
-    render();
     set();
 }

@@ -30,13 +30,13 @@
                 "EMSCRIPTEN",
                 "__EMSCRIPTEN__"
             ],
-            "compilerPath": "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk/upstream/bin/clang.exe",
+            "windowsSdkVersion": "10.0.26100.0",
+            "compilerPath": "C:/Users/casta/OneDrive/Desktop/vscode/messages/main/vcpkg/installed/x64-windows/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64",
+            "intelliSenseMode": "windows-gcc-x64",
             "compilerArgs": [
-                "-target",
-                "wasm32-unknown-emscripten"
+                "-Wno-nonexistent-include-directory"
             ]
         }
     ],

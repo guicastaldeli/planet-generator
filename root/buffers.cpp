@@ -11,7 +11,7 @@ Buffers::~Buffers() {}
 */
 void Buffers::set() {
     float vertices[] = {
-        0.5f,  0.5f, 0.0f,
+        0.0f,  1.0f, 0.0f,
         0.5f, -0.5f, 0.0f,
         -0.5f, -0.5f, 0.0f
     };
@@ -38,7 +38,6 @@ void Buffers::render() {
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
-    printf("Triangle drawn!\n");
 }
 
 /*

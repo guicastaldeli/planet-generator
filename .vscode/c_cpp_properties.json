@@ -27,17 +27,16 @@
                 "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk/**"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "EMSCRIPTEN",
+                "__EMSCRIPTEN__"
             ],
-            "windowsSdkVersion": "10.0.26100.0",
-            "compilerPath": "C:/Users/casta/OneDrive/Desktop/vscode/messages/main/vcpkg/installed/x64-windows/mingw64/bin/g++.exe",
+            "compilerPath": "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk/upstream/bin/clang.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64",
+            "intelliSenseMode": "clang-x64",
             "compilerArgs": [
-                "-Wno-nonexistent-include-directory"
+                "-target",
+                "wasm32-unknown-emscripten"
             ]
         }
     ],

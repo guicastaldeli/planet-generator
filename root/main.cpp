@@ -1,7 +1,7 @@
+#include "shader_loader.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
-#include "shader_loader.h"
 
 EM_JS(void, setupCanvas, (int* width, int* height), {
     const canvas = document.getElementById("ctx");

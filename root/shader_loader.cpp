@@ -3,40 +3,84 @@
 #include <string>
 #include <cstring>
 #include <emscripten/fetch.h>
+#include <emscripten/emscripten.h>
 
-std::string ShaderLoader::loadedData = "";
-std::function<void(const std::string&)> ShaderLoader::dataCallback = nullptr;
-void ShaderLoader::onDataLoaded(const std::string& data) {
-    printf("Data loaded!: %s\n", data.c_str());
+std::unordered_map<Type, std::string> ShaderLoader::loadedData;
+std::function<void()> ShaderLoader::dataCallback = nullptr;
+std::vector<Request> ShaderLoader::request;
+int ShaderLoader::pendingLoads = 0;
+
+void ShaderLoader::onDataLoaded() {
+    printf("All shaders loaded!\n");
+
+    for(const auto& s : loadedData) {
+        Type type = s.first;
+        const std::string& content = s.second;
+        
+        switch(type) {
+            case VERTEX:
+                EM_ASM({ console.group("Vertex Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd(); });
+                break;
+            case FRAG:
+                EM_ASM({ console.group("Frag Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+        }
+    }
+
 }
-void ShaderLoader::setCallback(std::function<void(const std::string&)> callback) {
+void ShaderLoader::setCallback(std::function<void()> callback) {
     dataCallback = callback;
 }
 
+void ShaderLoader::addUrl(const std::string& url, Type type) {
+    request.push_back({ url, type });
+}
+
 void ShaderLoader::onSuccess(emscripten_fetch_t * fetch) {
-    printf("Fetched %llu bytes\n", fetch->numBytes);
-    loadedData = std::string(fetch->data, fetch->numBytes);
+    for(const auto& r : request) {
+        if(r.url == fetch->url) {
+            loadedData[r.type] = std::string(fetch->data, fetch->numBytes);
+            break;
+        }
+    }
     emscripten_fetch_close(fetch);
-    if(dataCallback) dataCallback(loadedData);
+    pendingLoads--;
+    if(pendingLoads == 0) onDataLoaded();
 }
 
 void ShaderLoader::onError(emscripten_fetch_t *fetch) {
-    printf("Failed to load file!\n");
-    loadedData = "";
+    printf("Failed to load file!: %s\n", fetch->url);
     emscripten_fetch_close(fetch);
-    if(dataCallback) dataCallback("");
+    pendingLoads--;
+    if(pendingLoads == 0) onDataLoaded();
 }
 
 void ShaderLoader::load() {
-    loadedData = "";
+    loadedData.clear();
+    request.clear();
 
-    emscripten_fetch_attr_t attr;
-    emscripten_fetch_attr_init(&attr);
-    strcpy(attr.requestMethod, "GET");
+    addUrl(".shaders/frag.glsl", FRAG);
+    addUrl(".shaders/vertex.glsl", VERTEX);
+    pendingLoads = request.size();
+    printf("\nStarting to load %d shaders...\n", pendingLoads);
 
-    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-    attr.onsuccess = ShaderLoader::onSuccess;
-    attr.onerror = ShaderLoader::onError;
+    for(const auto& r : request) {
+        emscripten_fetch_attr_t attr;
+        emscripten_fetch_attr_init(&attr);
+        strcpy(attr.requestMethod, "GET");
 
-    emscripten_fetch(&attr, "test.txt");
+        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+        attr.onsuccess = ShaderLoader::onSuccess;
+        attr.onerror = ShaderLoader::onError;
+
+        emscripten_fetch(&attr, r.url.c_str());
+    }
+}
+
+const std::string& ShaderLoader::getShader(Type type) {
+    return loadedData[type];
 }

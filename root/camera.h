@@ -1,6 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
-
+#pragma once
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
@@ -17,7 +15,6 @@ class Camera {
     public:
         void init();
         void update();
-        Camera(Main* mainPtr, ShaderController* shaderPtr) : main(mainPtr), shaderController(shaderPtr) {}
+        Camera(Main* mainPtr, ShaderController* shaderPtr);
+        ~Camera();
 };
-
-#endif // CAMERA_H

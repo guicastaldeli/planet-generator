@@ -6,6 +6,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+Camera::Camera(Main* mainPtr, ShaderController* shaderPtr) : 
+    main(mainPtr), 
+    shaderController(shaderPtr) 
+{}
+
 void Camera::set() {
     glUseProgram(shaderController->shaderProgram);
     setMatrix();

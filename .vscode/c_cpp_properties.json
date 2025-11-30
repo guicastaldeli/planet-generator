@@ -24,7 +24,11 @@
                 "C:/Users/casta/OneDrive/Desktop/glad/src",
                 "C:/Users/casta/OneDrive/Desktop/glad/src/**",
                 "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk",
-                "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk/**"
+                "C:/Users/casta/OneDrive/Desktop/emscripten/emsdk/**",
+                "C:/Users/casta/OneDrive/Desktop/glm-1.0.2",
+                "C:/Users/casta/OneDrive/Desktop/glm-1.0.2/**",
+                "C:/Users/casta/OneDrive/Desktop/glm-1.0.2/glm",
+                "C:/Users/casta/OneDrive/Desktop/glm-1.0.2/glm/**"
             ],
             "defines": [
                 "EMSCRIPTEN",

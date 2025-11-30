@@ -1,5 +1,9 @@
 #include "buffers.h"
+#include <emscripten.h>
 #include <GLES3/gl3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Buffers::Buffers() {
     shaderController = new ShaderController();
@@ -35,6 +39,14 @@ void Buffers::set() {
 */
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
+
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+    unsigned int transLoc = glGetUniformLocation(shaderController->shaderProgram, "transform");
+    glUniformMatrix4fv(transLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
@@ -46,4 +58,5 @@ void Buffers::render() {
 void Buffers::init() {
     shaderController->initProgram();
     set();
+    emscripten_log(EM_LOG_CONSOLE, "init buffers!");
 }

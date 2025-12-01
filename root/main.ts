@@ -1,9 +1,27 @@
+import { AppController } from "./app-controller";
+
 const canvas = <HTMLCanvasElement>(document.getElementById('ctx'));
+
+/*
+** Init App Controller
+*/
+function initAppController(): void {
+    const Module = {
+        onRuntimeInitialized: (() => {
+            if(window.AppController) {
+                new AppController(Module);
+            } else {
+                console.error('AppController err!');
+            }
+        })
+    }
+}
+initAppController();
 
 /*
 ** Disable Context Menu
 */
-function disableContextMenu() {
+function disableContextMenu(): void {
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         return false;

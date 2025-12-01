@@ -1,6 +1,8 @@
 import { DocumentLoader } from "../document-loader";
 
 export class ControlsController {
+    private emscriptenModule: any;
+
     private loader: DocumentLoader;
     private container: HTMLElement | null = null;
     private docLoaded: boolean = false;
@@ -12,7 +14,8 @@ export class ControlsController {
     private onExportPresetClick?: () => void;
     private onResetToDefaultClick?: () => void;
     
-    constructor() {
+    constructor(module: any) {
+        this.emscriptenModule = module;
         this.loader = DocumentLoader.getInstance('./_controls.html');
         this.extractContainer();
         this.setupEventListeners();
@@ -89,12 +92,12 @@ export class ControlsController {
     *** Callbacks
     **
     */
-    public onControlMenu(cb: () => void): void {
+    public onControlsMenu(cb: () => void): void {
         this.onControlsMenuClick = cb;
     }
-    
+
     public onCustom(cb: () => void): void {
-        this.onControlsMenuClick = cb;
+        this.onCustomPresetClick = cb;
     }
 
     public onImport(cb: () => void): void {
@@ -107,5 +110,23 @@ export class ControlsController {
 
     public onReset(cb: () => void): void {
         this.onResetToDefaultClick = cb;
+    }
+
+    public setupCallbacks(): void {
+        this.onControlsMenu(() => {
+            this.emscriptenModule._onControlsMenu();
+        });
+        this.onCustom(() => {
+            this.emscriptenModule._onCustomPreset();
+        });
+        this.onImport(() => {
+            this.emscriptenModule._onImportPreset();
+        });
+        this.onExport(() => {
+            this.emscriptenModule._onExportPreset();
+        });
+        this.onReset(() => {
+            this.emscriptenModule._onResetToDefault();
+        });
     }
 }

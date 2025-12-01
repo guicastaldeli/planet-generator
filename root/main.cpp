@@ -51,12 +51,17 @@ void Main::initBuffers() {
     buffers->init();
 }
 
+void Main::initInterfaceWrapper() {
+    interfaceWrapperController = new InterfaceWrapperController();
+}
+
 void Main::init() {
     ShaderLoader::setCallback([this] {
         this->initBuffers();
         this->initCamera();
     });
     initShaderLoader();
+    initInterfaceWrapper();
 }
 
 /*

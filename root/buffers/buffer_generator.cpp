@@ -1,5 +1,126 @@
 #include "buffer_generator.h"
+#include "buffers.h"
+#include "../camera.h"
+#include "../.controller/shader_controller.h"
+#include <algorithm>
+#include <queue>
+#include <unordered_set>
 
 BufferGenerator::BufferGenerator() {};
 BufferGenerator::~BufferGenerator() {};
 
+/*
+** Shape to Buffer
+*/
+BufferData::Type BufferGenerator::shapeToBufferType(BufferData::Type shape) {
+    switch(shape) {
+        case BufferData::Type::TRIANGLE: 
+            return BufferData::Type::TRIANGLE;
+        case BufferData::Type::CUBE:
+            return BufferData::Type::CUBE;
+        case BufferData::Type::SPHERE:
+            return BufferData::Type::SPHERE;
+        default:
+            return BufferData::Type::SPHERE;
+    }
+}
+
+/*
+** Calculate Distance from Pos
+*/
+float BufferGenerator::calculateDistanceFromPosition(int position) {
+    if(position >= 0 && position < 16) {
+        return distances[position];
+    }
+    return 1.0f + (position - 8) * 0.15f;
+}
+
+/*
+** Generate Planets
+*/
+std::vector<PlanetBuffer> BufferGenerator::generateFromPreset(const PresetData& preset) {
+    std::vector<PlanetBuffer> planetBuffers;
+    for(const auto& data : preset.planets) {
+        planetBuffers.push_back(generatePlanet(data));
+    }
+    return planetBuffers;
+}
+
+PlanetBuffer BufferGenerator::generatePlanet(const PlanetData& data) {
+    PlanetBuffer planetBuffer;
+    planetBuffer.data = data;
+    return planetBuffer;
+}
+
+/*
+** Update Planets
+*/
+void BufferGenerator::updatePlanetRotation(std::vector<PlanetBuffer>& planets, float deltaTime) {
+    for(auto& planet : planets) {
+        switch(planet.data.rotationDir) {
+            case RotationAxis::X:
+                planet.data.currentRotation.x += planet.data.rotationSpeedItself * deltaTime;
+                break;
+            case RotationAxis::Y:
+                planet.data.currentRotation.y += planet.data.rotationSpeedItself * deltaTime;
+                break;
+            case RotationAxis::Z:
+                planet.data.currentRotation.z += planet.data.rotationSpeedItself * deltaTime;
+        }
+        if(planet.data.position != 0) {
+            planet.data.orbitAngle.y += planet.data.rotationSpeedCenter * deltaTime;
+        }
+    }
+}
+
+/*
+** Find Available Position
+*/
+int BufferGenerator::findAvailablePosition(const std::vector<PlanetData>& planets) {
+    const int MAX_PLANETS = 15;
+    std::vector<bool> occupied(MAX_PLANETS, false);
+    for(const auto& planet : planets) {
+        if(planet.position >= 0 && planet.position < MAX_PLANETS) {
+            occupied[planet.position] = true;
+        }
+    }
+
+    std::queue<int> queue;
+    queue.push(1);
+    while(!queue.empty()) {
+        int pos = queue.front();
+        queue.pop();
+
+        if(!occupied[pos]) return pos;
+        if(pos + 1 < MAX_PLANETS) queue.push(pos + 1);
+    }
+
+    return -1;
+}
+
+/*
+** Replace Last Planet
+*/
+bool BufferGenerator::replaceLastPlanet(
+    std::vector<PlanetData>& planets,
+    const PlanetData& newPlanet
+) {
+    if(planets.empty()) return false;
+
+    const int MAX_PLANETS = 16;
+    int highestPos = -1;
+    size_t highestIndex = 0;
+    for(size_t i = 0; i < planets.size(); i++) {
+        if(planets[i].position != 0 && planets[i].position > highestPos) {
+            highestPos  = planets[i].position;
+            highestIndex = i;
+        }
+    }
+    if(highestPos == -1) {
+        return false;
+    }
+
+    planets[highestIndex] = newPlanet;
+    planets[highestIndex].position = highestPos;
+    return true;
+}

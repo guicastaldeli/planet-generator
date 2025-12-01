@@ -7,42 +7,49 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Buffers::Buffers(Camera* camera, ShaderController* shaderController) :
+Buffers::Buffers(
+    Camera* camera, 
+    ShaderController* shaderController,
+    BufferTypes::Type type
+) :
     camera(camera),
-    shaderController(shaderController)
+    shaderController(shaderController),
+    bufferType(type),
+    indexCount(0)
 {}
-Buffers::~Buffers() {}
+Buffers::~Buffers() {
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+}
 
 /*
 ** Set Buffers
 */
 void Buffers::set() {
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        0.0f,  0.5f,  0.0f
-    };
-    GLuint indices[] = {
-        4, 0, 1,
-        4, 1, 2,
-        4, 2, 3,
-        4, 3, 0,
-        0, 1, 2,
-        0, 2, 3
-    };
+    BufferTypes::MeshData meshData = BufferTypes::GetMeshData(bufferType);
+    indexCount = meshData.indices.size();
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(
+        GL_ARRAY_BUFFER, 
+        meshData.vertices.size() * sizeof(float),
+        meshData.vertices.data(), 
+        GL_STATIC_DRAW
+    );
 
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, 
+        meshData.indices.size() * sizeof(GLuint),
+        meshData.indices.data(), 
+        GL_STATIC_DRAW
+    );
 
     GLuint posAttr = glGetAttribLocation(shaderController->shaderProgram, "aPos");
     glVertexAttribPointer(posAttr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -55,6 +62,8 @@ void Buffers::set() {
 ** Render
 */
 void Buffers::render() {
+    if(indexCount == 0) return;
+    
     glUseProgram(shaderController->shaderProgram);
     glBindVertexArray(vao);
 

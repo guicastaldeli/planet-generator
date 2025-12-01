@@ -1,4 +1,5 @@
 #include "main.h"
+#include "buffers/buffer_types.h"
 
 EM_JS(void, setupCanvas, (int* width, int* height), {
     const canvas = document.getElementById("ctx");
@@ -47,7 +48,7 @@ void Main::initShaderLoader() {
 }
 
 void Main::initBuffers() {
-    buffers = new Buffers(camera, shaderLoader->shaderController);
+    buffers = new Buffers(camera, shaderLoader->shaderController, BufferTypes::Type::TRIANGLE);
     buffers->init();
 }
 

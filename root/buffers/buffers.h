@@ -1,6 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include <GLES3/gl3.h>
+#include "buffer_types.h"
 
 class Camera;
 class ShaderController;
@@ -9,7 +10,8 @@ class Buffers {
         GLuint vao;
         GLuint vbo;
         GLuint ebo;
-        float vertices[6];
+        BufferTypes::Type bufferType;
+        GLuint indexCount;
         
         Camera* camera;
         ShaderController* shaderController;
@@ -17,7 +19,11 @@ class Buffers {
         void set();
         
     public:
-        Buffers(Camera* camera, ShaderController* shaderController);
+        Buffers(
+            Camera* camera, 
+            ShaderController* shaderController,
+            BufferTypes::Type type
+        );
         ~Buffers();
 
         void render();

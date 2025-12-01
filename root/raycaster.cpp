@@ -57,7 +57,7 @@ bool Raycaster::checkIntersection(
 ** AABB 
 */
 bool Raycaster::aabb(glm::vec3 rayWorldDir) {
-    glm::vec3 aabbMin(-0.5f, -0.5f, -0.5f);
+    glm::vec3 aabbMin(-0.5f, -0.5f, -0.5f); //Updtae later for planets vertex
     glm::vec3 aabbMax(0.5f, 0.5f, 0.5f);
 
     glm::vec3 rayOrigin = camera->position;
@@ -75,6 +75,22 @@ bool Raycaster::aabb(glm::vec3 rayWorldDir) {
 }
 
 /*
+** Handle Click
+*/
+bool Raycaster::handleClick(double x, double y, int viewportWidth, int viewportHeight) {
+    bool intersects = checkIntersection(x, y, viewportWidth, viewportHeight);
+    if(intersects && !camera->isPanningLocked()) {
+        camera->zoomToObj();
+        return true;
+    }
+    return false;
+}
+
+bool Raycaster::isMouseIntersecting() const {
+    return isIntersecting;
+}
+
+/*
 ** Render
 */
 void Raycaster::render(double x, double y) {
@@ -83,8 +99,4 @@ void Raycaster::render(double x, double y) {
     if (hoverLoc != -1) {
         glUniform1f(hoverLoc, isIntersecting ? 1.0f : 0.0f);
     }
-}
-
-bool Raycaster::isMouseIntersecting() const {
-    return isIntersecting;
 }

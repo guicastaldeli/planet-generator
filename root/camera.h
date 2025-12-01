@@ -11,7 +11,6 @@
 class Main;
 class Camera {
     private:
-        Main* main;
         ShaderController* shaderController;
 
         float yaw;
@@ -26,13 +25,21 @@ class Camera {
         float panSpeed;
         float zoomSpeed;
 
+        glm::vec3 savedPosition;
+        glm::vec3 savedTarget;
+        bool panningLocked;
+
         void updateVectors();
         void rotate(float deltaX, float deltaY);
         void pan(float deltaX, float deltaY);
         void zoom(float delta);
     public:
+        Camera(Main* main, ShaderController* shaderController);
+        ~Camera();
+
+        Main* main;
         Raycaster* raycaster;
-        
+
         glm::vec3 position;
         glm::vec3 target;
         glm::vec3 up;
@@ -49,6 +56,10 @@ class Camera {
         void setEvents();
         void init();
         void update();
-        Camera(Main* main, ShaderController* shaderController);
-        ~Camera();
+
+        void saveCurrentPos();
+        void zoomToObj();
+        void resetToSavedPos();
+        void lockPanning(bool lock);
+        bool isPanningLocked() const { return panningLocked; }
 };

@@ -23,7 +23,10 @@ Camera::Camera(Main* main, ShaderController* shaderController) :
     zoomLevel(45.0f),
     rotationSpeed(0.1f),
     panSpeed(0.001f),
-    zoomSpeed(0.1f)
+    zoomSpeed(0.1f),
+    panningLocked(false),
+    savedPosition(0.0f, 0.0f, 3.0f),
+    savedTarget(0.0f, 0.0f, 0.0f)
 {
     raycaster = new Raycaster(
         main, 
@@ -71,6 +74,8 @@ void Camera::rotate(float deltaX, float deltaY) {
 }
 
 void Camera::pan(float deltaX, float deltaY) {
+    if(panningLocked) return;
+
     glm::vec3 panOffset = (
         -right * deltaX +
         up * deltaY
@@ -108,6 +113,57 @@ void Camera::updateVectors() {
 
     right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
     up = glm::normalize(glm::cross(right, front));
+}
+
+/*
+** Save Current Position
+*/
+void Camera::saveCurrentPos() {
+    savedPosition = position;
+    savedTarget = target;
+    emscripten_log(EM_LOG_CONSOLE, "Camera position saved: %.2f, %.2f, %.2f", 
+                   savedPosition.x, savedPosition.y, savedPosition.z);
+}
+
+/*
+** Zoom to Object
+*/
+void Camera::zoomToObj() {
+    if(panningLocked) return;
+    saveCurrentPos();
+
+    glm::vec3 direction = glm::normalize(target - position);
+
+    float zoomDistance = 1.5f;
+    position = target - direction * zoomDistance;
+    
+    target = glm::vec3(0.0f, 0.0f, 0.0f); //change later for the planets pos
+    
+    updateVectors();
+    lockPanning(true);
+    emscripten_log(EM_LOG_CONSOLE, "Zoomed to object, panning locked");
+}
+
+/*
+** Reset to Position
+*/
+void Camera::resetToSavedPos() {
+    if(!panningLocked) return;
+
+    position = savedPosition;
+    target = savedTarget;
+    updateVectors();
+
+    lockPanning(false);
+    emscripten_log(EM_LOG_CONSOLE, "Reset to saved position, panning unlocked");
+}
+
+/*
+** Lock Panning
+*/
+void Camera::lockPanning(bool lock) {
+    panningLocked = lock;
+    emscripten_log(EM_LOG_CONSOLE, "Panning %s", lock ? "locked" : "unlocked");
 }
 
 /*
@@ -165,6 +221,14 @@ EM_BOOL mouseCallback(
     switch(eventType) {
         case EMSCRIPTEN_EVENT_MOUSEDOWN:
             camera->handleMouseDown(e->clientX, e->clientY, e->button);
+            if(e->button == 0 && camera->raycaster->isMouseIntersecting()) {
+                camera->raycaster->handleClick(
+                    e->clientX,
+                    e->clientY,
+                    camera->main->width,
+                    camera->main->height
+                );
+            }
             break;
         case EMSCRIPTEN_EVENT_MOUSEUP:
             camera->handleMouseUp(e->clientX, e->clientY, e->button);
@@ -187,11 +251,27 @@ EM_BOOL wheelCallback(
     return EM_TRUE;
 }
 
+EM_BOOL keyCallback(
+    int eventType,
+    const EmscriptenKeyboardEvent* e,
+    void* userData
+) {
+    if(eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
+        Camera* camera = static_cast<Camera*>(userData);
+        if(strcmp(e->key, "Escape") == 0) {
+            camera->resetToSavedPos();
+            return EM_TRUE;
+        }
+    }
+    return EM_FALSE;
+}
+
 void Camera::setEvents() {
     emscripten_set_mousedown_callback("#ctx", this, 1, mouseCallback);
     emscripten_set_mouseup_callback("#ctx", this, 1, mouseCallback);
     emscripten_set_mousemove_callback("#ctx", this, 1, mouseCallback);
     emscripten_set_wheel_callback("#ctx", this, 1, wheelCallback);
+    emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, 1, keyCallback);
 }
 
 void Camera::update() {

@@ -32,4 +32,6 @@ public:
     );
     void render(double x, double y);
     bool isMouseIntersecting() const;
+
+    bool handleClick(double x, double y, int viewportWidth, int viewportHeight);
 };

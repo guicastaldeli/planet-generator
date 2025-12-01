@@ -1,5 +1,5 @@
 #pragma once
-#include "shader_controller.h"
+#include ".controller/shader_controller.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

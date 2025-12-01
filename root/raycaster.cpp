@@ -1,8 +1,8 @@
 #include "raycaster.h"
 #include "camera.h"
-#include "buffers.h"
+#include "buffers/buffers.h"
 #include "main.h"
-#include "shader_controller.h"
+#include ".controller/shader_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <glm/glm.hpp>

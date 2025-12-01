@@ -1,7 +1,7 @@
 #pragma once
 #include "camera.h"
 #include "shader_loader.h"
-#include "buffers.h"
+#include "buffers/buffers.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>

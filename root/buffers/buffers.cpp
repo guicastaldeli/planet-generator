@@ -1,5 +1,5 @@
 #include "buffers.h"
-#include "shader_controller.h"
+#include ".controller/shader_controller.h"
 #include "camera.h"
 #include <emscripten.h>
 #include <GLES3/gl3.h>

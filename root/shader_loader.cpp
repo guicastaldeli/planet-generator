@@ -4,7 +4,7 @@
 #include <cstring>
 #include <emscripten/fetch.h>
 #include <emscripten/emscripten.h>
-#include "shader_controller.h"
+#include ".controller/shader_controller.h"
 
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
@@ -74,8 +74,8 @@ void ShaderLoader::load() {
     loadedData.clear();
     request.clear();
 
-    addUrl(".shaders/frag.glsl", FRAG);
-    addUrl(".shaders/vertex.glsl", VERTEX);
+    addUrl("_shaders/frag.glsl", FRAG);
+    addUrl("_shaders/vertex.glsl", VERTEX);
     pendingLoads = request.size();
     printf("\nStarting to load %d shaders...\n", pendingLoads);
 

@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <GL/glew.h>
+#include <glm/glm.hpp> 
 
 class BufferData {
     public:
@@ -30,7 +31,7 @@ class BufferData {
             maxBounds(max) {}
         };
 
-        static MeshData GetMeshData(Type t) {
+        static const MeshData& GetMeshData(Type t) {
             static const std::unordered_map<Type, MeshData> map = {
                 /* Triangle */
                 {Type::TRIANGLE, {
@@ -57,20 +58,23 @@ class BufferData {
                     {
                         -0.5f, -0.5f, -0.5f,
                         0.5f, -0.5f, -0.5f,
-                        0.5f, -0.5f,  0.5f,
+                        0.5f,  0.5f, -0.5f,
+                        -0.5f,  0.5f, -0.5f,
                         -0.5f, -0.5f,  0.5f,
-                        0.0f,  0.5f,  0.0f
+                        0.5f, -0.5f,  0.5f,
+                        0.5f,  0.5f,  0.5f,
+                        -0.5f,  0.5f,  0.5f
                     },
                     {
-                        4, 0, 1,
-                        4, 1, 2,
-                        4, 2, 3,
-                        4, 3, 0,
-                        0, 1, 2,
-                        0, 2, 3
+                        0,1,2, 0,2,3,
+                        4,5,6, 4,6,7,
+                        0,4,7, 0,7,3,
+                        1,5,6, 1,6,2,
+                        3,2,6, 3,6,7,
+                        0,1,5, 0,5,4
                     },
                     glm::vec3(-0.5f, -0.5f, -0.5f),
-                    glm::vec3(0.5f, 0.5f, 0.5f)
+                    glm::vec3(0.5f, 0.5f, 0.5f)  
                 }},
                 /* Sphere */
                 {Type::SPHERE, {

@@ -48,7 +48,7 @@ void Main::initShaderLoader() {
 }
 
 void Main::initBuffers() {
-    buffers = new Buffers(camera, shaderLoader->shaderController, BufferData::Type::TRIANGLE);
+    buffers = new Buffers(camera, shaderLoader->shaderController, BufferData::Type::CUBE);
     buffers->init();
 }
 

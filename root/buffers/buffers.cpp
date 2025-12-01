@@ -74,7 +74,7 @@ void Buffers::render() {
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
 
-    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 

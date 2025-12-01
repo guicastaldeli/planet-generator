@@ -1,8 +1,8 @@
 #include "raycaster.h"
-#include "camera.h"
-#include "buffers/buffers.h"
-#include "main.h"
-#include ".controller/shader_controller.h"
+#include "../camera.h"
+#include "buffers.h"
+#include "../main.h"
+#include "../.controller/shader_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <glm/glm.hpp>
@@ -57,7 +57,8 @@ bool Raycaster::checkIntersection(
 ** AABB 
 */
 bool Raycaster::aabb(glm::vec3 rayWorldDir) {
-    if(!buffers) return;
+    if(!buffers) return false;
+    
     glm::vec3 aabbMin = buffers->getMinBounds();
     glm::vec3 aabbMax = buffers->getMaxBounds();
 

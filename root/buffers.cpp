@@ -1,12 +1,14 @@
 #include "buffers.h"
 #include "shader_controller.h"
+#include "camera.h"
 #include <emscripten.h>
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Buffers::Buffers(ShaderController* shaderController) :
+Buffers::Buffers(Camera* camera, ShaderController* shaderController) :
+    camera(camera),
     shaderController(shaderController)
 {}
 Buffers::~Buffers() {}
@@ -55,7 +57,7 @@ void Buffers::set() {
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
     glBindVertexArray(vao);
-    
+
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, (float)emscripten_get_now() / 1000.f, glm::vec3(0.0f, 1.0f, 0.0f));
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");

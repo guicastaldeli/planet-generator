@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <GLES3/gl3.h>
 
+class Camera;
 class ShaderController;
 class Buffers {
     private:
@@ -10,12 +11,13 @@ class Buffers {
         GLuint ebo;
         float vertices[6];
         
+        Camera* camera;
         ShaderController* shaderController;
         
         void set();
         
     public:
-        Buffers(ShaderController* shaderController);
+        Buffers(Camera* camera, ShaderController* shaderController);
         ~Buffers();
 
         void render();

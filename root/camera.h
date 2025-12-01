@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <emscripten.h>
+#include "raycaster.h"
 
 class Main;
 class Camera {
@@ -13,10 +14,6 @@ class Camera {
         Main* main;
         ShaderController* shaderController;
 
-        glm::vec3 position;
-        glm::vec3 target;
-        glm::vec3 up;
-        glm::vec3 right;
         float yaw;
         float pitch;
 
@@ -25,7 +22,6 @@ class Camera {
         double lastMouseX;
         double lastMouseY;
 
-        float zoomLevel;
         float rotationSpeed;
         float panSpeed;
         float zoomSpeed;
@@ -35,6 +31,14 @@ class Camera {
         void pan(float deltaX, float deltaY);
         void zoom(float delta);
     public:
+        Raycaster* raycaster;
+        
+        glm::vec3 position;
+        glm::vec3 target;
+        glm::vec3 up;
+        glm::vec3 right;
+        float zoomLevel;
+
         void handleMouseDown(double x, double y, int button);
         void handleMouseUp(double x, double y, int button);
         void handleMouseMove(double x, double y);
@@ -45,6 +49,6 @@ class Camera {
         void setEvents();
         void init();
         void update();
-        Camera(Main* mainPtr, ShaderController* shaderPtr);
+        Camera(Main* main, ShaderController* shaderController);
         ~Camera();
 };

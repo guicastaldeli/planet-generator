@@ -7,9 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Camera::Camera(Main* mainPtr, ShaderController* shaderPtr) : 
-    main(mainPtr), 
-    shaderController(shaderPtr),
+Camera::Camera(Main* main, ShaderController* shaderController) : 
+    main(main), 
+    shaderController(shaderController),
     position(0.0f, 0.0f, 3.0f),
     target(0.0f, 0.0f, 0.0f),
     up(0.0f, 1.0f, 0.0f),
@@ -22,9 +22,16 @@ Camera::Camera(Main* mainPtr, ShaderController* shaderPtr) :
     lastMouseY(0.0),
     zoomLevel(45.0f),
     rotationSpeed(0.1f),
-    panSpeed(0.01f),
+    panSpeed(0.001f),
     zoomSpeed(0.1f)
-{}
+{
+    raycaster = new Raycaster(
+        main, 
+        this, 
+        main->buffers, 
+        shaderController
+    );
+}
 Camera::~Camera() {}
 
 /*
@@ -164,6 +171,7 @@ EM_BOOL mouseCallback(
             break;
         case EMSCRIPTEN_EVENT_MOUSEMOVE:
             camera->handleMouseMove(e->clientX, e->clientY);
+            camera->raycaster->render(e->clientX, e->clientY);
             break;
     }
     return EM_TRUE;

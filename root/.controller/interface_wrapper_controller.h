@@ -15,7 +15,7 @@ extern "C" {
     void EMSCRIPTEN_KEEPALIVE onImportPreset();
     void EMSCRIPTEN_KEEPALIVE onExportPreset();
     void EMSCRIPTEN_KEEPALIVE onResetToDefault();
-
+    void EMSCRIPTEN_KEEPALIVE appendToDOM(const char* html);
 #ifdef __cplusplus
 }
 #endif

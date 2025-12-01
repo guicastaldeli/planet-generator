@@ -1,9 +1,9 @@
-import { InterfaceManager } from "./interface/interface-manager";
+import { InterfaceManager } from "../out/interface/interface-manager.js";
 
 export class AppController {
     private interfaceManager: InterfaceManager;
 
-    constructor(module: any) {
+    constructor(module?: any) {
         this.interfaceManager = new InterfaceManager(module);
 
         this.setupCallbacks();

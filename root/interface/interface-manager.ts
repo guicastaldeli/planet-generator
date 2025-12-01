@@ -1,4 +1,4 @@
-import { ControlsController } from "./controls-controller";
+import { ControlsController } from "../../out/interface/controls-controller.js";
 
 export class InterfaceManager {
     private emscriptenModule: any;

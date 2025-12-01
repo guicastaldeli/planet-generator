@@ -1,6 +1,6 @@
 #pragma once
 #include <GLES3/gl3.h>
-#include "shader_loader.h"
+#include "../shader_loader.h"
 
 class ShaderController {
     public:

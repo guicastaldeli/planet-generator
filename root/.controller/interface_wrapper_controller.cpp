@@ -4,6 +4,27 @@
 InterfaceWrapperController::InterfaceWrapperController() {}
 InterfaceWrapperController::~InterfaceWrapperController() {}
 
+extern "C" {
+    void appendToDOM(const char* html) {
+        EM_ASM({
+            try {
+                const htmlString = UTF8ToString($0);
+                
+                const container = document.createElement('div');
+                container.innerHTML = htmlString;
+                
+                const controlsContainer = container.querySelector('.controls--container');
+                if(controlsContainer) {                    
+                    document.body.appendChild(controlsContainer);
+                    console.log('Controls appended to DOM from C++');
+                }
+            } catch(e) {
+                console.error('Error appending controls:', e);
+            }
+        }, html);
+    }
+}
+
 void onCustomPreset() {
     std::cout << "Custom button clicked from TypeScript!" << std::endl;
 }

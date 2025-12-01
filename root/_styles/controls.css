@@ -1,0 +1,19 @@
+.controls--container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+    
+.controls--container button {
+    display: block;
+}
+    
+#control--list {
+    margin-top: 10px;
+    padding-top: 10px;
+}

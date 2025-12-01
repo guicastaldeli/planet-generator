@@ -1,4 +1,4 @@
-import { DocumentLoader } from "../document-loader";
+import { DocumentLoader } from "../../out/document-loader.js";
 
 export class ControlsController {
     private emscriptenModule: any;
@@ -16,9 +16,25 @@ export class ControlsController {
     
     constructor(module: any) {
         this.emscriptenModule = module;
-        this.loader = DocumentLoader.getInstance('./_controls.html');
-        this.extractContainer();
-        this.setupEventListeners();
+        this.loader = DocumentLoader.getInstance('./interface/_controls.html');
+        this.init();
+    }
+
+    private async init(): Promise<void> {
+        await this.extractContainer();
+        await this.append();
+        setTimeout(() => this.setupEventListeners(), 100);
+    }
+
+    private async append(): Promise<void> {
+        if(this.container && this.emscriptenModule) {
+            const html = this.container.outerHTML;
+            this.emscriptenModule.ccall('appendToDOM',
+                null,
+                ['string'],
+                [html]
+            );
+        }
     }
 
     /*
@@ -41,30 +57,34 @@ export class ControlsController {
     ** Setup Event Listeners
     */
     private setupEventListeners(): void {
-        if(!this.container) throw new Error('container err!');
+        const container = document.querySelector('.controls--container');
+        if(!container) {
+            console.error('Container not found in DOM!');
+            return;
+        }
 
-        this.container.querySelector('#control--actn')
+        container.querySelector('#control--actn')
             ?.addEventListener('click', () => {
                 this.onControlsMenuClick?.();
                 this.toggleControls();
             }
         );
-        this.container.querySelector('#control--actn-custom')
+        container.querySelector('#control--actn-custom')
             ?.addEventListener('click', () => {
                 this.onCustomPresetClick?.();
             }
         );
-        this.container.querySelector('#control--actn-import')
+        container.querySelector('#control--actn-import')
             ?.addEventListener('click', () => {
                 this.onImportPresetClick?.();
             }
         );
-        this.container.querySelector('#control--actn-export')
+        container.querySelector('#control--actn-export')
             ?.addEventListener('click', () => {
                 this.onExportPresetClick?.();
             }
         );
-        this.container.querySelector('#control--actn-reset')
+        container.querySelector('#control--actn-reset')
             ?.addEventListener('click', () => {
                 this.onResetToDefaultClick?.();
             }

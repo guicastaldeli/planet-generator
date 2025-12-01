@@ -10,7 +10,7 @@
 Buffers::Buffers(
     Camera* camera, 
     ShaderController* shaderController,
-    BufferTypes::Type type
+    BufferData::Type type
 ) :
     camera(camera),
     shaderController(shaderController),
@@ -27,8 +27,10 @@ Buffers::~Buffers() {
 ** Set Buffers
 */
 void Buffers::set() {
-    BufferTypes::MeshData meshData = BufferTypes::GetMeshData(bufferType);
+    BufferData::MeshData meshData = BufferData::GetMeshData(bufferType);
     indexCount = meshData.indices.size();
+    minBounds = meshData.minBounds;
+    maxBounds = meshData.maxBounds;
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);

@@ -4,7 +4,7 @@
 #include <vector>
 #include <GL/glew.h>
 
-class BufferTypes {
+class BufferData {
     public:
         enum class Type {
             TRIANGLE,
@@ -15,6 +15,19 @@ class BufferTypes {
         struct MeshData {
             std::vector<float> vertices;
             std::vector<GLuint> indices;
+            glm::vec3 minBounds;
+            glm::vec3 maxBounds;
+
+            MeshData(
+                const std::vector<float>& v,
+                const std::vector<GLuint>& i,
+                const glm::vec3& min,
+                const glm::vec3& max
+            ) :
+            vertices(v),
+            indices(i),
+            minBounds(min),
+            maxBounds(max) {}
         };
 
         static MeshData GetMeshData(Type t) {
@@ -35,7 +48,9 @@ class BufferTypes {
                         4, 3, 0,
                         0, 1, 2,
                         0, 2, 3
-                    }
+                    },
+                    glm::vec3(-0.5f, -0.5f, -0.5f),
+                    glm::vec3(0.5f, 0.5f, 0.5f)
                 }},
                 /* Cube */
                 {Type::CUBE, {
@@ -53,7 +68,9 @@ class BufferTypes {
                         4, 3, 0,
                         0, 1, 2,
                         0, 2, 3
-                    }
+                    },
+                    glm::vec3(-0.5f, -0.5f, -0.5f),
+                    glm::vec3(0.5f, 0.5f, 0.5f)
                 }},
                 /* Sphere */
                 {Type::SPHERE, {
@@ -71,7 +88,9 @@ class BufferTypes {
                         4, 3, 0,
                         0, 1, 2,
                         0, 2, 3
-                    }
+                    },
+                    glm::vec3(-0.5f, -0.5f, -0.5f),
+                    glm::vec3(0.5f, 0.5f, 0.5f)
                 }}
             };
 

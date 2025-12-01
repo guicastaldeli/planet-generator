@@ -57,14 +57,15 @@ bool Raycaster::checkIntersection(
 ** AABB 
 */
 bool Raycaster::aabb(glm::vec3 rayWorldDir) {
-    glm::vec3 aabbMin(-0.5f, -0.5f, -0.5f); //Updtae later for planets vertex
-    glm::vec3 aabbMax(0.5f, 0.5f, 0.5f);
+    if(!buffers) return;
+    glm::vec3 aabbMin = buffers->getMinBounds();
+    glm::vec3 aabbMax = buffers->getMaxBounds();
 
     glm::vec3 rayOrigin = camera->position;
     glm::vec3 invDir = 1.0f / rayWorldDir;
     glm::vec3 t0 = (aabbMin - rayOrigin) * invDir;
     glm::vec3 t1 = (aabbMax - rayOrigin) * invDir;
-    
+
     glm::vec3 tmin = glm::min(t0, t1);
     glm::vec3 tmax = glm::max(t0, t1);
     float tminMax = glm::max(glm::max(tmin.x, tmin.y), tmin.z);

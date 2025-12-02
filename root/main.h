@@ -1,7 +1,7 @@
 #pragma once
 #include "camera.h"
 #include "shader_loader.h"
-#include "buffers/buffers.h"
+#include ".controller/buffer_controller.h"
 #include ".controller/interface_wrapper_controller.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
@@ -13,14 +13,14 @@ class Main {
         int height;
         int fps = 60;
 
-        Camera* camera = nullptr;
-        ShaderLoader* shaderLoader = nullptr;
-        Buffers* buffers = nullptr;
-        InterfaceWrapperController* interfaceWrapperController = nullptr;
+        Camera* camera;
+        ShaderLoader* shaderLoader;
+        BufferController* bufferController;
+        InterfaceWrapperController* interfaceWrapperController;
         
         int initGlWindow();
         void initShaderLoader();
-        void initBuffers();
+        void initBufferController();
         void initCamera();
         void initInterfaceWrapper();
         

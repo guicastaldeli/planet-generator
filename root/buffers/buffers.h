@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <GLES3/gl3.h>
 #include "buffer_data.h"
+#include "../buffers/buffer_generator.h"
 
 class Camera;
 class ShaderController;
@@ -16,6 +17,7 @@ class Buffers {
 
         BufferData::Type bufferType;
         GLuint indexCount;
+        std::vector<PlanetBuffer> planetBuffers;
 
         glm::vec3 minBounds;
         glm::vec3 maxBounds;
@@ -37,6 +39,7 @@ class Buffers {
             return maxBounds;
         }
 
+        void setOrbit();
         void render();
         void init();
 };

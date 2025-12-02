@@ -61,6 +61,49 @@ void Buffers::set() {
 }
 
 /*
+** Render Orbit
+*/
+void Buffers::setOrbit() {
+    for(const auto& planetBuffer : planetBuffers) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(
+            model, 
+            planetBuffer.data.currentRotation.x,
+            glm::vec3(1.0f, 0.0f, 0.0f)
+        );
+        model = glm::rotate(
+            model, 
+            planetBuffer.data.currentRotation.y,
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+        model = glm::rotate(
+            model, 
+            planetBuffer.data.currentRotation.z,
+            glm::vec3(0.0f, 0.0f, 1.0f)
+        );
+
+        if(planetBuffer.data.position != 0) {
+            float orbitRadius = planetBuffer.data.distanceFromCenter;
+            float angle = planetBuffer.data.orbitAngle.y;
+
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::rotate(
+                orbitTransform,
+                angle,
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+            orbitTransform = glm::translate(
+                orbitTransform,
+                glm::vec3(orbitRadius, 0.0f, 0.0f)
+            );
+            model = orbitTransform * model;
+        }
+
+        model = glm::scale(model, glm::vec3(planetBuffer.data.size));
+    }
+}
+
+/*
 ** Render
 */
 void Buffers::render() {

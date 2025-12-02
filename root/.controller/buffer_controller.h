@@ -1,19 +1,26 @@
 #pragma once
 #include "../preset/preset_loader.h"
 #include "../buffers/buffer_generator.h"
+#include "../camera.h"
+#include "../shader_loader.h"
 
 class BufferController {
     private:
+        Camera* camera;
+        ShaderLoader* shaderLoader;
         PresetLoader* presetLoader;
         BufferGenerator* bufferGenerator;
         std::vector<PlanetBuffer> planetBuffers;
+        Buffers* buffers;
         PresetData currentPreset;
-        
+
     public:
-        BufferController();
+        BufferController(Camera* Camera, ShaderLoader* shaderLoader);
         ~BufferController();
 
+        void initBuffers();
         void initPresetLoader();
         void initGenerator();
-        void loadDefaultPreset();
+        void init();
+        void render();
 };

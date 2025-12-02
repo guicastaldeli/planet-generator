@@ -47,9 +47,9 @@ void Main::initShaderLoader() {
     shaderLoader->load();
 }
 
-void Main::initBuffers() {
-    buffers = new Buffers(camera, shaderLoader->shaderController, BufferData::Type::TRIANGLE);
-    buffers->init();
+void Main::initBufferController() {
+    bufferController = new BufferController(camera, shaderLoader);
+    bufferController->init();
 }
 
 void Main::initInterfaceWrapper() {
@@ -58,7 +58,7 @@ void Main::initInterfaceWrapper() {
 
 void Main::init() {
     ShaderLoader::setCallback([this] {
-        this->initBuffers();
+        this->initBufferController();
         this->initCamera();
     });
     initShaderLoader();
@@ -69,8 +69,13 @@ void Main::init() {
 ** Render
 */
 void Main::render() {
+    static float lastTime = 0;
+    float currentTime = emscripten_get_now() / 1000.0f;
+    float deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
     if(camera) camera->update();
-    if(buffers) buffers->render();
+    if(bufferController) bufferController->render(deltaTime);
 }
 
 void Main::loop() {

@@ -3,7 +3,7 @@
 #include "../camera.h"
 #include "../.controller/shader_controller.h"
 #include "../preset/preset_loader.h"
-#include "../.data/data_parser.h"
+#include "../_data/data_parser.h"
 #include <algorithm>
 #include <queue>
 #include <iostream>
@@ -22,7 +22,7 @@ BufferGenerator::~BufferGenerator() {};
 */
 void BufferGenerator::loadDistanceMap() {
     try {
-        std::ifstream file("/.data/positions.json");
+        std::ifstream file("/_data/positions.json");
         if(!file.is_open()) {
             std::cerr << "Failed to open positions.json file" << std::endl;
             return;

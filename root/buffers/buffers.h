@@ -35,7 +35,6 @@ class Buffers {
         }
 
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
-        void setOrbit();
         void render();
         void init();
 };

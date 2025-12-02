@@ -16,7 +16,7 @@ void BufferController::initBuffers() {
 }
 
 void BufferController::initPresetLoader() {
-    std::string path = "/.data/default-preset.json";
+    std::string path = "/_data/default-preset.json";
     presetLoader = new PresetLoader(path);
 }
 
@@ -51,6 +51,5 @@ void BufferController::render(float deltaTime) {
 
         bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
         buffers->render();
-        buffers->setOrbit();
     }
 }

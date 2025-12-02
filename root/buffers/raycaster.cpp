@@ -17,7 +17,8 @@ Raycaster::Raycaster(
     camera(camera),
     buffers(buffers),
     shaderController(shaderController),
-    isIntersecting(false)
+    isIntersecting(false),
+    selectedPlanetIndex(-1)
 {}
 Raycaster::~Raycaster() {}
 
@@ -25,7 +26,10 @@ bool Raycaster::checkIntersection(
     double mouseX,
     double mouseY,
     int viewportWidth,
-    int viewportHeight
+    int viewportHeight,
+    const glm::vec3& planetPosition,
+    float planetSize,
+    int planetIndex
 ) {
     float x = (2.0f * mouseX) / viewportWidth - 1.0f;
     float y = 1.0f - (2.0f * mouseY) / viewportHeight;
@@ -50,17 +54,24 @@ bool Raycaster::checkIntersection(
     glm::vec4 rayWorld4 = invView * rayEye;
     glm::vec3 rayWorld = glm::normalize(rayWorld4);
 
-    return aabb(rayWorld);
+    bool intersects = aabb(rayWorld, planetPosition, planetSize);
+    if(intersects) selectedPlanetIndex = planetIndex; 
+
+    return intersects;
 }
 
 /*
 ** AABB 
 */
-bool Raycaster::aabb(glm::vec3 rayWorldDir) {
+bool Raycaster::aabb(
+    glm::vec3 rayWorldDir,
+    const glm::vec3& planetPosition,
+    float planetSize
+) {
     if(!buffers) return false;
     
-    glm::vec3 aabbMin = buffers->getMinBounds();
-    glm::vec3 aabbMax = buffers->getMaxBounds();
+    glm::vec3 aabbMin = planetPosition - glm::vec3(planetSize);
+    glm::vec3 aabbMax = planetPosition + glm::vec3(planetSize);
 
     glm::vec3 rayOrigin = camera->position;
     glm::vec3 invDir = 1.0f / rayWorldDir;
@@ -79,10 +90,26 @@ bool Raycaster::aabb(glm::vec3 rayWorldDir) {
 /*
 ** Handle Click
 */
-bool Raycaster::handleClick(double x, double y, int viewportWidth, int viewportHeight) {
-    bool intersects = checkIntersection(x, y, viewportWidth, viewportHeight);
-    if(intersects && !camera->isPanningLocked()) {
-        camera->zoomToObj();
+bool Raycaster::handleClick(
+    double x, 
+    double y, 
+    int viewportWidth, 
+    int viewportHeight,
+    const glm::vec3& planetPosition,
+    float planetSize,
+    int planetIndex
+) {
+    bool intersects = checkIntersection(
+        x, 
+        y, 
+        viewportWidth, 
+        viewportHeight,
+        planetPosition,
+        planetSize,
+        planetIndex
+    );
+    if(intersects) {
+        camera->zoomToObj(planetPosition, planetSize);
         return true;
     }
     return false;
@@ -95,10 +122,27 @@ bool Raycaster::isMouseIntersecting() const {
 /*
 ** Render
 */
-void Raycaster::render(double x, double y) {
-    isIntersecting = checkIntersection(x, y, main->width, main->height);
+void Raycaster::render(
+    double x, 
+    double y,
+    const glm::vec3& planetPosition,
+    float planetSize,
+    int planetIndex
+) {
+    isIntersecting = checkIntersection(
+        x, 
+        y, 
+        main->width, 
+        main->height,
+        planetPosition,
+        planetSize,
+        planetIndex
+    );
     GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
-    if (hoverLoc != -1) {
+    if(hoverLoc != -1) {
         glUniform1f(hoverLoc, isIntersecting ? 1.0f : 0.0f);
+    }
+    if(isIntersecting) {
+        selectedPlanetIndex = planetIndex;
     }
 }

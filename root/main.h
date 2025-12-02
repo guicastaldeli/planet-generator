@@ -18,12 +18,7 @@ class Main {
         BufferController* bufferController;
         InterfaceWrapperController* interfaceWrapperController;
         
-        int initGlWindow();
-        void initShaderLoader();
-        void initBufferController();
-        void initCamera();
-        void initInterfaceWrapper();
-        
+        int initGlWindow();        
         void render();
         void loop();
         void init();

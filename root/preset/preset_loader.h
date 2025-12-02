@@ -1,3 +1,4 @@
+#pragma once
 #include "preset_data.h"
 
 class PresetLoader {

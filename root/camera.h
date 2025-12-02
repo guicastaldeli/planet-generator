@@ -9,6 +9,7 @@
 #include "./buffers/raycaster.h"
 
 class Main;
+class BufferController;
 class Camera {
     private:
         ShaderController* shaderController;
@@ -34,11 +35,16 @@ class Camera {
         void pan(float deltaX, float deltaY);
         void zoom(float delta);
     public:
-        Camera(Main* main, ShaderController* shaderController);
+        Camera(
+            Main* main, 
+            ShaderController* shaderController,
+            BufferController* bufferController
+        );
         ~Camera();
-
+        
         Main* main;
         Raycaster* raycaster;
+        BufferController* bufferController;
 
         glm::vec3 position;
         glm::vec3 target;
@@ -58,7 +64,7 @@ class Camera {
         void update();
 
         void saveCurrentPos();
-        void zoomToObj();
+        void zoomToObj(const glm::vec3& planetPosition, float planetSize);
         void resetToSavedPos();
         void lockPanning(bool lock);
         bool isPanningLocked() const { return panningLocked; }

@@ -3,6 +3,7 @@
 #include <GLES3/gl3.h>
 #include "buffer_data.h"
 #include "../buffers/buffer_generator.h"
+#include "../.controller/buffer_controller.h"
 
 class Camera;
 class ShaderController;
@@ -10,6 +11,7 @@ class Buffers {
     private:
         Camera* camera;
         ShaderController* shaderController;
+        BufferController* bufferController;
 
         std::unordered_map<BufferData::Type, GLuint> vaos;
         std::unordered_map<BufferData::Type, GLuint> vbos;
@@ -22,7 +24,11 @@ class Buffers {
         void set(BufferData::Type type);
         
     public:
-        Buffers(Camera* camera, ShaderController* shaderController);
+        Buffers(
+            Camera* camera, 
+            ShaderController* shaderController,
+            BufferController* bufferController
+        );
         ~Buffers();
 
         std::vector<PlanetBuffer> planetBuffers;

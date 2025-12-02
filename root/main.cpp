@@ -37,32 +37,18 @@ int Main::initGlWindow() {
 /*
 ** Init
 */
-void Main::initCamera() {
-    camera = new Camera(this, shaderLoader->shaderController);
-    camera->init();
-}
-
-void Main::initShaderLoader() {
+void Main::init() {
     shaderLoader = new ShaderLoader();
     shaderLoader->load();
-}
-
-void Main::initBufferController() {
-    bufferController = new BufferController(camera, shaderLoader);
-    bufferController->init();
-}
-
-void Main::initInterfaceWrapper() {
-    interfaceWrapperController = new InterfaceWrapperController();
-}
-
-void Main::init() {
     ShaderLoader::setCallback([this] {
-        this->initBufferController();
-        this->initCamera();
+        bufferController = new BufferController(this, nullptr, shaderLoader);
+        bufferController->init();
+        camera = new Camera(this, shaderLoader->shaderController, bufferController);
+        camera->init();
+        bufferController->setCamera(camera);
     });
-    initShaderLoader();
-    initInterfaceWrapper();
+    
+    interfaceWrapperController = new InterfaceWrapperController();
 }
 
 /*

@@ -6,10 +6,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include ".controller/buffer_controller.h"
 
-Camera::Camera(Main* main, ShaderController* shaderController) : 
+Camera::Camera(
+    Main* main, 
+    ShaderController* shaderController, 
+    BufferController* bufferController
+) : 
     main(main), 
     shaderController(shaderController),
+    bufferController(bufferController),
     position(0.0f, 0.0f, 3.0f),
     target(0.0f, 0.0f, 0.0f),
     up(0.0f, 1.0f, 0.0f),
@@ -27,14 +33,7 @@ Camera::Camera(Main* main, ShaderController* shaderController) :
     panningLocked(false),
     savedPosition(0.0f, 0.0f, 3.0f),
     savedTarget(0.0f, 0.0f, 0.0f)
-{
-    raycaster = new Raycaster(
-        main, 
-        this, 
-        main->bufferController->buffers, 
-        shaderController
-    );
-}
+{}
 Camera::~Camera() {}
 
 /*
@@ -122,20 +121,24 @@ void Camera::saveCurrentPos() {
 /*
 ** Zoom to Object
 */
-void Camera::zoomToObj() {
-    if(panningLocked) return;
-    saveCurrentPos();
+void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
+    if(panningLocked) saveCurrentPos();
+    target = planetPosition;
 
-    glm::vec3 direction = glm::normalize(target - position);
+    if(bufferController && bufferController->getSelectedPlanet()) {
+        planetSize = bufferController->getSelectedPlanet()->data.size;
+    }
 
-    float zoomDistance = 1.5f;
-    position = target - direction * zoomDistance;
-    
-    target = glm::vec3(0.0f, 0.0f, 0.0f); //change later for the planets pos
-    
+    float zoomDistance = planetSize * 3.0f;
+    glm::vec3 directionToPlanet = glm::normalize(planetPosition - position);
+    position = planetPosition - directionToPlanet * zoomDistance;
+    up = glm::vec3(0.0f, 1.0f, 0.0f);
+
     updateVectors();
     lockPanning(true);
-    emscripten_log(EM_LOG_CONSOLE, "Zoomed to object, panning locked");
+    
+    emscripten_log(EM_LOG_CONSOLE, "Zoomed to planet at (%.2f, %.2f, %.2f)", 
+                   position.x, position.y, position.z);
 }
 
 /*
@@ -212,16 +215,19 @@ EM_BOOL mouseCallback(
     void* userData
 ) {
     Camera* camera = static_cast<Camera*>(userData);
+    if (!camera || !camera->main || !camera->bufferController) {
+        return EM_TRUE;
+    }
     switch(eventType) {
         case EMSCRIPTEN_EVENT_MOUSEDOWN:
             camera->handleMouseDown(e->clientX, e->clientY, e->button);
-            if(e->button == 0 && camera->raycaster->isMouseIntersecting()) {
-                camera->raycaster->handleClick(
-                    e->clientX,
-                    e->clientY,
-                    camera->main->width,
-                    camera->main->height
-                );
+            if(e->button == 0) {
+                if(camera->bufferController) {
+                    camera->bufferController->handleRaycasterClick(
+                        e->clientX,
+                        e->clientY
+                    );
+                }
             }
             break;
         case EMSCRIPTEN_EVENT_MOUSEUP:
@@ -229,7 +235,10 @@ EM_BOOL mouseCallback(
             break;
         case EMSCRIPTEN_EVENT_MOUSEMOVE:
             camera->handleMouseMove(e->clientX, e->clientY);
-            camera->raycaster->render(e->clientX, e->clientY);
+            camera->bufferController->handleRaycasterRender(
+                e->clientX,
+                e->clientY
+            );
             break;
     }
     return EM_TRUE;

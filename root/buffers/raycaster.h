@@ -1,37 +1,72 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 class Main;
 class Camera;
 class Buffers;
 class ShaderController;
 class Raycaster {
-private:
-    Main* main;
-    Camera* camera;
-    Buffers* buffers;
-    ShaderController* shaderController;
-    bool isIntersecting;
+    private:
+        Main* main;
+        Camera* camera;
+        Buffers* buffers;
+        ShaderController* shaderController;
+        bool isIntersecting;
 
-    bool aabb(glm::vec3 rayWorldDir);
+        std::unordered_map<int, bool> planetIntersections;
 
-public:
-    Raycaster(
-        Main* main,
-        Camera* camera, 
-        Buffers* buffers,
-        ShaderController* shaderController
-    );
-    ~Raycaster();
+        bool aabb(
+            glm::vec3 rayWorldDir,
+            const glm::vec3& planetPosition,
+            float planetSize
+        );
 
-    bool checkIntersection(
-        double mouseX,
-        double mouseY,
-        int viewportWidth,
-        int viewportHeight
-    );
-    void render(double x, double y);
-    bool isMouseIntersecting() const;
+    public:
+        Raycaster(
+            Main* main,
+            Camera* camera, 
+            Buffers* buffers,
+            ShaderController* shaderController
+        );
+        ~Raycaster();
 
-    bool handleClick(double x, double y, int viewportWidth, int viewportHeight);
+        int selectedPlanetIndex;
+
+        void render(
+            double x, 
+            double y,
+            const glm::vec3& planetPosition,
+            float planetSize,
+            int planetIndex
+        );
+        bool isMouseIntersecting() const;
+        bool checkIntersection(
+            double mouseX,
+            double mouseY,
+            int viewportWidth,
+            int viewportHeight,
+            const glm::vec3& planetPosition,
+            float planetSize,
+            int planetIndex
+        );
+
+        bool handleClick(
+            double x, 
+            double y, 
+            int viewportWidth, 
+            int viewportHeight,
+            const glm::vec3& planetPosition,
+            float planetSize,
+            int planetIndex
+        );
+
+        void setIsIntersecting(bool intersecting) {
+            isIntersecting = intersecting;
+            if(!intersecting) {
+                selectedPlanetIndex = -1;
+            }
+        }
+        int getSelectedPlanetIndex() const { return selectedPlanetIndex; }
+        void clearSelection() { selectedPlanetIndex = -1; }
 };

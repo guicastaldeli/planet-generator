@@ -1,17 +1,24 @@
 #include "buffer_controller.h"
 #include "../buffers/buffers.h"
 
-BufferController::BufferController(Camera* camera, ShaderLoader* shaderLoader) :
+BufferController::BufferController(
+    Main* main,
+    Camera* camera, 
+    ShaderLoader* shaderLoader
+) :
+    main(main),
     camera(camera),
     shaderLoader(shaderLoader),
     bufferGenerator(nullptr),
     presetLoader(nullptr),
-    buffers(nullptr)
+    buffers(nullptr),
+    raycaster(nullptr),
+    selectedPlanetIndex(-1)
 {};
 BufferController::~BufferController() {};
 
 void BufferController::initBuffers() {
-    buffers = new Buffers(camera, shaderLoader->shaderController);
+    buffers = new Buffers(camera, shaderLoader->shaderController, this);
     buffers->init();
 }
 
@@ -34,26 +41,130 @@ void BufferController::init() {
 }
 
 /*
+** Check Planet Intersections
+*/
+int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
+    if(!raycaster || buffers->planetBuffers.empty()) {
+        selectedPlanetIndex = -1;
+        return -1;
+    }
+    selectedPlanetIndex = -1;
+
+    for(int i = 0; i < buffers->planetBuffers.size(); i++) {
+        const auto& planet = buffers->planetBuffers[i];
+        if(raycaster->checkIntersection(
+            mouseX, mouseY,
+            main->width, main->height,
+            planet.worldPos,
+            planet.data.size,
+            i
+        )) {
+            selectedPlanetIndex = i;
+            break;
+        }
+    }
+
+    return selectedPlanetIndex;
+}
+
+/*
+** Handle Raycaster
+*/
+void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
+    if(!raycaster) return;
+
+    int hoveredPlanetIndex = checkPlanetIntersections(mouseX, mouseY);
+    if(hoveredPlanetIndex != -1) {
+        const auto& planet = buffers->planetBuffers[hoveredPlanetIndex];
+        raycaster->render(
+            mouseX,
+            mouseY,
+            planet.worldPos,
+            planet.data.size,
+            hoveredPlanetIndex
+        );
+    } else {
+        raycaster->setIsIntersecting(false);
+    }
+}
+
+void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
+    int clickedPlanetIndex = checkPlanetIntersections(mouseX, mouseY);
+    if(clickedPlanetIndex != -1) {
+        const auto& planet = buffers->planetBuffers[clickedPlanetIndex];
+        if(raycaster->handleClick(
+            mouseX, mouseY,
+            main->width, main->height,
+            planet.worldPos,
+            planet.data.size,
+            clickedPlanetIndex
+        )) {
+            camera->zoomToObj(planet.worldPos, planet.data.size);
+        }
+    }
+}
+
+/*
+** Get Selected Planet
+*/
+const PlanetBuffer* BufferController::getSelectedPlanet() const {
+    if(selectedPlanetIndex >= 0 && selectedPlanetIndex < buffers->planetBuffers.size()) {
+        return &buffers->planetBuffers[selectedPlanetIndex];
+    }
+    return nullptr;
+}
+
+void BufferController::setCamera(Camera* cam) {
+    camera = cam;
+    if(camera && buffers && shaderLoader) {
+        if (raycaster) {
+            delete raycaster;
+            raycaster = nullptr;
+        }
+        raycaster = new Raycaster(
+            main,
+            camera,
+            buffers,
+            shaderLoader->shaderController
+        );
+    }
+}
+
+/*
 ** Render
 */
 void BufferController::render(float deltaTime) {
     if(presetLoader->loadDefaultPreset()) {
         currentPreset = presetLoader->getCurrentPreset();
         std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
-        for(auto& planetBuffer : newPlanetBuffers) {
-            int pos = planetBuffer.data.position;
-            if(pos >= MIN_PLANETS && pos <= MAX_PLANETS) {
-                planetBuffer.data.distanceFromCenter = bufferGenerator->calculateDistanceFromPosition(pos);
-            }
-            buffers->createBufferForPlanet(planetBuffer);
-        }
 
         buffers->planetBuffers.clear();
         for(auto& planetBuffer : newPlanetBuffers) {
+            float orbitRadius = planetBuffer.data.distanceFromCenter;
+            float orbitAngle = planetBuffer.data.orbitAngle.y;
+
+            glm::vec3 planetPosition(
+                orbitRadius * cos(orbitAngle),
+                0.0f,
+                orbitRadius * sin(orbitAngle)
+            );
+            planetBuffer.worldPos = planetPosition;
+            buffers->createBufferForPlanet(planetBuffer);
             buffers->planetBuffers.push_back(std::move(planetBuffer));
         }
 
         bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
+        for(auto& planetBuffer : buffers->planetBuffers) {
+            float orbitRadius = planetBuffer.data.distanceFromCenter;
+            float orbitAngle = planetBuffer.data.orbitAngle.y;
+
+            planetBuffer.worldPos = glm::vec3(
+                orbitRadius * cos(orbitAngle),
+                0.0f,
+                orbitRadius * sin(orbitAngle)
+            );
+        }
+
         buffers->render();
     }
 }

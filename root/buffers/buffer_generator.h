@@ -6,16 +6,14 @@
 #include <memory>
 #include <unordered_map>
 
-class Buffers;
-
 struct PlanetBuffer {
-    std::unique_ptr<Buffers> buffer;
     PlanetData data;
     uint32_t vao;
     uint32_t vbo;
     uint32_t ebo;
+    glm::vec3 worldPos;
 
-    PlanetBuffer() = default;
+    PlanetBuffer() : worldPos(0.0f) {}
     PlanetBuffer(PlanetBuffer&&) = default;
     PlanetBuffer& operator=(PlanetBuffer&&) = default;
     

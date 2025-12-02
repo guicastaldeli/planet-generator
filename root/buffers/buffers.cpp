@@ -7,9 +7,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Buffers::Buffers(Camera* camera, ShaderController* shaderController) :
+Buffers::Buffers(
+    Camera* camera, 
+    ShaderController* shaderController, 
+    BufferController* bufferController
+) :
     camera(camera),
-    shaderController(shaderController)
+    shaderController(shaderController),
+    bufferController(bufferController)
 {}
 Buffers::~Buffers() {
     for(auto& [type, v] : vaos) {
@@ -78,6 +83,7 @@ void Buffers::createBufferForPlanet(const PlanetBuffer& planetBuffer) {
 */
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
+    
     for(const auto& planetBuffer : planetBuffers) {
         auto it = vaos.find(planetBuffer.data.shape);
         if(it == vaos.end()) continue;
@@ -90,7 +96,7 @@ void Buffers::render() {
         glm::vec3 position(
             orbitRadius * cos(orbitAngle),
             0.0f,
-            orbitRadius * (sin(orbitAngle))
+            orbitRadius * sin(orbitAngle)
         );
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -100,6 +106,14 @@ void Buffers::render() {
 
         unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        
+        int isThisPlanetHovered = (
+            bufferController->raycaster->selectedPlanetIndex == &planetBuffer - &planetBuffers[0]
+        ) ? 1 : 0;
+        GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
+        if(hoverLoc != -1) {
+            glUniform1f(hoverLoc, (float)isThisPlanetHovered);
+        }
 
         glDrawElements(
             GL_TRIANGLES,

@@ -3,10 +3,12 @@
 #include "../buffers/buffer_generator.h"
 #include "../camera.h"
 #include "../shader_loader.h"
+#include "../buffers/raycaster.h"
+#include "../main.h"
 
 class BufferController {
     private:
-        Camera* camera;
+        Main* main;
         ShaderLoader* shaderLoader;
         PresetLoader* presetLoader;
         BufferGenerator* bufferGenerator;
@@ -15,15 +17,29 @@ class BufferController {
 
         int MIN_PLANETS = 0;
         int MAX_PLANETS = 15;
+        int selectedPlanetIndex;
         
     public:
-        BufferController(Camera* Camera, ShaderLoader* shaderLoader);
+        BufferController(
+            Main* main, 
+            Camera* Camera, 
+            ShaderLoader* shaderLoader
+        );
         ~BufferController();
+        
         Buffers* buffers;
+        Camera* camera;
+        Raycaster* raycaster;
 
+        void setCamera(Camera* cam);
         void initBuffers();
         void initPresetLoader();
         void initGenerator();
         void init();
         void render(float deltaTime);
+
+        int checkPlanetIntersections(double mosueX, double mouseY);
+        void handleRaycasterRender(double mouseX, double mouseY);
+        void handleRaycasterClick(double mouseX, double mouseY);
+        const PlanetBuffer* getSelectedPlanet() const;
 };

@@ -1,11 +1,10 @@
-import { InterfaceManager } from "../out/interface/interface-manager.js";
+import { AppManager } from "../out/app-manager.js";
 
 export class AppController {
-    private interfaceManager: InterfaceManager;
+    private appManager: AppManager;
 
     constructor(module?: any) {
-        this.interfaceManager = new InterfaceManager(module);
-
+        this.appManager = new AppManager(module);
         this.setupCallbacks();
         this.exposeToEngine();
     }
@@ -14,7 +13,8 @@ export class AppController {
     ** Setup Callbacks
     */
     private setupCallbacks(): void {
-        this.interfaceManager.getControlsController().setupCallbacks();
+        this.appManager.getControlsController().setupCallbacks();
+        this.appManager.getGeneratorController().setupCallbacks();
     }
 
     /*

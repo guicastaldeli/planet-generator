@@ -2,9 +2,12 @@
 #include "buffers.h"
 #include "../camera.h"
 #include "../.controller/shader_controller.h"
+#include "../preset/preset_loader.h"
 #include <algorithm>
 #include <queue>
+#include <iostream>
 #include <unordered_set>
+#include <emscripten/html5.h>
 
 BufferGenerator::BufferGenerator() {};
 BufferGenerator::~BufferGenerator() {};
@@ -30,7 +33,7 @@ BufferData::Type BufferGenerator::shapeToBufferType(BufferData::Type shape) {
 */
 float BufferGenerator::calculateDistanceFromPosition(int position) {
     if(position >= 0 && position < 16) {
-        return distances[position];
+        //return distances[position];
     }
     return 1.0f + (position - 8) * 0.15f;
 }
@@ -123,4 +126,40 @@ bool BufferGenerator::replaceLastPlanet(
     planets[highestIndex] = newPlanet;
     planets[highestIndex].position = highestPos;
     return true;
+};
+
+/*
+** Generate
+*/
+void generate(const char* data) {
+    try {
+        std::string str(data);
+
+        PlanetData newPlanet;
+        BufferGenerator bufferGenerator;
+        PresetLoader* presetLoader;
+
+        auto& planets = presetLoader->getCurrentPreset().planets;
+        int availablePos = bufferGenerator.findAvailablePosition(
+            presetLoader->getCurrentPreset().planets
+        );
+        if(availablePos == -1) {
+            bufferGenerator.replaceLastPlanet(
+                presetLoader->getCurrentPreset().planets, newPlanet
+            );
+        } else {
+            newPlanet.position = availablePos;
+            newPlanet.distanceFromCenter = bufferGenerator.calculateDistanceFromPosition(
+                availablePos
+            );
+            presetLoader->getCurrentPreset().planets.push_back(newPlanet);
+        }
+
+        Buffers* buffers;
+        buffers->planetBuffers = bufferGenerator.generateFromPreset(
+            presetLoader->getCurrentPreset()
+        );
+    } catch(const std::exception& err) {
+        std::cerr << "Error creating planet!" << err.what() << std::endl;
+    }
 }

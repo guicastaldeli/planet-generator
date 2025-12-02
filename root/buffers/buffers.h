@@ -17,7 +17,6 @@ class Buffers {
 
         BufferData::Type bufferType;
         GLuint indexCount;
-        std::vector<PlanetBuffer> planetBuffers;
 
         glm::vec3 minBounds;
         glm::vec3 maxBounds;
@@ -31,6 +30,8 @@ class Buffers {
             BufferData::Type type
         );
         ~Buffers();
+
+        std::vector<PlanetBuffer> planetBuffers;
 
         glm::vec3 getMinBounds() const {
             return minBounds;

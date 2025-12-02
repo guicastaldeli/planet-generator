@@ -1,0 +1,78 @@
+<div id="planet-creator-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create New Planet</h2>
+        
+        <div class="form-group">
+            <label for="planet-name">Planet Name:</label>
+            <input type="text" id="planet-name" placeholder="Enter planet name">
+        </div>
+        
+        <div class="form-group">
+            <label for="planet-shape">Shape:</label>
+            <select id="planet-shape">
+                <option value="SPHERE">Sphere</option>
+                <option value="CUBE">Cube</option>
+                <option value="TRIANGLE">Triangle</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="planet-size">Size (0.01 - 0.5):</label>
+            <input type="range" id="planet-size" min="1" max="50" value="10">
+            <span id="size-value">0.1</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="planet-color">Color:</label>
+            <input type="color" id="planet-color" value="#808080">
+        </div>
+        
+        <div class="form-group">
+            <label for="planet-position">Position (1-15):</label>
+            <select id="planet-position">
+                <option value="1">1 (Mercury Orbit)</option>
+                <option value="2">2 (Venus Orbit)</option>
+                <option value="3">3 (Earth Orbit)</option>
+                <option value="4">4 (Mars Orbit)</option>
+                <option value="5">5 (Jupiter Orbit)</option>
+                <option value="6">6 (Saturn Orbit)</option>
+                <option value="7">7 (Uranus Orbit)</option>
+                <option value="8">8 (Neptune Orbit)</option>
+                <option value="9">9 (Custom 1)</option>
+                <option value="10">10 (Custom 2)</option>
+                <option value="11">11 (Custom 3)</option>
+                <option value="12">12 (Custom 4)</option>
+                <option value="13">13 (Custom 5)</option>
+                <option value="14">14 (Custom 6)</option>
+                <option value="15">15 (Custom 7)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="rotation-axis">Rotation Axis:</label>
+            <select id="rotation-axis">
+                <option value="X">X Axis</option>
+                <option value="Y" selected>Y Axis</option>
+                <option value="Z">Z Axis</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="self-rotation">Self Rotation Speed:</label>
+            <input type="range" id="self-rotation" min="0" max="100" value="10">
+            <span id="self-rotation-value">0.01</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="orbit-speed">Orbit Speed:</label>
+            <input type="range" id="orbit-speed" min="0" max="100" value="10">
+            <span id="orbit-speed-value">0.01</span>
+        </div>
+        
+        <div class="form-buttons">
+            <button id="create-planet-btn">Create Planet</button>
+            <button id="cancel-planet-btn">Cancel</button>
+        </div>
+    </div>
+</div>

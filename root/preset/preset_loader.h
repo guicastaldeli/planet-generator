@@ -15,5 +15,6 @@ class PresetLoader {
         //void PresetLoader::parseJSONPlanets(const std::string& jsonStr)
         bool PresetLoader::validatePreset();
         PresetData getCurrentPreset() const;
+        PresetData& getCurrentPreset();
         void setCurrentPreset(const PresetData& preset);
 };

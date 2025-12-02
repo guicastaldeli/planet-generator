@@ -5,7 +5,6 @@ export class ControlsController {
 
     private loader: DocumentLoader;
     private container: HTMLElement | null = null;
-    private docLoaded: boolean = false;
     private isVisible: boolean = true;
 
     private onControlsMenuClick?: () => void;

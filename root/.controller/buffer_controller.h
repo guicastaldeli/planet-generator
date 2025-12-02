@@ -22,5 +22,5 @@ class BufferController {
         void initPresetLoader();
         void initGenerator();
         void init();
-        void render();
+        void render(float deltaTime);
 };

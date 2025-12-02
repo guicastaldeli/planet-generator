@@ -17,9 +17,6 @@ class Buffers {
         std::unordered_map<BufferData::Type, GLuint> vbos;
         std::unordered_map<BufferData::Type, GLuint> ebos;
         std::unordered_map<BufferData::Type, size_t> indexCounts;
-
-        glm::vec3 minBounds;
-        glm::vec3 maxBounds;
         
         void set(BufferData::Type type);
         
@@ -32,14 +29,6 @@ class Buffers {
         ~Buffers();
 
         std::vector<PlanetBuffer> planetBuffers;
-
-        glm::vec3 getMinBounds() const {
-            return minBounds;
-        }
-        glm::vec3 getMaxBounds() const {
-            return maxBounds;
-        }
-
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
         void render();
         void init();

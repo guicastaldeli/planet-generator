@@ -35,9 +35,6 @@ void Buffers::set(BufferData::Type type) {
     GLuint vbo;
     GLuint ebo;
 
-    minBounds = meshData.minBounds;
-    maxBounds = meshData.maxBounds;
-
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 

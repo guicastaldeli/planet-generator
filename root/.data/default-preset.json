@@ -1,0 +1,211 @@
+{
+    "planets": [
+        {
+            "id": 0,
+            "name": "Sun",
+            "shape": "SPHERE",
+            "size": 0.3,
+            "texture": "",
+            "color": "yellow",
+            "position": 0,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.01,
+            "rotationSpeedCenter": 0,
+            "distanceFromCenter": 0,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "id": 1,
+            "name": "Mercury",
+            "shape": "SPHERE",
+            "size": 0.02,
+            "texture": "",
+            "color": "#cccccc",
+            "position": 1,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.02,
+            "rotationSpeedCenter": 0.05,
+            "distanceFromCenter": 0.1,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "id": 2,
+            "name": "Venus",
+            "shape": "SPHERE",
+            "size": 0.04,
+            "texture": "",
+            "color": "#ffcc99",
+            "position": 2,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.015,
+            "rotationSpeedCenter": 0.04,
+            "distanceFromCenter": 0.15,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 45,
+                "z": 0
+            }
+        },
+        {
+            "id": 3,
+            "name": "Earth",
+            "shape": "SPHERE",
+            "size": 0.04,
+            "texture": "",
+            "color": "blue",
+            "position": 3,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.01,
+            "rotationSpeedCenter": 0.03,
+            "distanceFromCenter": 0.2,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 90,
+                "z": 0
+            }
+        },
+        {
+            "id": 4,
+            "name": "Mars",
+            "shape": "SPHERE",
+            "size": 0.03,
+            "texture": "",
+            "color": "red",
+            "position": 4,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.018,
+            "rotationSpeedCenter": 0.025,
+            "distanceFromCenter": 0.25,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 135,
+                "z": 0
+            }
+        },
+        {
+            "id": 5,
+            "name": "Jupiter",
+            "shape": "SPHERE",
+            "size": 0.2,
+            "texture": "",
+            "color": "#ffcc99",
+            "position": 5,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.03,
+            "rotationSpeedCenter": 0.015,
+            "distanceFromCenter": 0.4,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 180,
+                "z": 0
+            }
+        },
+        {
+            "id": 6,
+            "name": "Saturn",
+            "shape": "SPHERE",
+            "size": 0.18,
+            "texture": "",
+            "color": "#ffcc99",
+            "position": 6,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.025,
+            "rotationSpeedCenter": 0.01,
+            "distanceFromCenter": 0.55,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 225,
+                "z": 0
+            }
+        },
+        {
+            "id": 7,
+            "name": "Uranus",
+            "shape": "SPHERE",
+            "size": 0.1,
+            "texture": "",
+            "color": "#99ccff",
+            "position": 7,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.02,
+            "rotationSpeedCenter": 0.008,
+            "distanceFromCenter": 0.7,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 270,
+                "z": 0
+            }
+        },
+        {
+            "id": 8,
+            "name": "Neptune",
+            "shape": "SPHERE",
+            "size": 0.09,
+            "texture": "",
+            "color": "blue",
+            "position": 8,
+            "rotationDir": "Y",
+            "rotationSpeedItself": 0.02,
+            "rotationSpeedCenter": 0.006,
+            "distanceFromCenter": 0.85,
+            "currentRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orbitAngle": {
+                "x": 0,
+                "y": 315,
+                "z": 0
+            }
+        }
+    ]
+}

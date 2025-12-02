@@ -9,11 +9,10 @@ class PresetLoader {
         PresetLoader(const std::string& defaultPresetPath);
         ~PresetLoader();
 
+        bool parse(const std::string& data);
         bool loadPreset(const std::string& filePath);
         bool loadDefaultPreset();
-        //bool PresetLoader::parseJSON(const std::string& jsonStr)
-        //void PresetLoader::parseJSONPlanets(const std::string& jsonStr)
-        bool PresetLoader::validatePreset();
+        bool validatePreset();
         PresetData getCurrentPreset() const;
         PresetData& getCurrentPreset();
         void setCurrentPreset(const PresetData& preset);

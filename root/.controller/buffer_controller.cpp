@@ -1,7 +1,7 @@
 #include "buffer_controller.h"
-#include "buffers.h"
+#include "../buffers/buffers.h"
 
-BufferController::BufferController(Camera* Camera, ShaderLoader* shaderLoader) :
+BufferController::BufferController(Camera* camera, ShaderLoader* shaderLoader) :
     camera(camera),
     shaderLoader(shaderLoader),
     bufferGenerator(nullptr),
@@ -11,16 +11,13 @@ BufferController::BufferController(Camera* Camera, ShaderLoader* shaderLoader) :
 BufferController::~BufferController() {};
 
 void BufferController::initBuffers() {
-    buffers = new Buffers(
-        camera, 
-        shaderLoader->shaderController, 
-        BufferData::Type::TRIANGLE
-    );
+    buffers = new Buffers(camera, shaderLoader->shaderController);
     buffers->init();
 }
 
 void BufferController::initPresetLoader() {
-    presetLoader = new PresetLoader("../.data/default-preset");
+    std::string path = "/.data/default-preset.json";
+    presetLoader = new PresetLoader(path);
 }
 
 void BufferController::initGenerator() {
@@ -42,24 +39,18 @@ void BufferController::init() {
 void BufferController::render(float deltaTime) {
     if(presetLoader->loadDefaultPreset()) {
         currentPreset = presetLoader->getCurrentPreset();
-        planetBuffers = bufferGenerator->generateFromPreset(currentPreset);
-        for(const auto& planetBuffer : planetBuffers) {
-            BufferData::Type bufferType;
-            switch (planetBuffer.data.shape) {
-                case BufferData::Type::SPHERE:
-                    bufferType = BufferData::Type::SPHERE;
-                    break;
-                case BufferData::Type::CUBE:
-                    bufferType = BufferData::Type::CUBE;
-                    break;
-                case BufferData::Type::TRIANGLE:
-                    bufferType = BufferData::Type::TRIANGLE;
-                    break;
-            }
-
-            buffers->render();
-            bufferGenerator->updatePlanetRotation(planetBuffers, deltaTime);
-            buffers->setOrbit();
+        std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
+        for(auto& planetBuffer : newPlanetBuffers) {
+            buffers->createBufferForPlanet(planetBuffer);
         }
+
+        buffers->planetBuffers.clear();
+        for(auto& planetBuffer : newPlanetBuffers) {
+            buffers->planetBuffers.push_back(std::move(planetBuffer));
+        }
+
+        bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
+        buffers->render();
+        buffers->setOrbit();
     }
 }

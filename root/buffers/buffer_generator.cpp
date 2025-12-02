@@ -3,14 +3,61 @@
 #include "../camera.h"
 #include "../.controller/shader_controller.h"
 #include "../preset/preset_loader.h"
+#include "../.data/data_parser.h"
 #include <algorithm>
 #include <queue>
 #include <iostream>
 #include <unordered_set>
 #include <emscripten/html5.h>
+#include <fstream>
+#include <sstream>
 
-BufferGenerator::BufferGenerator() {};
+BufferGenerator::BufferGenerator() {
+    loadDistanceMap();
+};
 BufferGenerator::~BufferGenerator() {};
+
+/*
+** Load Distance Map
+*/
+void BufferGenerator::loadDistanceMap() {
+    try {
+        std::ifstream file("/.data/positions.json");
+        if(!file.is_open()) {
+            std::cerr << "Failed to open positions.json file" << std::endl;
+            return;
+        }
+
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string data = buffer.str();
+
+        DataParser::Value root = DataParser::Parser::parse(data);
+        if(!root.hasKey("distances") || !root["distances"].isArray()) {
+            std::cerr << "Invalid positions.json format: missing distances array" << std::endl;
+            return;
+        }
+
+        const auto& distancesArray = root["distances"].asArray();
+        for(const auto& distanceValue : distancesArray) {
+            if(!distanceValue.isObject()) continue;
+            if(distanceValue.hasKey("index") && distanceValue.hasKey("distance")) {
+                int i = distanceValue["index"].asInt();
+                std::string distanceStr = distanceValue["distance"].asString();
+                if(distanceStr.back() == 'f') {
+                    distanceStr.pop_back();
+                }
+
+                float distance = std::stof(distanceStr);
+                distanceMap[i] = distance;
+            }
+        }
+
+        std::cout << "Loaded " << distanceMap.size() << " distance mappings" << std::endl;
+    } catch(const std::exception& err) {
+        std::cerr << "Error loading distance map: " << err.what() << std::endl;
+    }
+}
 
 /*
 ** Shape to Buffer
@@ -32,8 +79,9 @@ BufferData::Type BufferGenerator::shapeToBufferType(BufferData::Type shape) {
 ** Calculate Distance from Pos
 */
 float BufferGenerator::calculateDistanceFromPosition(int position) {
-    if(position >= 0 && position < 16) {
-        //return distances[position];
+    auto it = distanceMap.find(position);
+    if(it != distanceMap.end()) {
+        return it->second;
     }
     return 1.0f + (position - 8) * 0.15f;
 }
@@ -156,9 +204,13 @@ void generate(const char* data) {
         }
 
         Buffers* buffers;
-        buffers->planetBuffers = bufferGenerator.generateFromPreset(
+        auto newBuffers = bufferGenerator.generateFromPreset(
             presetLoader->getCurrentPreset()
         );
+        buffers->planetBuffers.clear();
+        for(auto& buffer : newBuffers) {
+            buffers->planetBuffers.push_back(std::move(buffer));
+        }
     } catch(const std::exception& err) {
         std::cerr << "Error creating planet!" << err.what() << std::endl;
     }

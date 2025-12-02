@@ -31,7 +31,7 @@ Camera::Camera(Main* main, ShaderController* shaderController) :
     raycaster = new Raycaster(
         main, 
         this, 
-        main->buffers, 
+        main->bufferController->buffers, 
         shaderController
     );
 }

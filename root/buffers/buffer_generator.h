@@ -4,6 +4,7 @@
 #include <emscripten/html5.h>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 class Buffers;
 
@@ -13,6 +14,13 @@ struct PlanetBuffer {
     uint32_t vao;
     uint32_t vbo;
     uint32_t ebo;
+
+    PlanetBuffer() = default;
+    PlanetBuffer(PlanetBuffer&&) = default;
+    PlanetBuffer& operator=(PlanetBuffer&&) = default;
+    
+    PlanetBuffer(const PlanetBuffer&) = delete;
+    PlanetBuffer& operator=(const PlanetBuffer&) = delete;
 };
 
 class BufferGenerator {
@@ -28,8 +36,11 @@ class BufferGenerator {
         float calculateDistanceFromPosition(int position);
 
     private:
+        std::unordered_map<int, float> distanceMap;
         BufferData::Type shapeToBufferType(BufferData::Type shape);
         //glm::vec3 colorStringToVec3(const std::string& colorStr);
+
+        void loadDistanceMap();
 };
 
 #ifdef __cplusplus

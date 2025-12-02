@@ -11,24 +11,18 @@ class Buffers {
         Camera* camera;
         ShaderController* shaderController;
 
-        GLuint vao;
-        GLuint vbo;
-        GLuint ebo;
-
-        BufferData::Type bufferType;
-        GLuint indexCount;
+        std::unordered_map<BufferData::Type, GLuint> vaos;
+        std::unordered_map<BufferData::Type, GLuint> vbos;
+        std::unordered_map<BufferData::Type, GLuint> ebos;
+        std::unordered_map<BufferData::Type, size_t> indexCounts;
 
         glm::vec3 minBounds;
         glm::vec3 maxBounds;
         
-        void set();
+        void set(BufferData::Type type);
         
     public:
-        Buffers(
-            Camera* camera, 
-            ShaderController* shaderController,
-            BufferData::Type type
-        );
+        Buffers(Camera* camera, ShaderController* shaderController);
         ~Buffers();
 
         std::vector<PlanetBuffer> planetBuffers;
@@ -40,6 +34,7 @@ class Buffers {
             return maxBounds;
         }
 
+        void createBufferForPlanet(const PlanetBuffer& planetBuffer);
         void setOrbit();
         void render();
         void init();

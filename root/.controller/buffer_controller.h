@@ -11,12 +11,12 @@ class BufferController {
         PresetLoader* presetLoader;
         BufferGenerator* bufferGenerator;
         std::vector<PlanetBuffer> planetBuffers;
-        Buffers* buffers;
         PresetData currentPreset;
-
+        
     public:
         BufferController(Camera* Camera, ShaderLoader* shaderLoader);
         ~BufferController();
+        Buffers* buffers;
 
         void initBuffers();
         void initPresetLoader();

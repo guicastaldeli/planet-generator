@@ -7,28 +7,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Buffers::Buffers(
-    Camera* camera, 
-    ShaderController* shaderController,
-    BufferData::Type type
-) :
+Buffers::Buffers(Camera* camera, ShaderController* shaderController) :
     camera(camera),
-    shaderController(shaderController),
-    bufferType(type),
-    indexCount(0)
+    shaderController(shaderController)
 {}
 Buffers::~Buffers() {
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    for(auto& [type, v] : vaos) {
+        glDeleteVertexArrays(1, &v);
+        glDeleteBuffers(1, &vbos[type]);
+        glDeleteBuffers(1, &ebos[type]);
+    } 
 }
 
 /*
 ** Set Buffers
 */
-void Buffers::set() {
-    BufferData::MeshData meshData = BufferData::GetMeshData(bufferType);
-    indexCount = meshData.indices.size();
+void Buffers::set(BufferData::Type type) {
+    if(vaos.find(type) != vaos.end()) return;
+
+    BufferData::MeshData meshData = BufferData::GetMeshData(type);
+    GLuint vao;
+    GLuint vbo;
+    GLuint ebo;
+
     minBounds = meshData.minBounds;
     maxBounds = meshData.maxBounds;
 
@@ -58,6 +59,18 @@ void Buffers::set() {
     glEnableVertexAttribArray(posAttr);
 
     glBindVertexArray(0);
+
+    vaos[type] = vao;
+    vbos[type] = vbo;
+    ebos[type] = ebo;
+    indexCounts[type] = meshData.indices.size();
+}
+
+/*
+** Create Buffer for Planet
+*/
+void Buffers::createBufferForPlanet(const PlanetBuffer& planetBuffer) {
+    set(planetBuffer.data.shape);
 }
 
 /*
@@ -107,17 +120,28 @@ void Buffers::setOrbit() {
 ** Render
 */
 void Buffers::render() {
-    if(indexCount == 0) return;
-    
     glUseProgram(shaderController->shaderProgram);
-    glBindVertexArray(vao);
+    for(const auto& planetBuffer : planetBuffers) {
+        auto it = vaos.find(planetBuffer.data.shape);
+        if(it == vaos.end()) continue;
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, (float)emscripten_get_now() / 1000.f, glm::vec3(0.0f, 1.0f, 0.0f));
-    unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
+        glBindVertexArray(it->second);
 
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(planetBuffer.data.size));
+
+        unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        glDrawElements(
+            GL_TRIANGLES,
+            indexCounts[planetBuffer.data.shape],
+            GL_UNSIGNED_INT,
+            0
+        );
+    }
+
     glBindVertexArray(0);
 }
 
@@ -126,6 +150,5 @@ void Buffers::render() {
 */
 void Buffers::init() {
     shaderController->initProgram();
-    set();
     emscripten_log(EM_LOG_CONSOLE, "init buffers!");
 }

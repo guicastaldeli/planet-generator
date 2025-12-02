@@ -73,7 +73,7 @@ export class GeneratorController {
         this.emscriptenModule._generate(JSON.stringify(data));
     }
 
-    private setupEventListeners(): void {
+    public setupEventListeners(): void {
         if(!this.container) return;
         this.container.querySelector('#create-planet-btn')?.addEventListener('click', () => {
             this.generate();

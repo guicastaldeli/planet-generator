@@ -12,6 +12,9 @@ class BufferController {
         BufferGenerator* bufferGenerator;
         std::vector<PlanetBuffer> planetBuffers;
         PresetData currentPreset;
+
+        int MIN_PLANETS = 0;
+        int MAX_PLANETS = 15;
         
     public:
         BufferController(Camera* Camera, ShaderLoader* shaderLoader);

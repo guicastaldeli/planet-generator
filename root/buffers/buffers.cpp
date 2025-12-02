@@ -84,7 +84,17 @@ void Buffers::render() {
 
         glBindVertexArray(it->second);
 
+        float orbitRadius = planetBuffer.data.distanceFromCenter;
+        float orbitAngle = planetBuffer.data.orbitAngle.y;
+
+        glm::vec3 position(
+            orbitRadius * cos(orbitAngle),
+            0.0f,
+            orbitRadius * (sin(orbitAngle))
+        );
+
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, position);
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(planetBuffer.data.size));
 

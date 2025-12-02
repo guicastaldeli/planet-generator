@@ -43,19 +43,13 @@ Camera::~Camera() {}
 void Camera::set() {
     glUseProgram(shaderController->shaderProgram);
     
-    glm::mat4 projMatrix;
-    projMatrix = glm::perspective(
-        glm::radians(zoomLevel),
-        (float)main->width / (float)main->height,
-        0.1f, 
-        100.0f
-    );
+    glm::mat4 projMatrix = getProjectionMatrix();
     int projMatrixLoc = glGetUniformLocation(shaderController->shaderProgram, "projection");
     glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE, glm::value_ptr(projMatrix));
 
-    glm::mat4 view = glm::lookAt(position, target, up);
+    glm::mat4 viewMatrix = getViewMatrix();
     int viewLoc = glGetUniformLocation(shaderController->shaderProgram, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 }
 
 /*
@@ -264,6 +258,22 @@ EM_BOOL keyCallback(
         }
     }
     return EM_FALSE;
+}
+
+glm::mat4 Camera::getViewMatrix() {
+    glm::mat4 view = glm::lookAt(position, target, up);
+    return view;
+}
+
+glm::mat4 Camera::getProjectionMatrix() {
+    glm::mat4 projMatrix;
+    projMatrix = glm::perspective(
+        glm::radians(zoomLevel),
+        (float)main->width / (float)main->height,
+        0.1f, 
+        100.0f
+    );
+    return projMatrix;
 }
 
 void Camera::setEvents() {

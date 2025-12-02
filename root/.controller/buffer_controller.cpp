@@ -41,6 +41,10 @@ void BufferController::render(float deltaTime) {
         currentPreset = presetLoader->getCurrentPreset();
         std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
         for(auto& planetBuffer : newPlanetBuffers) {
+            int pos = planetBuffer.data.position;
+            if(pos >= MIN_PLANETS && pos <= MAX_PLANETS) {
+                planetBuffer.data.distanceFromCenter = bufferGenerator->calculateDistanceFromPosition(pos);
+            }
             buffers->createBufferForPlanet(planetBuffer);
         }
 

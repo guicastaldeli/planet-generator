@@ -62,4 +62,7 @@ class Camera {
         void resetToSavedPos();
         void lockPanning(bool lock);
         bool isPanningLocked() const { return panningLocked; }
+
+        glm::mat4 getViewMatrix();
+        glm::mat4 getProjectionMatrix();
 };

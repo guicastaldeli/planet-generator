@@ -59,6 +59,11 @@ void Main::render() {
     float currentTime = emscripten_get_now() / 1000.0f;
     float deltaTime = currentTime - lastTime;
     lastTime = currentTime;
+    /*
+    emscripten_console_log(std::to_string(deltaTime).c_str());
+    emscripten_console_log(std::to_string(lastTime).c_str());
+    emscripten_console_log(std::to_string(currentTime).c_str());
+    */
 
     if(camera) camera->update();
     if(bufferController) bufferController->render(deltaTime);

@@ -134,37 +134,47 @@ void BufferController::setCamera(Camera* cam) {
 ** Render
 */
 void BufferController::render(float deltaTime) {
-    if(presetLoader->loadDefaultPreset()) {
-        currentPreset = presetLoader->getCurrentPreset();
-        std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
+    static bool presetLoaded = false;
 
-        buffers->planetBuffers.clear();
-        for(auto& planetBuffer : newPlanetBuffers) {
-            float orbitRadius = planetBuffer.data.distanceFromCenter;
-            float orbitAngle = planetBuffer.data.orbitAngle.y;
+    if(!presetLoaded) {
+        if(presetLoader->loadDefaultPreset()) {
+            currentPreset = presetLoader->getCurrentPreset();
+            presetLoaded = true;
 
-            glm::vec3 planetPosition(
-                orbitRadius * cos(orbitAngle),
-                0.0f,
-                orbitRadius * sin(orbitAngle)
-            );
-            planetBuffer.worldPos = planetPosition;
-            buffers->createBufferForPlanet(planetBuffer);
-            buffers->planetBuffers.push_back(std::move(planetBuffer));
+            std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
+            buffers->planetBuffers.clear();
+            for(auto& planetBuffer : newPlanetBuffers) {
+                float orbitRadius = planetBuffer.data.distanceFromCenter;
+                float orbitAngle = planetBuffer.data.orbitAngle.y;
+
+                glm::vec3 planetPosition(
+                    orbitRadius * cos(glm::radians(orbitAngle)),
+                    0.0f,
+                    orbitRadius * sin(glm::radians(orbitAngle))
+                );
+                planetBuffer.worldPos = planetPosition;
+                buffers->createBufferForPlanet(planetBuffer);
+                buffers->planetBuffers.push_back(std::move(planetBuffer));
+            }
+        } else {
+            printf("ERR failed to load preset!\n");
+            return;
         }
-
+    }
+    if(!buffers->planetBuffers.empty()) {
         bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
         for(auto& planetBuffer : buffers->planetBuffers) {
             float orbitRadius = planetBuffer.data.distanceFromCenter;
             float orbitAngle = planetBuffer.data.orbitAngle.y;
 
             planetBuffer.worldPos = glm::vec3(
-                orbitRadius * cos(orbitAngle),
+                orbitRadius * cos(glm::radians(orbitAngle)),
                 0.0f,
-                orbitRadius * sin(orbitAngle)
+                orbitRadius * sin(glm::radians(orbitAngle))
             );
         }
-
         buffers->render();
+    } else {
+        printf("ERR: no planets to render!");
     }
 }

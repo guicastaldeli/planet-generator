@@ -30,6 +30,10 @@ class Camera {
         glm::vec3 savedTarget;
         bool panningLocked;
 
+        bool isFollowingPlanet;
+        int followingPlanetIndex;
+        glm::vec3 followingPlanetOffset;
+
         void updateVectors();
         void rotate(float deltaX, float deltaY);
         void pan(float deltaX, float deltaY);
@@ -63,6 +67,7 @@ class Camera {
         void init();
         void update();
 
+        void updateFollowing();
         void saveCurrentPos();
         void zoomToObj(const glm::vec3& planetPosition, float planetSize);
         void resetToSavedPos();

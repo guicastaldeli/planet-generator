@@ -43,4 +43,5 @@ class BufferController {
         void handleRaycasterRender(double mouseX, double mouseY);
         void handleRaycasterClick(double mouseX, double mouseY);
         const PlanetBuffer* getSelectedPlanet() const;
+        int getSelectedPlanetIndex() const;
 };

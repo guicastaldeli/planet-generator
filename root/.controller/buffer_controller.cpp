@@ -129,6 +129,10 @@ const PlanetBuffer* BufferController::getSelectedPlanet() const {
     return nullptr;
 }
 
+int BufferController::getSelectedPlanetIndex() const {
+    return selectedPlanetIndex;
+}
+
 void BufferController::setCamera(Camera* cam) {
     camera = cam;
     if(camera && buffers && shaderLoader) {

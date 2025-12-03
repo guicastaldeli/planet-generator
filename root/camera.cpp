@@ -33,7 +33,10 @@ Camera::Camera(
     zoomSpeed(0.1f),
     panningLocked(false),
     savedPosition(0.0f, 0.0f, 3.0f),
-    savedTarget(0.0f, 0.0f, 0.0f)
+    savedTarget(0.0f, 0.0f, 0.0f),
+    isFollowingPlanet(false),
+    followingPlanetIndex(-1),
+    followingPlanetOffset(0.0f)
 {}
 Camera::~Camera() {}
 
@@ -128,18 +131,42 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
 
     if(bufferController && bufferController->getSelectedPlanet()) {
         planetSize = bufferController->getSelectedPlanet()->data.size;
+        followingPlanetIndex = bufferController->getSelectedPlanetIndex();
     }
 
     float zoomDistance = planetSize * 3.0f;
     glm::vec3 directionToPlanet = glm::normalize(planetPosition - position);
-    position = planetPosition - directionToPlanet * zoomDistance;
+    followingPlanetOffset = -directionToPlanet * zoomDistance;
+    position = planetPosition + followingPlanetOffset;
     up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+    isFollowingPlanet = true;
     updateVectors();
     lockPanning(true);
     
     emscripten_log(EM_LOG_CONSOLE, "Zoomed to planet at (%.2f, %.2f, %.2f)", 
                    position.x, position.y, position.z);
+}
+
+/*
+** Update Following
+*/
+void Camera::updateFollowing() {
+    if(!isFollowingPlanet || !bufferController || followingPlanetIndex == -1) {
+        return;
+    }
+
+    const PlanetBuffer* planet = bufferController->getSelectedPlanet();
+    /*
+    if(!planet) {
+        resetToSavedPos();
+        return;
+    }
+        */
+
+    target = planet->worldPos;
+    position = target + followingPlanetOffset;
+    updateVectors();
 }
 
 /*
@@ -151,6 +178,9 @@ void Camera::resetToSavedPos() {
     position = savedPosition;
     target = savedTarget;
     updateVectors();
+
+    isFollowingPlanet = false;
+    followingPlanetIndex = -1;
 
     lockPanning(false);
     emscripten_log(EM_LOG_CONSOLE, "Reset to saved position, panning unlocked");
@@ -299,6 +329,7 @@ void Camera::setEvents() {
 }
 
 void Camera::update() {
+    if(isFollowingPlanet) updateFollowing();
     set();
 }
 

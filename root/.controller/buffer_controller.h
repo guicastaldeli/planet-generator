@@ -1,9 +1,9 @@
 #pragma once
-#include "../preset/preset_loader.h"
-#include "../buffers/buffer_generator.h"
+#include "../.preset/preset_loader.h"
+#include "../.buffers/buffer_generator.h"
 #include "../camera.h"
 #include "../shader_loader.h"
-#include "../buffers/raycaster.h"
+#include "../.buffers/raycaster.h"
 #include "../main.h"
 
 class BufferController {

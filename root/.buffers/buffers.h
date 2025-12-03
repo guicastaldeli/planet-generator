@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <GLES3/gl3.h>
 #include "buffer_data.h"
-#include "../buffers/buffer_generator.h"
+#include "../.buffers/buffer_generator.h"
 #include "../.controller/buffer_controller.h"
 
 class Camera;

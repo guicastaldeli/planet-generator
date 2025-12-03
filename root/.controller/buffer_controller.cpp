@@ -1,5 +1,5 @@
 #include "buffer_controller.h"
-#include "../buffers/buffers.h"
+#include "../.buffers/buffers.h"
 
 BufferController::BufferController(
     Main* main,

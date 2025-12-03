@@ -1,6 +1,6 @@
 #include "camera.h"
 #include "main.h"
-#include "buffers/buffers.h"
+#include ".buffers/buffers.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>

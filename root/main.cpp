@@ -1,5 +1,5 @@
 #include "main.h"
-#include "buffers/buffer_data.h"
+#include ".buffers/buffer_data.h"
 
 EM_JS(void, setupCanvas, (int* width, int* height), {
     const canvas = document.getElementById("ctx");

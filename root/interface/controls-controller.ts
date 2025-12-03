@@ -71,6 +71,7 @@ export class ControlsController {
         container.querySelector('#control--actn-custom')
             ?.addEventListener('click', () => {
                 this.onCustomPresetClick?.();
+                this.emscriptenModule._showGenerator();
             }
         );
         container.querySelector('#control--actn-import')

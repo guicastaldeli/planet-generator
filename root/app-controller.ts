@@ -14,7 +14,8 @@ export class AppController {
     */
     private setupCallbacks(): void {
         this.appManager.getControlsController().setupCallbacks();
-        this.appManager.getGeneratorController().setupEventListeners();
+        //this.appManager.getGeneratorController().setupCallbacks();
+        this.appManager.getInfoController().setupCallbacks();
     }
 
     /*
@@ -22,5 +23,10 @@ export class AppController {
     */
     private exposeToEngine(): void {
         (window as any).appController = this;
+        this.getAppManager();
+    }
+
+    public getAppManager() {
+        return this.appManager;
     }
 }

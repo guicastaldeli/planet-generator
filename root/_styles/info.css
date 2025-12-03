@@ -1,0 +1,5 @@
+.info--container {
+    position: absolute;
+    z-index: 9;
+    background-color: rgb(169, 33, 33);
+}

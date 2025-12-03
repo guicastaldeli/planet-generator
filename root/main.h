@@ -3,6 +3,7 @@
 #include "shader_loader.h"
 #include ".controller/buffer_controller.h"
 #include ".controller/interface_wrapper_controller.h"
+#include ".controller/info_wrapper_controller.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
@@ -17,6 +18,7 @@ class Main {
         ShaderLoader* shaderLoader;
         BufferController* bufferController;
         InterfaceWrapperController* interfaceWrapperController;
+        InfoWrapperController* infoWapperController;
         
         int initGlWindow();        
         void render();

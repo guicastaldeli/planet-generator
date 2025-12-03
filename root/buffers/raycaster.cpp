@@ -3,6 +3,7 @@
 #include "buffers.h"
 #include "../main.h"
 #include "../.controller/shader_controller.h"
+#include "../.controller/info_wrapper_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <glm/glm.hpp>
@@ -35,24 +36,26 @@ bool Raycaster::checkIntersection(
     float y = 1.0f - (2.0f * mouseY) / viewportHeight;
 
     glm::vec4 rayClip = glm::vec4(x, y, -1.0f, 1.0f);
+    
     glm::mat4 projMatrix = glm::perspective(
         glm::radians(camera->zoomLevel),
         (float)viewportWidth / (float)viewportHeight,
         0.1f,
         100.0f
     );
+    
     glm::mat4 invProj = glm::inverse(projMatrix);
     glm::vec4 rayEye = invProj * rayClip;
     rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
-
     glm::mat4 view = glm::lookAt(
-        glm::vec3(camera->position),
-        glm::vec3(camera->target),
-        glm::vec3(camera->up)
+        camera->position,
+        camera->target,
+        camera->up
     );
+    
     glm::mat4 invView = glm::inverse(view);
     glm::vec4 rayWorld4 = invView * rayEye;
-    glm::vec3 rayWorld = glm::normalize(rayWorld4);
+    glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorld4));
 
     bool intersects = aabb(rayWorld, planetPosition, planetSize);
     if(intersects) selectedPlanetIndex = planetIndex; 
@@ -110,6 +113,14 @@ bool Raycaster::handleClick(
     );
     if(intersects) {
         camera->zoomToObj(planetPosition, planetSize);
+
+        if(buffers && planetIndex >= 0 && planetIndex < buffers->planetBuffers.size()) {
+            auto& planet = buffers->planetBuffers[planetIndex];
+            display(
+                planet.data.name.c_str(),
+                planet.data.name.c_str()
+            );
+        }
         return true;
     }
     return false;

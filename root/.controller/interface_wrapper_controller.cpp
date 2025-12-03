@@ -18,8 +18,8 @@ extern "C" {
                     document.body.appendChild(controlsContainer);
                     console.log('Controls appended to DOM from C++');
                 }
-            } catch(e) {
-                console.error('Error appending controls:', e);
+            } catch(err) {
+                console.error('Error appending controls:', err);
             }
         }, html);
     }

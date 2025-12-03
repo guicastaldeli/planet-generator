@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "main.h"
+#include "buffers/buffers.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
@@ -223,6 +224,10 @@ EM_BOOL mouseCallback(
             camera->handleMouseDown(e->clientX, e->clientY, e->button);
             if(e->button == 0) {
                 if(camera->bufferController) {
+                    camera->bufferController->bufferGenerator->updatePlanetRotation(
+                        camera->bufferController->buffers->planetBuffers, 0.0f
+                    );
+                    camera->bufferController->updatePlanetPositions();
                     camera->bufferController->handleRaycasterClick(
                         e->clientX,
                         e->clientY
@@ -235,10 +240,17 @@ EM_BOOL mouseCallback(
             break;
         case EMSCRIPTEN_EVENT_MOUSEMOVE:
             camera->handleMouseMove(e->clientX, e->clientY);
-            camera->bufferController->handleRaycasterRender(
-                e->clientX,
-                e->clientY
-            );
+
+            if(camera->bufferController) {
+                camera->bufferController->bufferGenerator->updatePlanetRotation(
+                    camera->bufferController->buffers->planetBuffers, 0.0f
+                );
+                camera->bufferController->updatePlanetPositions();
+                camera->bufferController->handleRaycasterRender(
+                    e->clientX,
+                    e->clientY
+                );
+            }
             break;
     }
     return EM_TRUE;

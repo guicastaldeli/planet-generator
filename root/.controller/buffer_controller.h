@@ -11,7 +11,6 @@ class BufferController {
         Main* main;
         ShaderLoader* shaderLoader;
         PresetLoader* presetLoader;
-        BufferGenerator* bufferGenerator;
         std::vector<PlanetBuffer> planetBuffers;
         PresetData currentPreset;
 
@@ -30,6 +29,7 @@ class BufferController {
         Buffers* buffers;
         Camera* camera;
         Raycaster* raycaster;
+        BufferGenerator* bufferGenerator;
 
         void setCamera(Camera* cam);
         void initBuffers();
@@ -38,6 +38,7 @@ class BufferController {
         void init();
         void render(float deltaTime);
 
+        void updatePlanetPositions();
         int checkPlanetIntersections(double mosueX, double mouseY);
         void handleRaycasterRender(double mouseX, double mouseY);
         void handleRaycasterClick(double mouseX, double mouseY);

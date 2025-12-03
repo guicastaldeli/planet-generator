@@ -49,6 +49,7 @@ void Main::init() {
     });
     
     interfaceWrapperController = new InterfaceWrapperController();
+    infoWapperController = new InfoWrapperController();
 }
 
 /*

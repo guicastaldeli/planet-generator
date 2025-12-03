@@ -101,6 +101,7 @@
         "variant": "cpp",
         "ios": "cpp",
         "*.inc": "cpp",
-        "__verbose_abort": "cpp"
+        "__verbose_abort": "cpp",
+        "__node_handle": "cpp"
     }
 }

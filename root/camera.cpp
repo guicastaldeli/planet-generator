@@ -224,9 +224,6 @@ EM_BOOL mouseCallback(
             camera->handleMouseDown(e->clientX, e->clientY, e->button);
             if(e->button == 0) {
                 if(camera->bufferController) {
-                    camera->bufferController->bufferGenerator->updatePlanetRotation(
-                        camera->bufferController->buffers->planetBuffers, 0.0f
-                    );
                     camera->bufferController->updatePlanetPositions();
                     camera->bufferController->handleRaycasterClick(
                         e->clientX,
@@ -242,10 +239,6 @@ EM_BOOL mouseCallback(
             camera->handleMouseMove(e->clientX, e->clientY);
 
             if(camera->bufferController) {
-                camera->bufferController->bufferGenerator->updatePlanetRotation(
-                    camera->bufferController->buffers->planetBuffers, 0.0f
-                );
-                camera->bufferController->updatePlanetPositions();
                 camera->bufferController->handleRaycasterRender(
                     e->clientX,
                     e->clientY

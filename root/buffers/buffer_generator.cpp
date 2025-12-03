@@ -107,22 +107,24 @@ PlanetBuffer BufferGenerator::generatePlanet(const PlanetData& data) {
 ** Update Planets
 */
 void BufferGenerator::updatePlanetRotation(std::vector<PlanetBuffer>& planets, float deltaTime) {
-    const float SPEED_MULTIPLIER = 10.0f;
+    const float SPEED_MULTIPLIER_CENTER = 2000.0f;
+    const float SPEED_MULTIPLIER_ITSELF = 20.0f;
     
     for(auto& planet : planets) {
         switch(planet.data.rotationDir) {
             case RotationAxis::X:
-                planet.data.currentRotation.x += planet.data.rotationSpeedItself * SPEED_MULTIPLIER * deltaTime;
+                planet.data.currentRotation.x += planet.data.rotationSpeedItself * SPEED_MULTIPLIER_ITSELF * deltaTime;
                 break;
             case RotationAxis::Y:
-                planet.data.currentRotation.y += planet.data.rotationSpeedItself * SPEED_MULTIPLIER * deltaTime;
+                planet.data.currentRotation.y += planet.data.rotationSpeedItself * SPEED_MULTIPLIER_ITSELF * deltaTime;
                 break;
             case RotationAxis::Z:
-                planet.data.currentRotation.z += planet.data.rotationSpeedItself * SPEED_MULTIPLIER * deltaTime;
+                planet.data.currentRotation.z += planet.data.rotationSpeedItself * SPEED_MULTIPLIER_ITSELF * deltaTime;
                 break;
         }
         if(planet.data.position != 0) {
-            planet.data.orbitAngle.y += planet.data.rotationSpeedCenter * SPEED_MULTIPLIER * deltaTime;
+            planet.data.orbitAngle.y += planet.data.rotationSpeedCenter * SPEED_MULTIPLIER_CENTER * deltaTime;
+            planet.data.orbitAngle.y = fmod(planet.data.orbitAngle.y, 360.0f);
         }
         
         planet.data.currentRotation.x = fmod(planet.data.currentRotation.x, 360.0f);

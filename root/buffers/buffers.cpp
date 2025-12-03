@@ -81,7 +81,7 @@ void Buffers::createBufferForPlanet(const PlanetBuffer& planetBuffer) {
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
     
-    for(const auto& planetBuffer : planetBuffers) {
+    for(auto& planetBuffer : planetBuffers) {
         auto it = vaos.find(planetBuffer.data.shape);
         if(it == vaos.end()) continue;
 
@@ -89,15 +89,14 @@ void Buffers::render() {
 
         float orbitRadius = planetBuffer.data.distanceFromCenter;
         float orbitAngle = planetBuffer.data.orbitAngle.y;
-
-        glm::vec3 position(
-            orbitRadius * cos(orbitAngle),
+        planetBuffer.worldPos = glm::vec3(
+            orbitRadius * cos(glm::radians(orbitAngle)),
             0.0f,
-            orbitRadius * sin(orbitAngle)
+            orbitRadius * sin(glm::radians(orbitAngle))
         );
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
+        model = glm::translate(model, planetBuffer.worldPos);
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(planetBuffer.data.size));
 

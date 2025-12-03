@@ -65,7 +65,6 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
     }
     selectedPlanetIndex = -1;
 
-    updatePlanetPositions();
     for(int i = 0; i < buffers->planetBuffers.size(); i++) {
         auto& planet = buffers->planetBuffers[i];
         if(raycaster->checkIntersection(
@@ -89,9 +88,6 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
 void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
     if(!raycaster) return;
 
-    bufferGenerator->updatePlanetRotation(buffers->planetBuffers, 0.0f);
-    updatePlanetPositions();
-
     int hoveredPlanetIndex = checkPlanetIntersections(mouseX, mouseY);
     if(hoveredPlanetIndex != -1) {
         auto& planet = buffers->planetBuffers[hoveredPlanetIndex];
@@ -108,9 +104,6 @@ void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
 }
 
 void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
-    bufferGenerator->updatePlanetRotation(buffers->planetBuffers, 0.0f);
-    updatePlanetPositions();
-
     int clickedPlanetIndex = checkPlanetIntersections(mouseX, mouseY);
     if(clickedPlanetIndex != -1) {
         auto& planet = buffers->planetBuffers[clickedPlanetIndex];
@@ -155,6 +148,10 @@ void BufferController::setCamera(Camera* cam) {
 /*
 ** Render
 */
+// ...existing code...
+/*
+** Render
+*/
 void BufferController::render(float deltaTime) {
     static bool presetLoaded = false;
 
@@ -167,12 +164,12 @@ void BufferController::render(float deltaTime) {
             buffers->planetBuffers.clear();
             for(auto& planetBuffer : newPlanetBuffers) {
                 float orbitRadius = planetBuffer.data.distanceFromCenter;
-                float orbitAngle = planetBuffer.data.orbitAngle.y;
-
+                float initialAngle = planetBuffer.data.orbitAngle.y;
+                
                 glm::vec3 planetPosition(
-                    orbitRadius * cos(glm::radians(orbitAngle)),
+                    orbitRadius * cos(glm::radians(initialAngle)),
                     0.0f,
-                    orbitRadius * sin(glm::radians(orbitAngle))
+                    orbitRadius * sin(glm::radians(initialAngle))
                 );
                 planetBuffer.worldPos = planetPosition;
                 buffers->createBufferForPlanet(planetBuffer);
@@ -183,19 +180,10 @@ void BufferController::render(float deltaTime) {
             return;
         }
     }
+    
     if(!buffers->planetBuffers.empty()) {
         bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
-        for(auto& planetBuffer : buffers->planetBuffers) {
-            float orbitRadius = planetBuffer.data.distanceFromCenter;
-            float orbitAngle = planetBuffer.data.orbitAngle.y;
-
-            glm::vec3 currentPos = glm::vec3(
-                orbitRadius * cos(glm::radians(orbitAngle)),
-                0.0f,
-                orbitRadius * sin(glm::radians(orbitAngle))
-            );
-            planetBuffer.worldPos = currentPos;
-        }
+        updatePlanetPositions();
         buffers->render();
     } else {
         printf("ERR: no planets to render!");

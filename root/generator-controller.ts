@@ -5,11 +5,49 @@ export class GeneratorController {
     
     private loader: DocumentLoader;
     private container: HTMLElement | null = null;
+    private options: null = null;
+
+    private onGenerateClick?: (data: any) => void;
+    private onCancelClick?: () => void;
 
     constructor(module: any) {
         this.emscriptenModule = module;
         this.loader = DocumentLoader.getInstance('./interface/_generator-menu.html');
         this.init();
+    }
+
+    private async init(): Promise<void> {
+        await this.loadOptions();
+        await this.extractContainer();
+        await this.setOptions();
+        await this.append();
+        setTimeout(() => this.setupEventListeners(), 100);
+    }
+
+    private async append(): Promise<void> {
+        if(this.container && this.emscriptenModule) {
+            const html = this.container.outerHTML;
+            this.emscriptenModule.ccall('appendToDOM',
+                null,
+                ['string'],
+                [html]
+            );
+        }
+    }
+
+    /*
+    ** Load Options
+    */
+    private async loadOptions(): Promise<void> {
+        try {
+            const res = await fetch('./_data/options.json');
+            if(!res.ok) {
+                throw new Error(`ERROR!!: ${res.status}`);
+            }
+            this.options = await res.json();
+        } catch(err) {
+            console.error('Failed to load options', err);
+        }
     }
 
     private hexToRgb(hex: string): { 
@@ -30,20 +68,60 @@ export class GeneratorController {
         }
     }
 
-    private async init(): Promise<void> {
-        await this.extractContainer();
-        await this.append();
-        setTimeout(() => this.setupEventListeners(), 100);
-    }
+    /*
+    ** Set Options
+    */
+    private async setOptions(): Promise<void> {
+        if(!this.container || !this.options) return;
 
-    private async append(): Promise<void> {
-        if(this.container && this.emscriptenModule) {
-            const html = this.container.outerHTML;
-            this.emscriptenModule.ccall('appendToDOM',
-                null,
-                ['string'],
-                [html]
-            );
+        /* Shape */
+        const shapeSelect = this.container.querySelector('#planet-shape') as HTMLSelectElement;
+        if(shapeSelect && this.options.generatorOptions.shapes) {
+            shapeSelect.innerHTML = '';
+            this.options.generatorOptions.shapes.forEach((shape: any) => {
+                const option = document.createElement('option');
+                option.value = shape.id;
+                option.textContent = shape.name;
+                shapeSelect.appendChild(option);
+            });
+        }
+
+        /* Rotation */
+        const rotationSelect = this.container.querySelector('#rotation-axis') as HTMLSelectElement;
+        if(rotationSelect && this.options.generatorOptions.rotationAxes) {
+            rotationSelect.innerHTML = '';
+            this.options.generatorOptions.rotationAxes.forEach((axis: any) => {
+                const option = document.createElement('option');
+                option.value = axis.id;
+                option.textContent = axis.name;
+                if(axis.id === 'Y') option.selected = true;
+                rotationSelect.appendChild(option);
+            });
+        }
+
+        /* Position */
+        const positionSelect = this.container.querySelector('#planet-position') as HTMLSelectElement;
+        if(positionSelect && this.options.generatorOptions.orbitPositions) {
+            positionSelect.innerHTML = '';
+            this.options.generatorOptions.orbitPositions.forEach((orbit: any) => {
+                const option = document.createElement('option');
+                option.value = orbit.id.toString();
+                option.textContent = orbit.name;
+                positionSelect.appendChild(option);
+            });
+        }
+
+        /* Size */
+        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
+        if (sizeSlider && this.options.generatorOptions.sizeRange) {
+            const range = this.options.generatorOptions.sizeRange;
+            sizeSlider.min = (range.min * 100).toString();
+            sizeSlider.max = (range.max * 100).toString();
+            sizeSlider.value = (range.default * 100).toString();
+            const sizeValue = this.container.querySelector('#size-value') as HTMLElement;
+            if(sizeValue) {
+                sizeValue.textContent = range.default.toFixed(2);
+            }
         }
     }
 
@@ -136,5 +214,25 @@ export class GeneratorController {
                 orbitValue.textContent = value.toFixed(3);
             });
         }
+    }
+
+    public onGenerate(cb: (data: any) => void): void {
+        this.onGenerateClick = cb;
+    }
+
+    public onCancel(cb: () => void): void {
+        this.onCancelClick = cb;
+    }
+
+    /*
+    ** Setup Callbacks
+    */
+    public setupCallbcks(): void {
+        this.onGenerate((data: any) => {
+            this.emscriptenModule._generate(JSON.stringify(data));
+        });
+        this.onCancel(() => {
+            this.emscriptenModule._hideGenerator();
+        });
     }
 }

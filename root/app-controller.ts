@@ -14,7 +14,7 @@ export class AppController {
     */
     private setupCallbacks(): void {
         this.appManager.getControlsController().setupCallbacks();
-        //this.appManager.getGeneratorController().setupCallbacks();
+        this.appManager.getGeneratorController().setupCallbacks();
         this.appManager.getInfoController().setupCallbacks();
     }
 

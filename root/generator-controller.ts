@@ -209,7 +209,7 @@ export class GeneratorController {
             rotationSpeedItself: parseInt(selfRotationSlider.value) / 1000,
             rotationSpeedCenter: parseInt(orbitSlider.value) / 1000
         };
-        this.emscriptenModule._generate(JSON.stringify(data));
+        this.emscriptenModule._generatePlanetParser(JSON.stringify(data));
         if(this.container) {
             this.container.style.display = 'none';
         }
@@ -266,9 +266,9 @@ export class GeneratorController {
     /*
     ** Setup Callbacks
     */
-    public setupCallbcks(): void {
+    public setupCallbacks(): void {
         this.onGenerate((data: any) => {
-            this.emscriptenModule._generate(JSON.stringify(data));
+            this.emscriptenModule._generatePlanetParser(JSON.stringify(data));
         });
         this.onCancel(() => {
             this.emscriptenModule._hideGenerator();

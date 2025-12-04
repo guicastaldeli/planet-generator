@@ -1,10 +1,10 @@
 #pragma once
 #include <emscripten.h>
 
-class InterfaceWrapperController {
+class ControlsWrapperController {
     public:
-        InterfaceWrapperController();
-        ~InterfaceWrapperController();    
+        ControlsWrapperController();
+        ~ControlsWrapperController();    
 };
 
 #ifdef __cplusplus

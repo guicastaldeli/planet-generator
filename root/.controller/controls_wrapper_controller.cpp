@@ -1,8 +1,8 @@
-#include "interface_wrapper_controller.h"
+#include "controls_wrapper_controller.h"
 #include <iostream>
 
-InterfaceWrapperController::InterfaceWrapperController() {}
-InterfaceWrapperController::~InterfaceWrapperController() {}
+ControlsWrapperController::ControlsWrapperController() {}
+ControlsWrapperController::~ControlsWrapperController() {}
 
 extern "C" {
     void appendToDOM(const char* html) {

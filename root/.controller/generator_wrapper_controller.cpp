@@ -2,6 +2,8 @@
 #include "../_data/data_parser.h"
 #include "../.preset/preset_data.h"
 #include "../.buffers/buffer_generator.h"
+#include "../.preset/preset_loader.h"
+#include "../.controller/buffer_controller.h"
 
 GeneratorWrapperController* g_generatorWrapperController = nullptr;
 
@@ -56,7 +58,7 @@ extern "C" {
         });
     }
 
-    void generate(const char* planetData) {
+    void generatePlanetParser(const char* planetData) {
         if(!g_generatorWrapperController) {
             printf("ERR.");
             return;
@@ -98,7 +100,7 @@ extern "C" {
             }
             if(data.hasKey("rotationDir")) {
                 std::string rotationData = data["rotationDir"].asString();
-                g_generatorWrapperController->
+                newPlanet.rotationDir = g_generatorWrapperController->
                     bufferController->
                     bufferGenerator->rotationToBufferType(rotationData);
             } else {

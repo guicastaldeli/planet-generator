@@ -46,7 +46,7 @@ class BufferGenerator {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    void EMSCRIPTEN_KEEPALIVE generate(const char* data);
+    void EMSCRIPTEN_KEEPALIVE generatePlanetParser(const char* data);
 #ifdef __cplusplus
 }
 #endif

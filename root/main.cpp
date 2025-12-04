@@ -48,7 +48,7 @@ void Main::init() {
         bufferController->setCamera(camera);
     });
     
-    interfaceWrapperController = new InterfaceWrapperController();
+    controlsWrapperController = new ControlsWrapperController();
     infoWapperController = new InfoWrapperController();
     generatorWrapperController = new GeneratorWrapperController(
         bufferController->presetLoader,

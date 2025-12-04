@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "shader_loader.h"
 #include ".controller/buffer_controller.h"
-#include ".controller/interface_wrapper_controller.h"
+#include ".controller/controls_wrapper_controller.h"
 #include ".controller/info_wrapper_controller.h"
 #include ".controller/generator_wrapper_controller.h"
 #include <stdio.h>
@@ -18,8 +18,8 @@ class Main {
         Camera* camera;
         ShaderLoader* shaderLoader;
         BufferController* bufferController;
-        
-        InterfaceWrapperController* interfaceWrapperController;
+
+        ControlsWrapperController* controlsWrapperController;
         InfoWrapperController* infoWapperController;
         GeneratorWrapperController* generatorWrapperController;
         

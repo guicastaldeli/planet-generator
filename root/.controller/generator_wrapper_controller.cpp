@@ -47,17 +47,21 @@ extern "C" {
                 const container = document.querySelector('#planet-creator-modal');
                 if(container) {
                     container.style.display = 'block';
-                    g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->
                 } else {
                     console.error('Generator err');
                 }
             })();
         });
+        g_generatorWrapperController->
+            bufferController->
+            previewController->previewPlanet();
     }
 
     void generatePlanetParser(const char* planetData) {
+        g_generatorWrapperController->
+            bufferController->
+            previewController->exitPreview();
+
         printf("Received planet data: %s\n", planetData);
         if(!planetData || strlen(planetData) == 0) {
             printf("ERR: Empty planet data received\n");

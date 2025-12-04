@@ -32,6 +32,7 @@ Camera::Camera(
     panSpeed(0.001f),
     zoomSpeed(0.1f),
     panningLocked(false),
+    rotationLocked(false),
     savedPosition(0.0f, 0.0f, 3.0f),
     savedTarget(0.0f, 0.0f, 0.0f),
     isFollowingPlanet(false),
@@ -61,6 +62,8 @@ void Camera::set() {
 **
 */
 void Camera::rotate(float deltaX, float deltaY) {
+    if(rotationLocked) return;
+
     yaw += deltaX * rotationSpeed;
     pitch -= deltaY * rotationSpeed;
 
@@ -173,7 +176,7 @@ void Camera::updateFollowing() {
 ** Reset to Position
 */
 void Camera::resetToSavedPos() {
-    if(!panningLocked) return;
+    if(!panningLocked || !rotationLocked) return;
 
     position = savedPosition;
     target = savedTarget;
@@ -187,11 +190,16 @@ void Camera::resetToSavedPos() {
 }
 
 /*
-** Lock Panning
+** Lock
 */
 void Camera::lockPanning(bool lock) {
     panningLocked = lock;
     emscripten_log(EM_LOG_CONSOLE, "Panning %s", lock ? "locked" : "unlocked");
+}
+
+void Camera::lockRotation(bool lock) {
+    rotationLocked = lock;
+    emscripten_log(EM_LOG_CONSOLE, "Rotation %s", lock ? "locked" : "unlocked");
 }
 
 /*

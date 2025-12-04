@@ -7,10 +7,18 @@ PreviewController::PreviewController(BufferController* bufferController, Camera*
 PreviewController::~PreviewController() {};
 
 /*
-** Lock Camera
-*/
+ *
+ * Lock and Unlock Camera
+ * 
+ */
 void PreviewController::lockCamera() {
+    camera->lockPanning(true);
+    camera->lockRotation(true);
+}
 
+void PreviewController::unlockCamera() {
+    camera->lockPanning(false);
+    camera->lockRotation(false);
 }
 
 /*
@@ -21,12 +29,16 @@ void PreviewController::positionateCamera() {
 }
 
 /*
-** Preview Planet
+** Preview
 */
-void PreviewController::previewPlanet() {
+void PreviewController::preview() {
+    lockCamera();
+}
 
+void PreviewController::exitPreview() {
+    unlockCamera();
 }
 
 void PreviewController::init() {
-    
+
 }

@@ -47,10 +47,6 @@ void BufferController::init() {
 }
 
 /*
-** 
-*/
-
-/*
 ** Update Planet Positions
 */
 void BufferController::updatePlanetPositions() {

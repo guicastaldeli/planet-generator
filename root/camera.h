@@ -29,6 +29,7 @@ class Camera {
         glm::vec3 savedPosition;
         glm::vec3 savedTarget;
         bool panningLocked;
+        bool rotationLocked;
 
         bool isFollowingPlanet;
         int followingPlanetIndex;
@@ -72,6 +73,7 @@ class Camera {
         void zoomToObj(const glm::vec3& planetPosition, float planetSize);
         void resetToSavedPos();
         void lockPanning(bool lock);
+        void lockRotation(bool lock);
         bool isPanningLocked() const { return panningLocked; }
 
         glm::mat4 getViewMatrix();

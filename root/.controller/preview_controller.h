@@ -6,13 +6,15 @@ class PreviewController {
         Camera* camera;
         BufferController* bufferController;
 
+        void lockCamera();
+        void unlockCamera();
+        void positionateCamera();
+
     public:
         PreviewController(BufferController* bufferController, Camera* camera);
         ~PreviewController();
 
-        void lockCamera();
-        void positionateCamera();
-        void previewPlanet();
-
+        void preview();
+        void exitPreview();
         void init();
 };  

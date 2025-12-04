@@ -1,5 +1,5 @@
 export class DocumentLoader {
-    private static instance: DocumentLoader;
+    private static instances: Map<string, DocumentLoader> = new Map();
     private url: string;
 
     constructor(url: string) {
@@ -7,16 +7,11 @@ export class DocumentLoader {
     }
 
     public static getInstance(url: string): DocumentLoader {
-        if(!DocumentLoader.instance) {
-            if(!url) {
-                throw new Error('URL is required!');
-            }
-            DocumentLoader.instance = new DocumentLoader(url);
+        if(!DocumentLoader.instances.has(url)) {
+            if(!url) throw new Error('url is required');
+            DocumentLoader.instances.set(url, new DocumentLoader(url));
         }
-        if(url) {
-            DocumentLoader.instance.setUrl(url);
-        }
-        return DocumentLoader.instance;
+        return DocumentLoader.instances.get(url!)!;
     }
 
     /*

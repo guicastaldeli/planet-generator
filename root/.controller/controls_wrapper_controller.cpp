@@ -27,6 +27,17 @@ extern "C" {
 
 void onCustomPreset() {
     std::cout << "Custom button clicked from TypeScript!" << std::endl;
+
+    EM_ASM({
+        (function() {
+            if(typeof window._showGenerator !== 'undefined') {
+                console.log('onCustomPreset call');
+                window._showGenerator();
+            } else {
+                console.error('showGenerator not found!');
+            }
+        })();
+    });
 }
 
 void onImportPreset() {

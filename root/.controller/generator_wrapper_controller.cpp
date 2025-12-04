@@ -38,23 +38,15 @@ extern "C" {
 
     void showGenerator() {
         EM_ASM({
-            const container = document.getElementById('planet-creator-modal');
-            if(container) {
-                container.style.display = 'block';
-
-                const closeBtn = container.querySelector('.close');
-                if(closeBtn) {
-                    closeBtn.addEventListener('click', () => {
-                        container.style.display = 'none';
-                    });
+            (function() {
+                const container = document.querySelector('#planet-creator-modal');
+                if(container) {
+                    container.style.display = 'block';
+                    console.log('generator!');
+                } else {
+                    console.error('Generator err');
                 }
-
-                window.addEventListener('click', (e) => {
-                    if(e.target === container) {
-                        container.style.display = 'none';
-                    }
-                });
-            }
+            })();
         });
     }
 

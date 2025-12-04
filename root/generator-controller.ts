@@ -58,15 +58,15 @@ export class GeneratorController {
     private async init(): Promise<void> {
         await this.loadOptions();
         await this.extractContainer();
-        await this.setOptions();
         await this.append();
+        await this.setOptions();
         setTimeout(() => this.setupEventListeners(), 100);
     }
 
     private async append(): Promise<void> {
         if(this.container && this.emscriptenModule) {
             const html = this.container.outerHTML;
-            this.emscriptenModule.ccall('appendToDOM',
+            this.emscriptenModule.ccall('appendGeneratorToDOM',
                 null,
                 ['string'],
                 [html]
@@ -175,7 +175,7 @@ export class GeneratorController {
             this.container = doc.querySelector('#planet-creator-modal');
             return this.container;
         } catch(err) {
-            console.error(err);
+            console.error('extractContainer error:', err);
             return null;
         }
     }

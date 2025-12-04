@@ -46,14 +46,13 @@ void Main::init() {
         camera = new Camera(this, shaderLoader->shaderController, bufferController);
         camera->init();
         bufferController->setCamera(camera);
+        controlsWrapperController = new ControlsWrapperController();
+        infoWapperController = new InfoWrapperController();
+        generatorWrapperController = new GeneratorWrapperController(
+            bufferController->presetLoader,
+            bufferController
+        );
     });
-    
-    controlsWrapperController = new ControlsWrapperController();
-    infoWapperController = new InfoWrapperController();
-    generatorWrapperController = new GeneratorWrapperController(
-        bufferController->presetLoader,
-        bufferController
-    );
 }
 
 /*

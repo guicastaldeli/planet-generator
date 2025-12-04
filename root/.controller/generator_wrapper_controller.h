@@ -19,7 +19,7 @@ class GeneratorWrapperController {
 extern "C" {
 #endif
     void EMSCRIPTEN_KEEPALIVE appendGeneratorToDOM(const char* html);
-    void EMSCRIPTEN_KEEPALIVE generate(const char* planetData);
+    void EMSCRIPTEN_KEEPALIVE generatePlanetParser(const char* planetData);
     void EMSCRIPTEN_KEEPALIVE showGenerator();
 #ifdef __cplusplus
 }

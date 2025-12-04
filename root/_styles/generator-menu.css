@@ -8,3 +8,12 @@
     color: white;
     font-family: Arial, sans-serif;
 }
+
+.close {
+    user-select: none;
+    cursor: pointer;
+}
+.close:hover {
+    background-color: rgb(121, 121, 121);
+    cursor: pointer;
+}

@@ -4,6 +4,8 @@
 #include "../.buffers/buffer_generator.h"
 #include "../.preset/preset_loader.h"
 #include "../.controller/buffer_controller.h"
+#include "../.buffers/buffers.h"
+#include <iostream>
 
 GeneratorWrapperController* g_generatorWrapperController = nullptr;
 
@@ -14,6 +16,9 @@ GeneratorWrapperController::GeneratorWrapperController(
     presetLoader(presetLoader),
     bufferController(bufferController) 
 {
+    if (!presetLoader || !bufferController) {
+        std::cerr << "GeneratorWrapperController: Invalid pointers provided!" << std::endl;
+    }
     g_generatorWrapperController = this;
 }
 GeneratorWrapperController::~GeneratorWrapperController() {
@@ -51,13 +56,19 @@ extern "C" {
     }
 
     void generatePlanetParser(const char* planetData) {
+        printf("Received planet data: %s\n", planetData);
+        if(!planetData || strlen(planetData) == 0) {
+            printf("ERR: Empty planet data received\n");
+            return;
+        }
         if(!g_generatorWrapperController) {
-            printf("ERR.");
+            printf("ERR: Generator wrapper controller not initialized\n");
             return;
         }
 
         try {
             std::string str(planetData);
+            printf("Parsing JSON string of length: %zu\n", str.length());
             auto data = DataParser::Parser::parse(str);
 
             PlanetData newPlanet;
@@ -135,16 +146,25 @@ extern "C" {
             }
 
             preset.planets.push_back(newPlanet);
-            if(g_generatorWrapperController->bufferController && 
-                g_generatorWrapperController->bufferController->bufferGenerator
-            ) {
-                g_generatorWrapperController->
+            auto newPlanetBuffers = g_generatorWrapperController->
                 bufferController->
-                bufferGenerator->generatePlanet(newPlanet);
+                bufferGenerator->generateFromPreset(preset);
+
+            g_generatorWrapperController->bufferController->buffers->planetBuffers.clear();
+            for(auto& planetBuffer : newPlanetBuffers) {
+                float orbitRadius = planetBuffer.data.distanceFromCenter;
+                float initialAngle = planetBuffer.data.orbitAngle.y;
+                glm::vec3 planetPosition(
+                    orbitRadius * cos(glm::radians(initialAngle)),
+                    0.0f,
+                    orbitRadius * sin(glm::radians(initialAngle))
+                );
+                planetBuffer.worldPos = planetPosition;
+                g_generatorWrapperController->bufferController->buffers->createBufferForPlanet(planetBuffer);
+                g_generatorWrapperController->bufferController->buffers->planetBuffers.push_back(std::move(planetBuffer));
             }
 
             printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);
-            
         } catch(const std::exception& e) {
             printf("Error generating planet: %s\n", e.what());
         }

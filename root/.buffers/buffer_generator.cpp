@@ -65,8 +65,8 @@ void BufferGenerator::loadDistanceMap() {
 BufferData::Type BufferGenerator::shapeToBufferType(const std::string& name) {
     static const std::unordered_map<std::string, BufferData::Type> map = {
         { "SPHERE", BufferData::Type::SPHERE },
-        { "CUBE", BufferData::Type::SPHERE },
-        { "TRIANGLE", BufferData::Type::SPHERE }
+        { "CUBE", BufferData::Type::CUBE },
+        { "TRIANGLE", BufferData::Type::TRIANGLE }
     };
 
     auto it = map.find(name);

@@ -80,6 +80,7 @@ export class GeneratorController {
     private async loadOptions(): Promise<void> {
         try {
             const res = await fetch('./_data/options.json');
+            console.log(res)
             if(!res.ok) {
                 throw new Error(`ERROR!!: ${res.status}`);
             }
@@ -111,10 +112,17 @@ export class GeneratorController {
     ** Set Options
     */
     private async setOptions(): Promise<void> {
-        if(!this.container || !this.options) return;
+        if(!this.container || !this.options) {
+            console.error('setOptions - missing container or options');
+            return;
+        }
 
-        /* Shape */
-        const shapeSelect = this.container.querySelector('#planet-shape') as HTMLSelectElement;
+        const domContainer = document.querySelector('#planet-creator-modal');
+        console.log('setOptions - domContainer found:', !!domContainer);
+        const workingContainer = domContainer || this.container;
+        
+        const shapeSelect = workingContainer.querySelector('#planet-shape') as HTMLSelectElement;
+        console.log('setOptions - shapeSelect found:', !!shapeSelect);
         if(shapeSelect && this.options.generatorOptions.shapes) {
             shapeSelect.innerHTML = '';
             this.options.generatorOptions.shapes.forEach((shape: any) => {
@@ -123,10 +131,11 @@ export class GeneratorController {
                 option.textContent = shape.name;
                 shapeSelect.appendChild(option);
             });
+            console.log('setOptions - shapes populated:', shapeSelect.children.length);
         }
 
         /* Rotation */
-        const rotationSelect = this.container.querySelector('#rotation-axis') as HTMLSelectElement;
+        const rotationSelect = workingContainer.querySelector('#rotation-axis') as HTMLSelectElement;
         if(rotationSelect && this.options.generatorOptions.rotationAxes) {
             rotationSelect.innerHTML = '';
             this.options.generatorOptions.rotationAxes.forEach((axis: any) => {
@@ -139,7 +148,7 @@ export class GeneratorController {
         }
 
         /* Position */
-        const positionSelect = this.container.querySelector('#planet-position') as HTMLSelectElement;
+        const positionSelect = workingContainer.querySelector('#planet-position') as HTMLSelectElement;
         if(positionSelect && this.options.generatorOptions.orbitPositions) {
             positionSelect.innerHTML = '';
             this.options.generatorOptions.orbitPositions.forEach((orbit: any) => {
@@ -151,13 +160,13 @@ export class GeneratorController {
         }
 
         /* Size */
-        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
+        const sizeSlider = workingContainer.querySelector('#planet-size') as HTMLInputElement;
         if (sizeSlider && this.options.generatorOptions.sizeRange) {
             const range = this.options.generatorOptions.sizeRange;
             sizeSlider.min = (range.min * 100).toString();
             sizeSlider.max = (range.max * 100).toString();
             sizeSlider.value = (range.default * 100).toString();
-            const sizeValue = this.container.querySelector('#size-value') as HTMLElement;
+            const sizeValue = workingContainer.querySelector('#size-value') as HTMLElement;
             if(sizeValue) {
                 sizeValue.textContent = range.default.toFixed(2);
             }
@@ -184,49 +193,105 @@ export class GeneratorController {
     ** Generate
     */
     private generate(): void {
-        if(!this.container) return;
+        const domContainer = document.querySelector('#planet-creator-modal');
+        if(!domContainer) {
+            console.error('container not found in DOM');
+            return;
+        }
         
-        const nameInput = this.container.querySelector('#planet-name') as HTMLInputElement;
-        const shapeSelect = this.container.querySelector('#planet-shape') as HTMLSelectElement;
-        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
-        const colorInput = this.container.querySelector('#planet-color') as HTMLInputElement;
-        const positionSelect = this.container.querySelector('#planet-position') as HTMLSelectElement;
-        const rotationSelect = this.container.querySelector('#rotation-axis') as HTMLSelectElement;
-        const selfRotationSlider = this.container.querySelector('#self-rotation') as HTMLInputElement;
-        const orbitSlider = this.container.querySelector('#orbit-speed') as HTMLInputElement;
-        
-        const hexColor = colorInput.value;
-        const rgb = this.hexToRgb(hexColor);
+        const nameInput = domContainer.querySelector('#planet-name') as HTMLInputElement;
+        const shapeSelect = domContainer.querySelector('#planet-shape') as HTMLSelectElement;
+        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
+        const colorInput = domContainer.querySelector('#planet-color') as HTMLInputElement;
+        const positionSelect = domContainer.querySelector('#planet-position') as HTMLSelectElement;
+        const rotationSelect = domContainer.querySelector('#rotation-axis') as HTMLSelectElement;
+        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
+        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
 
         const data = {
             name: nameInput.value || `Planet ${Date.now()}`,
             shape: shapeSelect.value,
             size: parseInt(sizeSlider.value) / 100,
             color: colorInput.value,
-            rgbColor: rgb,
             position: parseInt(positionSelect.value),
             rotationDir: rotationSelect.value,
             rotationSpeedItself: parseInt(selfRotationSlider.value) / 1000,
             rotationSpeedCenter: parseInt(orbitSlider.value) / 1000
         };
-        this.emscriptenModule._generatePlanetParser(JSON.stringify(data));
-        if(this.container) {
-            this.container.style.display = 'none';
+        
+        const dataStr = JSON.stringify(data);
+        if(
+            this.emscriptenModule._malloc && 
+            this.emscriptenModule.stringToUTF8 && 
+            this.emscriptenModule.lengthBytesUTF8
+        ) {
+            console.log('Using manual memory allocation');
+            try {
+                const byteLength = this.emscriptenModule.lengthBytesUTF8(dataStr) + 1;
+                console.log('Allocating', byteLength, 'bytes');
+                
+                const ptr = this.emscriptenModule._malloc(byteLength);
+                console.log('Allocated at pointer:', ptr);
+                
+                if(ptr === 0) {
+                    console.error('Failed to allocate memory');
+                } else {
+                    this.emscriptenModule.stringToUTF8(dataStr, ptr, byteLength);
+                    console.log('String copied to WebAssembly memory');
+                    
+                    console.log('Calling _generatePlanetParser with pointer:', ptr);
+                    this.emscriptenModule._generatePlanetParser(ptr);
+                    
+                    this.emscriptenModule._free(ptr);
+                    console.log('Memory freed');
+                    
+                    console.log('Planet generation process completed');
+                    (domContainer as HTMLElement).style.display = 'none';
+                    return;
+                }
+            } catch (err) {
+                console.error('Manual allocation failed:', err);
+            }
         }
+        if(this.emscriptenModule.ccall) {
+            console.log('Using ccall');
+            try {
+                this.emscriptenModule.ccall('generatePlanetParser', 
+                    null, 
+                    ['string'], 
+                    [dataStr]
+                );
+                console.log('Planet generation process completed');
+                (domContainer as HTMLElement).style.display = 'none';
+                return;
+            } catch (err) {
+                console.error('ccall failed:', err);
+            }
+        }
+        console.error('No valid method found for planet generation');
     }
 
     /*
     ** Setup Event Listeners
     */
     public setupEventListeners(): void {
-        if(!this.container) return;
-        this.container.querySelector('#create-planet-btn')?.addEventListener('click', () => {
+        const domContainer = document.querySelector('#planet-creator-modal');
+        if(!domContainer) {
+            console.error('setupEventListeners - modal not found in DOM');
+            return;
+        }
+        
+        console.log('setupEventListeners - DOM container found:', !!domContainer);
+        console.log('setupEventListeners - create button:', domContainer.querySelector('#create-planet-btn'));
+        
+        domContainer.querySelector('#create-planet-btn')?.addEventListener('click', () => {
+            console.log('Create planet button clicked!');
             this.generate();
         });
         
         /* Size Slider */
-        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
-        const sizeValue = this.container.querySelector('#size-value') as HTMLElement;
+        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
+        const sizeValue = domContainer.querySelector('#size-value') as HTMLElement;
         if(sizeSlider && sizeValue) {
             sizeSlider.addEventListener('input', () => {
                 const value = parseInt(sizeSlider.value) / 100;
@@ -235,8 +300,8 @@ export class GeneratorController {
         }
 
         /* Self Rotation */
-        const selfRotationSlider = this.container.querySelector('#self-rotation') as HTMLInputElement;
-        const selfRotationValue = this.container.querySelector('#self-rotation-value') as HTMLElement;
+        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
+        const selfRotationValue = domContainer.querySelector('#self-rotation-value') as HTMLElement;
         if(selfRotationSlider && selfRotationValue) {
             selfRotationSlider.addEventListener('input', () => {
                 const value = parseInt(selfRotationSlider.value) / 1000;
@@ -245,8 +310,8 @@ export class GeneratorController {
         }
         
         /* Orbit Rotation */
-        const orbitSlider = this.container.querySelector('#orbit-speed') as HTMLInputElement;
-        const orbitValue = this.container.querySelector('#orbit-speed-value') as HTMLElement;
+        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
+        const orbitValue = domContainer.querySelector('#orbit-speed-value') as HTMLElement;
         if(orbitSlider && orbitValue) {
             orbitSlider.addEventListener('input', () => {
                 const value = parseInt(orbitSlider.value) / 1000;
@@ -268,7 +333,14 @@ export class GeneratorController {
     */
     public setupCallbacks(): void {
         this.onGenerate((data: any) => {
-            this.emscriptenModule._generatePlanetParser(JSON.stringify(data));
+            const dataStr = JSON.stringify(data);
+            if(this.emscriptenModule._generatePlanetParser) {
+                this.emscriptenModule._generatePlanetParser(dataStr);
+            } else if(this.emscriptenModule.ccall) {
+                this.emscriptenModule.ccall('generatePlanetParser', null, ['string'], [dataStr]);
+            } else {
+                console.error('No valid Emscripten function found');
+            }
         });
         this.onCancel(() => {
             this.emscriptenModule._hideGenerator();

@@ -5,34 +5,34 @@ interface GeneratorOptions {
         id: string; 
         name: string; 
         description: string 
-    }>;
+    }>
     rotationAxes: Array<{ 
         id: string;
      name: string 
-    }>;
+    }>
     orbitPositions: Array<{ 
         id: number; 
         name: string; 
         distance: number 
-    }>;
+    }>
     sizeRange: { 
         min: number; 
         max: number; 
         step: number; 
         default: number 
-    };
+    }
     rotationSpeedRange: { 
         min: number; 
         max: number; 
         step: number; 
         default: number 
-    };
+    }
     orbitSpeedRange: { 
         min: number; 
         max: number; 
         step: number; 
         default: number 
-    };
+    }
 }
 
 interface OptionsData {
@@ -217,7 +217,7 @@ export class GeneratorController {
             rotationDir: rotationSelect.value,
             rotationSpeedItself: parseInt(selfRotationSlider.value) / 1000,
             rotationSpeedCenter: parseInt(orbitSlider.value) / 1000
-        };
+        }
         
         const dataStr = JSON.stringify(data);
         if(
@@ -283,14 +283,27 @@ export class GeneratorController {
 
         const updatePreview = () => {
             const data = this.getCurrentData();
-            if(this.emscriptenModule._updatePreviewPlanet) {
-                this.emscriptenModule._updatePreviewPlanet(JSON.stringify(data));
-            } else if(this.emscriptenModule.ccall) {
-                this.emscriptenModule.ccall('updatePreviewPlanet', 
-                    null, 
+            const dataStr = JSON.stringify(data);
+            if(typeof window['updatePreviewPlanet'] === 'function') {
+                window['updatePreviewPlanet'](dataStr);
+                return;
+            }
+            if(this.emscriptenModule && this.emscriptenModule.ccall) {
+                this.emscriptenModule.ccall(
+                    'updatePreviewPlanet', 
+                    'null', 
                     ['string'], 
-                    [JSON.stringify(data)]
+                    [dataStr]
                 );
+                return;
+            }
+            if(this.emscriptenModule && this.emscriptenModule._updatePreviewPlanet) {
+                const lengthBytes = this.emscriptenModule.lengthBytesUTF8(dataStr) + 1;
+                const ptr = this.emscriptenModule._malloc(lengthBytes);
+                this.emscriptenModule.stringToUTF8(dataStr, ptr, lengthBytes);
+                this.emscriptenModule._updatePreviewPlanet(ptr);
+                this.emscriptenModule._free(ptr);
+                return;
             }
         }
 
@@ -376,7 +389,7 @@ export class GeneratorController {
             rotationDir: rotationSelect?.value || 'Y',
             rotationSpeedItself: selfRotationSlider ? parseInt(selfRotationSlider.value) / 1000 : 0.01,
             rotationSpeedCenter: orbitSlider ? parseInt(orbitSlider.value) / 1000 : 0.01
-        };
+        }
     }
 
     /*

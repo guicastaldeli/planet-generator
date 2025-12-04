@@ -5,8 +5,8 @@
 #include "../shader_loader.h"
 #include "../.buffers/raycaster.h"
 #include "../main.h"
-#include "preview_controller.h"
 
+class PreviewController;
 class BufferController {
     private:
         Main* main;

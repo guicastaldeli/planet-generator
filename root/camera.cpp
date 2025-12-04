@@ -125,6 +125,11 @@ void Camera::saveCurrentPos() {
                    savedPosition.x, savedPosition.y, savedPosition.z);
 }
 
+void Camera::saveCurrentPosBefore() {
+    savedPosition = position;
+    savedTarget = target;
+}
+
 /*
 ** Zoom to Object
 */
@@ -328,9 +333,31 @@ glm::mat4 Camera::getProjectionMatrix() {
     return projMatrix;
 }
 
-void Camera::setPosition(float x, float y, float z) {
+void Camera::setPosition(
+    float x, 
+    float y, 
+    float z,
+    bool savedPosition = true
+) {
+    if(savedPosition) saveCurrentPos();
     position = glm::vec3(x, y, z);
     updateVectors();
+}
+
+/*
+** Release Camera
+*/
+void Camera::releaseCamera() {
+    if(panningLocked || rotationLocked) {
+        panningLocked = false;
+        rotationLocked = false;
+        isFollowingPlanet = false;
+        followingPlanetIndex = -1;
+
+        position = savedPosition;
+        target = savedTarget;
+        updateVectors();
+    }
 }
 
 void Camera::setEvents() {

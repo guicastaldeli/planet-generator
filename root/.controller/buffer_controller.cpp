@@ -1,5 +1,6 @@
 #include "buffer_controller.h"
 #include "../.buffers/buffers.h"
+#include "preview_controller.h"
 
 BufferController::BufferController(
     Main* main,
@@ -36,7 +37,6 @@ void BufferController::initGenerator() {
 
 void BufferController::initPreviewController() {
     previewController = new PreviewController(this, camera);
-    previewController->init();
 }
 
 void BufferController::init() {

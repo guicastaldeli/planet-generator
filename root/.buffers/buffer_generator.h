@@ -15,10 +15,12 @@ struct PlanetBuffer {
     glm::vec3 worldPos;
     bool isPreview = false;
 
-    PlanetBuffer() : worldPos(0.0f) {}
+    PlanetBuffer() : 
+        worldPos(0.0f),
+        isPreview(false) 
+    {}
     PlanetBuffer(PlanetBuffer&&) = default;
     PlanetBuffer& operator=(PlanetBuffer&&) = default;
-    PlanetBuffer() : isPreview(false) {}
     
     PlanetBuffer(const PlanetBuffer&) = delete;
     PlanetBuffer& operator=(const PlanetBuffer&) = delete;

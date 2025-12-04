@@ -4,7 +4,7 @@
 PreviewController::PreviewController(BufferController* bufferController, Camera* camera) :
     bufferController(bufferController),
     camera(camera),
-    isPreviewing(true),
+    isPreviewing(false),
     isGeneratorActive(false)
 {};
 PreviewController::~PreviewController() {
@@ -35,9 +35,7 @@ void PreviewController::unlockCamera() {
 */
 void PreviewController::positionateCamera() {
     if(isPreviewing && camera) {
-        camera->setPosition(0.0f, 0.0f, 3.0f);
-    } else if(camera){
-        camera->releaseCamera();
+        camera->setPosition(0.0f, 0.0f, 5.0f, false);
     }
 }
 
@@ -45,6 +43,7 @@ void PreviewController::positionateCamera() {
 ** Preview
 */
 void PreviewController::preview() {
+    isGeneratorActive = true;
     isPreviewing = true;
     lockCamera();
     positionateCamera();
@@ -53,15 +52,22 @@ void PreviewController::preview() {
 void PreviewController::exitPreview() {
     isPreviewing = false;
     unlockCamera();
+    camera->releaseCamera();
 }
 
 /*
 ** Start Generator Preview
 */
 void PreviewController::startGeneratorPreview() {
-    if(isGeneratorActive) cleanupPreview();
+    //if(isGeneratorActive) cleanupPreview();
+
     isGeneratorActive = true;
     isPreviewing = true;
+
+    if(camera) {
+        camera->saveCurrentPosBefore();
+        preview();
+    }
 
     PlanetData previewData;
     previewData.id = -1;
@@ -79,10 +85,6 @@ void PreviewController::startGeneratorPreview() {
 
     if(bufferController && bufferController->buffers) {
         bufferController->buffers->setupPreviewPlanet(previewData);
-    }
-    if(camera) {
-        camera->setPosition(0.0f, 0.0f, 5.0f);
-        lockCamera();
     }
 }
 
@@ -118,9 +120,11 @@ void PreviewController::cleanupPreview() {
         bufferController->buffers->cleanupPreviewPlanet();
     }
     if(isPreviewing) {
-        unlockCamera();
+        exitPreview();
     }
 
     isGeneratorActive = false;
+    isPreviewing = false;
+
     emscripten_log(EM_LOG_CONSOLE, "Cannot update preview - not in generator mode!");
 }

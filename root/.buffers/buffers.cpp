@@ -170,7 +170,7 @@ void Buffers::updatePreviewPlanet(const PlanetData& data) {
 
     previewPlanet.data = data;
     previewPlanet.isPreview = true;
-    previewPlanet.data.id = 01;
+    previewPlanet.data.id = -1;
     set(previewPlanet.data.shape);
 }
 

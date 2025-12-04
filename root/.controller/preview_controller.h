@@ -1,6 +1,6 @@
 #pragma once
 #include "../camera.h"
-#include "buffer_controller.h";
+#include "buffer_controller.h"
 
 class PreviewController {
     private:
@@ -25,5 +25,4 @@ class PreviewController {
         void updatePreview(const PlanetData& data);
         void cleanupPreview();
         bool isInGeneratorMode() const { return isGeneratorActive; }
-        void init();
 };  

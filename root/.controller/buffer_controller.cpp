@@ -31,14 +31,24 @@ void BufferController::initPresetLoader() {
 }
 
 void BufferController::initGenerator() {
-    bufferGenerator = new BufferGenerator();
+    bufferGenerator = new BufferGenerator(camera);
+}
+
+void BufferController::initPreviewController() {
+    previewController = new PreviewController(this, camera);
+    previewController->init();
 }
 
 void BufferController::init() {
     initBuffers();
     initPresetLoader();
     initGenerator();
+    initPreviewController();
 }
+
+/*
+** 
+*/
 
 /*
 ** Update Planet Positions

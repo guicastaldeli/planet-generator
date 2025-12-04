@@ -1,6 +1,7 @@
 #pragma once
 #include "../.preset/preset_data.h"
 #include "buffer_data.h"
+#include "../camera.h"
 #include <emscripten/html5.h>
 #include <vector>
 #include <memory>
@@ -22,8 +23,14 @@ struct PlanetBuffer {
 };
 
 class BufferGenerator {
+    private:    
+        Camera* camera;
+        std::unordered_map<int, float> distanceMap;
+        //glm::vec3 colorStringToVec3(const std::string& colorStr);
+
+        void loadDistanceMap();
     public:
-        BufferGenerator();
+        BufferGenerator(Camera* camera);
         ~BufferGenerator();
 
         std::vector<PlanetBuffer> generateFromPreset(const PresetData& preset);
@@ -35,12 +42,6 @@ class BufferGenerator {
 
         BufferData::Type shapeToBufferType(const std::string& name);
         RotationAxis rotationToBufferType(const std::string& axis);
-
-    private:
-        std::unordered_map<int, float> distanceMap;
-        //glm::vec3 colorStringToVec3(const std::string& colorStr);
-
-        void loadDistanceMap();
 };
 
 #ifdef __cplusplus

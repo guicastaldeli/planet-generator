@@ -47,7 +47,9 @@ extern "C" {
                 const container = document.querySelector('#planet-creator-modal');
                 if(container) {
                     container.style.display = 'block';
-                    console.log('generator!');
+                    g_generatorWrapperController->
+                    bufferController->
+                    bufferGenerator->
                 } else {
                     console.error('Generator err');
                 }

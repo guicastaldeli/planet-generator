@@ -5,6 +5,7 @@
 #include "../shader_loader.h"
 #include "../.buffers/raycaster.h"
 #include "../main.h"
+#include "preview_controller.h"
 
 class BufferController {
     private:
@@ -30,11 +31,14 @@ class BufferController {
         Raycaster* raycaster;
         BufferGenerator* bufferGenerator;
         PresetLoader* presetLoader;
+        PreviewController* previewController;
 
-        void setCamera(Camera* cam);
         void initBuffers();
         void initPresetLoader();
         void initGenerator();
+        void initPreviewController();
+
+        void setCamera(Camera* cam);
         void init();
         void render(float deltaTime);
 

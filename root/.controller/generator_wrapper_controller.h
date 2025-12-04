@@ -1,10 +1,20 @@
 #pragma once
+#include "../.preset/preset_loader.h"
+#include "buffer_controller.h"
 #include <emscripten/html5.h>
 
+class PresetLoader;
+class BufferController;
 class GeneratorWrapperController {
     public:
-        GeneratorWrapperController();
+        GeneratorWrapperController(
+            PresetLoader* presetLoader,
+            BufferController* bufferController
+        );
         ~GeneratorWrapperController();
+
+        PresetLoader* presetLoader;
+        BufferController* bufferController;
 };
 
 #ifdef __cplusplus

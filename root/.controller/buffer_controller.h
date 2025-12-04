@@ -10,7 +10,6 @@ class BufferController {
     private:
         Main* main;
         ShaderLoader* shaderLoader;
-        PresetLoader* presetLoader;
         std::vector<PlanetBuffer> planetBuffers;
         PresetData currentPreset;
 
@@ -30,6 +29,7 @@ class BufferController {
         Camera* camera;
         Raycaster* raycaster;
         BufferGenerator* bufferGenerator;
+        PresetLoader* presetLoader;
 
         void setCamera(Camera* cam);
         void initBuffers();

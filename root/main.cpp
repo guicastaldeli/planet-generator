@@ -50,6 +50,10 @@ void Main::init() {
     
     interfaceWrapperController = new InterfaceWrapperController();
     infoWapperController = new InfoWrapperController();
+    generatorWrapperController = new GeneratorWrapperController(
+        bufferController->presetLoader,
+        bufferController
+    );
 }
 
 /*

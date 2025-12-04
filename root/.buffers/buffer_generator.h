@@ -33,9 +33,11 @@ class BufferGenerator {
         bool replaceLastPlanet(std::vector<PlanetData>& planets, const PlanetData& newPlanet);
         float calculateDistanceFromPosition(int position);
 
+        BufferData::Type shapeToBufferType(const std::string& name);
+        RotationAxis rotationToBufferType(const std::string& axis);
+
     private:
         std::unordered_map<int, float> distanceMap;
-        BufferData::Type shapeToBufferType(BufferData::Type shape);
         //glm::vec3 colorStringToVec3(const std::string& colorStr);
 
         void loadDistanceMap();

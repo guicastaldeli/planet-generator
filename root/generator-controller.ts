@@ -1,11 +1,50 @@
 import { DocumentLoader } from "../out/document-loader.js";
 
+interface GeneratorOptions {
+    shapes: Array<{ 
+        id: string; 
+        name: string; 
+        description: string 
+    }>;
+    rotationAxes: Array<{ 
+        id: string;
+     name: string 
+    }>;
+    orbitPositions: Array<{ 
+        id: number; 
+        name: string; 
+        distance: number 
+    }>;
+    sizeRange: { 
+        min: number; 
+        max: number; 
+        step: number; 
+        default: number 
+    };
+    rotationSpeedRange: { 
+        min: number; 
+        max: number; 
+        step: number; 
+        default: number 
+    };
+    orbitSpeedRange: { 
+        min: number; 
+        max: number; 
+        step: number; 
+        default: number 
+    };
+}
+
+interface OptionsData {
+    generatorOptions: GeneratorOptions;
+}
+
 export class GeneratorController {
     private emscriptenModule: any;
     
     private loader: DocumentLoader;
     private container: HTMLElement | null = null;
-    private options: null = null;
+    private options: OptionsData | null = null;
 
     private onGenerateClick?: (data: any) => void;
     private onCancelClick?: () => void;

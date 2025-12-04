@@ -60,19 +60,31 @@ void BufferGenerator::loadDistanceMap() {
 }
 
 /*
-** Shape to Buffer
+** Shape to Buffer Type
 */
-BufferData::Type BufferGenerator::shapeToBufferType(BufferData::Type shape) {
-    switch(shape) {
-        case BufferData::Type::TRIANGLE: 
-            return BufferData::Type::TRIANGLE;
-        case BufferData::Type::CUBE:
-            return BufferData::Type::CUBE;
-        case BufferData::Type::SPHERE:
-            return BufferData::Type::SPHERE;
-        default:
-            return BufferData::Type::SPHERE;
-    }
+BufferData::Type BufferGenerator::shapeToBufferType(const std::string& name) {
+    static const std::unordered_map<std::string, BufferData::Type> map = {
+        { "SPHERE", BufferData::Type::SPHERE },
+        { "CUBE", BufferData::Type::SPHERE },
+        { "TRIANGLE", BufferData::Type::SPHERE }
+    };
+
+    auto it = map.find(name);
+    return it != map.end() ? it->second : BufferData::Type::SPHERE;
+}
+
+/*
+** Rotation to Buffer Type
+*/
+RotationAxis BufferGenerator::rotationToBufferType(const std::string& axis) {
+    static const std::unordered_map<std::string, RotationAxis> map = {
+        { "X", RotationAxis::X },
+        { "Y", RotationAxis::Y },
+        { "Z", RotationAxis::Z }
+    };
+
+    auto it = map.find(axis);
+    return it != map.end() ? it->second : RotationAxis::Y;
 }
 
 /*

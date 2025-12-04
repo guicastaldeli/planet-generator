@@ -328,6 +328,11 @@ glm::mat4 Camera::getProjectionMatrix() {
     return projMatrix;
 }
 
+void Camera::setPosition(float x, float y, float z) {
+    position = glm::vec3(x, y, z);
+    updateVectors();
+}
+
 void Camera::setEvents() {
     emscripten_set_mousedown_callback("#ctx", this, 1, mouseCallback);
     emscripten_set_mouseup_callback("#ctx", this, 1, mouseCallback);

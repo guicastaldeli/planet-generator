@@ -68,6 +68,9 @@ class Camera {
         void init();
         void update();
 
+        void setPosition(float x, float y, float z);
+        void releaseCamera();
+        
         void updateFollowing();
         void saveCurrentPos();
         void zoomToObj(const glm::vec3& planetPosition, float planetSize);

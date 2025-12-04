@@ -182,6 +182,7 @@ void BufferController::render(float deltaTime) {
                     orbitRadius * sin(glm::radians(initialAngle))
                 );
                 planetBuffer.worldPos = planetPosition;
+                planetBuffer.isPreview = false;
                 buffers->createBufferForPlanet(planetBuffer);
                 buffers->planetBuffers.push_back(std::move(planetBuffer));
             }

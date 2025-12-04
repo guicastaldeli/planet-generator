@@ -280,9 +280,31 @@ export class GeneratorController {
             console.error('setupEventListeners - modal not found in DOM');
             return;
         }
-        
-        console.log('setupEventListeners - DOM container found:', !!domContainer);
-        console.log('setupEventListeners - create button:', domContainer.querySelector('#create-planet-btn'));
+
+        const updatePreview = () => {
+            const data = this.getCurrentData();
+            if(this.emscriptenModule._updatePreviewPlanet) {
+                this.emscriptenModule._updatePreviewPlanet(JSON.stringify(data));
+            } else if(this.emscriptenModule.ccall) {
+                this.emscriptenModule.ccall('updatePreviewPlanet', 
+                    null, 
+                    ['string'], 
+                    [JSON.stringify(data)]
+                );
+            }
+        }
+
+        let updateTimeout: NodeJS.Timeout;
+        const debouncedUpdate = () => {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(updatePreview, 100);
+        }
+
+        const formInputs = domContainer.querySelectorAll('input, select, range');
+        formInputs.forEach(input => {
+            input.addEventListener('input', debouncedUpdate);
+            input.addEventListener('change', debouncedUpdate);
+        });
         
         domContainer.querySelector('#create-planet-btn')?.addEventListener('click', () => {
             console.log('Create planet button clicked!');
@@ -326,6 +348,35 @@ export class GeneratorController {
 
     public onCancel(cb: () => void): void {
         this.onCancelClick = cb;
+    }
+
+    /*
+    ** Get Current Data
+    */
+    private getCurrentData(): any {
+        const domContainer = document.querySelector('#planet-creator-modal');
+        if(!domContainer) {
+            console.log('no dom container!');
+            return;
+        }
+        
+        const nameInput = domContainer.querySelector('#planet-name') as HTMLInputElement;
+        const shapeSelect = domContainer.querySelector('#planet-shape') as HTMLSelectElement;
+        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
+        const colorInput = domContainer.querySelector('#planet-color') as HTMLInputElement;
+        const rotationSelect = domContainer.querySelector('#rotation-axis') as HTMLSelectElement;
+        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
+        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
+        
+        return {
+            name: nameInput?.value || `Planet ${Date.now()}`,
+            shape: shapeSelect?.value || 'SPHERE',
+            size: sizeSlider ? parseInt(sizeSlider.value) / 100 : 1.0,
+            color: colorInput?.value || '#808080',
+            rotationDir: rotationSelect?.value || 'Y',
+            rotationSpeedItself: selfRotationSlider ? parseInt(selfRotationSlider.value) / 1000 : 0.01,
+            rotationSpeedCenter: orbitSlider ? parseInt(orbitSlider.value) / 1000 : 0.01
+        };
     }
 
     /*

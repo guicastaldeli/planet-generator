@@ -13,10 +13,12 @@ struct PlanetBuffer {
     uint32_t vbo;
     uint32_t ebo;
     glm::vec3 worldPos;
+    bool isPreview = false;
 
     PlanetBuffer() : worldPos(0.0f) {}
     PlanetBuffer(PlanetBuffer&&) = default;
     PlanetBuffer& operator=(PlanetBuffer&&) = default;
+    PlanetBuffer() : isPreview(false) {}
     
     PlanetBuffer(const PlanetBuffer&) = delete;
     PlanetBuffer& operator=(const PlanetBuffer&) = delete;

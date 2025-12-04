@@ -12,7 +12,9 @@
 #include <fstream>
 #include <sstream>
 
-BufferGenerator::BufferGenerator() {
+BufferGenerator::BufferGenerator(Camera* camera) :
+    camera(camera) 
+{
     loadDistanceMap();
 };
 BufferGenerator::~BufferGenerator() {};
@@ -206,27 +208,27 @@ void generate(const char* data) {
         std::string str(data);
 
         PlanetData newPlanet;
-        BufferGenerator bufferGenerator;
+        BufferGenerator* bufferGenerator;
         PresetLoader* presetLoader;
 
         auto& planets = presetLoader->getCurrentPreset().planets;
-        int availablePos = bufferGenerator.findAvailablePosition(
+        int availablePos = bufferGenerator->findAvailablePosition(
             presetLoader->getCurrentPreset().planets
         );
         if(availablePos == -1) {
-            bufferGenerator.replaceLastPlanet(
+            bufferGenerator->replaceLastPlanet(
                 presetLoader->getCurrentPreset().planets, newPlanet
             );
         } else {
             newPlanet.position = availablePos;
-            newPlanet.distanceFromCenter = bufferGenerator.calculateDistanceFromPosition(
+            newPlanet.distanceFromCenter = bufferGenerator->calculateDistanceFromPosition(
                 availablePos
             );
             presetLoader->getCurrentPreset().planets.push_back(newPlanet);
         }
 
         Buffers* buffers;
-        auto newBuffers = bufferGenerator.generateFromPreset(
+        auto newBuffers = bufferGenerator->generateFromPreset(
             presetLoader->getCurrentPreset()
         );
         buffers->planetBuffers.clear();

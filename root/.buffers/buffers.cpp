@@ -118,8 +118,64 @@ void Buffers::render() {
             0
         );
     }
+    if(!previewPlanet.data.name.empty()) {
+        auto it = vaos.find(previewPlanet.data.shape);
+        if(it != vaos.end()) {
+            glBindVertexArray(it->second);
+
+            static float previewRotation = 0.0f;
+            previewRotation += 0.5f;
+
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.0f));
+            model = glm::scale(model, glm::vec3(previewPlanet.data.size));
+
+            unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
+            if(hoverLoc != -1) {
+                glUniform1f(hoverLoc, 0.0f);
+            }
+
+            glDrawElements(
+                GL_TRIANGLES,
+                indexCounts[previewPlanet.data.shape],
+                GL_UNSIGNED_INT,
+                0
+            );
+        }
+    }
 
     glBindVertexArray(0);
+}
+
+/*
+**
+*** Preview Planet
+**
+*/
+void Buffers::setupPreviewPlanet(const PlanetData& data) {
+    previewPlanet.data = data;
+    previewPlanet.isPreview = true;
+    previewPlanet.data.id = -1;
+    set(previewPlanet.data.shape);
+}
+
+void Buffers::updatePreviewPlanet(const PlanetData& data) {
+    if(previewPlanet.data.name.empty()) {
+        setupPreviewPlanet(data);
+        return;
+    }
+
+    previewPlanet.data = data;
+    previewPlanet.isPreview = true;
+    previewPlanet.data.id = 01;
+    set(previewPlanet.data.shape);
+}
+
+void Buffers::cleanupPreviewPlanet() {
+    previewPlanet = PlanetBuffer();
 }
 
 /*

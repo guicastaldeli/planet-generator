@@ -41,6 +41,9 @@ extern "C" {
         }, html);
     }
 
+    /*
+     * Show Generator
+     */
     void showGenerator() {
         EM_ASM({
             (function() {
@@ -54,9 +57,88 @@ extern "C" {
         });
         g_generatorWrapperController->
             bufferController->
-            previewController->previewPlanet();
+            previewController->startGeneratorPreview();
     }
 
+    /*
+     * Start Generator Preview
+     */
+    void startGeneratorPreview() {
+        if(g_generatorWrapperController && g_generatorWrapperController->bufferController) {
+            g_generatorWrapperController->
+                bufferController->
+                previewController->startGeneratorPreview();
+        }
+    }
+
+    /*
+     * Update Preview
+     */
+    void updatePreviewPlanet(const char* data) {
+        if(!g_generatorWrapperController || !data) {
+            printf("ERR: cannot update preview!");
+            return;
+        }
+
+        try {
+            std::string dataStr(data);
+            auto data = DataParser::Parser::parse(dataStr);
+
+            PlanetBuffer planetBuffer;
+            planetBuffer.isPreview = true;
+            PlanetData previewPlanet;
+            previewPlanet.id = -1;
+            previewPlanet.name = 
+                data.hasKey("name") ?
+                data["name"].asString() :
+                "Planet";
+
+            if(data.hasKey("shape")) {
+                std::string shape = data["shape"].asString();
+                previewPlanet.shape = g_generatorWrapperController->
+                    bufferController->
+                    bufferGenerator->shapeToBufferType(shape);
+            } else {
+                previewPlanet.shape = BufferData::Type::SPHERE;
+            }
+            previewPlanet.size = 
+                data.hasKey("size") ? 
+                data["size"].asFloat() : 
+                1.0f;
+            previewPlanet.color =
+                data.hasKey("color") ?
+                data["color"].asString() :
+                "#808080";
+
+            if(data.hasKey("rotationDir")) {
+                std::string rotation = data["rotationDir"].asString();
+                previewPlanet.rotationDir = g_generatorWrapperController->
+                    bufferController->
+                    bufferGenerator->rotationToBufferType(rotation);
+            } else {
+                previewPlanet.rotationDir = RotationAxis::Y;
+            }
+
+            previewPlanet.rotationSpeedItself = 
+                data.hasKey("rotationSpeedItself") ?
+                data["rotationSpeedItself"].asFloat() :
+                0.01f;
+            previewPlanet.rotationSpeedCenter =
+                data.hasKey("rotationSpeedCenter") ?
+                data["rotationSpeedCenter"].asFloat() :
+                0.01f;
+
+            g_generatorWrapperController->
+                bufferController->
+                previewController->updatePreview(previewPlanet);
+        } catch(const std::exception& err) {
+            printf("Error updating preview planet: %s\n", err.what());
+        }
+    }
+
+    /*
+     * Generate Planet
+     */
     void generatePlanetParser(const char* planetData) {
         g_generatorWrapperController->
             bufferController->

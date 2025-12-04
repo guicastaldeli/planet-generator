@@ -29,6 +29,15 @@ class Buffers {
         ~Buffers();
 
         std::vector<PlanetBuffer> planetBuffers;
+        PlanetBuffer previewPlanet;
+
+        void setupPreviewPlanet(const PlanetData& data);
+        void updatePreviewPlanet(const PlanetData& data);
+        void cleanupPreviewPlanet();
+        bool hasPreviewPlanet() const {
+            return !previewPlanet.data.name.empty();
+        }
+
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
         void render();
         void init();

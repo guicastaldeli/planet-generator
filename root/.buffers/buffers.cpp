@@ -127,7 +127,7 @@ void Buffers::render() {
             previewRotation += 0.5f;
 
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.0f));
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
 
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");

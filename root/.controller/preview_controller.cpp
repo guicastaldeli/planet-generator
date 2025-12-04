@@ -35,7 +35,7 @@ void PreviewController::unlockCamera() {
 */
 void PreviewController::positionateCamera() {
     if(isPreviewing && camera) {
-        camera->setPosition(0.0f, 0.0f, 5.0f, false);
+        camera->setPosition(5.0f, 5.0f, 5.0f, false);
     }
 }
 
@@ -45,8 +45,10 @@ void PreviewController::positionateCamera() {
 void PreviewController::preview() {
     isGeneratorActive = true;
     isPreviewing = true;
-    lockCamera();
-    positionateCamera();
+    if(isPreviewing && isGeneratorActive) {
+        lockCamera();
+        positionateCamera();
+    }
 }
 
 void PreviewController::exitPreview() {

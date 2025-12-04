@@ -39,6 +39,7 @@ class Camera {
         void rotate(float deltaX, float deltaY);
         void pan(float deltaX, float deltaY);
         void zoom(float delta);
+        
     public:
         Camera(
             Main* main, 

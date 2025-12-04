@@ -80,7 +80,6 @@ export class GeneratorController {
     private async loadOptions(): Promise<void> {
         try {
             const res = await fetch('./_data/options.json');
-            console.log(res)
             if(!res.ok) {
                 throw new Error(`ERROR!!: ${res.status}`);
             }
@@ -118,11 +117,9 @@ export class GeneratorController {
         }
 
         const domContainer = document.querySelector('#planet-creator-modal');
-        console.log('setOptions - domContainer found:', !!domContainer);
         const workingContainer = domContainer || this.container;
         
         const shapeSelect = workingContainer.querySelector('#planet-shape') as HTMLSelectElement;
-        console.log('setOptions - shapeSelect found:', !!shapeSelect);
         if(shapeSelect && this.options.generatorOptions.shapes) {
             shapeSelect.innerHTML = '';
             this.options.generatorOptions.shapes.forEach((shape: any) => {
@@ -131,7 +128,6 @@ export class GeneratorController {
                 option.textContent = shape.name;
                 shapeSelect.appendChild(option);
             });
-            console.log('setOptions - shapes populated:', shapeSelect.children.length);
         }
 
         /* Rotation */

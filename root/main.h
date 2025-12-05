@@ -25,6 +25,8 @@ class Main {
         
         int initGlWindow();        
         void render();
+        void resize();
+        void resizeCanvas();
         void loop();
         void init();
 };

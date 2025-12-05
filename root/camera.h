@@ -26,6 +26,11 @@ class Camera {
         float panSpeed;
         float zoomSpeed;
 
+        float fov = 45.0f;
+        float zNear = 0.1f;
+        float zFar = 100.f;
+        glm::mat4 projection;
+
         glm::vec3 savedPosition;
         glm::vec3 savedTarget;
         bool panningLocked;
@@ -36,6 +41,7 @@ class Camera {
         glm::vec3 followingPlanetOffset;
 
         void updateVectors();
+        void updateProjection();
         void rotate(float deltaX, float deltaY);
         void pan(float deltaX, float deltaY);
         void zoom(float delta);

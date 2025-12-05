@@ -1,9 +1,18 @@
 #include "main.h"
 #include ".buffers/buffer_data.h"
 
+static Main* g_app = nullptr;
+
 EM_JS(void, setupCanvas, (int* width, int* height), {
     const canvas = document.getElementById("ctx");
     Module.canvas = canvas;
+    HEAP32[width >> 2] = canvas.width;
+    HEAP32[height >> 2] = canvas.height;
+    //console.log("original size %d x %d", canvas.width, canvas.height);
+});
+
+EM_JS(void, handleResize, (int* width, int* height), {
+    const canvas = document.getElementById("ctx");
     HEAP32[width >> 2] = canvas.width;
     HEAP32[height >> 2] = canvas.height;
     //console.log("original size %d x %d", canvas.width, canvas.height);
@@ -35,6 +44,48 @@ int Main::initGlWindow() {
 }
 
 /*
+** Resize
+*/
+void Main::resize() {
+    EM_ASM({
+        const canvas = document.getElementById("ctx");
+        if(canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const width = Math.floor(rect.width * window.devicePixelRatio);
+            const height = Math.floor(rect.height * window.devicePixelRatio);
+            if(canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height;
+            }
+
+            setValue($0, width, 'i32');
+            setValue($1, height, 'i32');
+        }
+    }, &width, &height);
+
+    glViewport(0, 0, width, height);
+    if(camera) camera->updateProjection();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Main::resizeCanvas() {
+    emscripten_set_resize_callback(
+        EMSCRIPTEN_EVENT_TARGET_WINDOW,
+        this,
+        1,
+        [](
+            int eventType,
+            const EmscriptenUiEvent* uiEvent,
+            void* userData
+        ) -> EM_BOOL {
+            Main* app = static_cast<Main*>(userData);
+            app->resize();
+            return EM_TRUE;
+        }
+    );
+}
+
+/*
 ** Init
 */
 void Main::init() {
@@ -57,6 +108,8 @@ void Main::init() {
             bufferController
         );
     });
+
+    resizeCanvas();
 }
 
 /*
@@ -87,6 +140,8 @@ void Main::loop() {
 
 int main() {
     static Main app;
+    g_app = &app;
+
     app.initGlWindow();
     app.init();
     emscripten_set_main_loop([]() {
@@ -94,4 +149,13 @@ int main() {
         appPtr->loop();
     }, 0, 1);
     return 0;
+}
+
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void resizeCanvas() {
+        if(g_app) {
+            g_app->resize();
+        }
+    }
 }

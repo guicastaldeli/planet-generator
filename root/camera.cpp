@@ -99,6 +99,7 @@ void Camera::reset() {
     pitch = 0.0f;
     zoomLevel = 45.0f;
     updateVectors();
+    updateProjection();
 }
 
 void Camera::updateVectors() {
@@ -181,7 +182,7 @@ void Camera::updateFollowing() {
 ** Reset to Position
 */
 void Camera::resetToSavedPos() {
-    if(!panningLocked || !rotationLocked) return;
+    if(!panningLocked && !rotationLocked) return;
 
     position = savedPosition;
     target = savedTarget;
@@ -191,6 +192,7 @@ void Camera::resetToSavedPos() {
     followingPlanetIndex = -1;
 
     lockPanning(false);
+    lockRotation(false);
     emscripten_log(EM_LOG_CONSOLE, "Reset to saved position, panning unlocked");
 }
 
@@ -323,14 +325,19 @@ glm::mat4 Camera::getViewMatrix() {
 }
 
 glm::mat4 Camera::getProjectionMatrix() {
-    glm::mat4 projMatrix;
-    projMatrix = glm::perspective(
-        glm::radians(zoomLevel),
-        (float)main->width / (float)main->height,
-        0.1f, 
-        100.0f
+    return projection;
+}
+
+void Camera::updateProjection() {
+    if(!main || !main->width || !main->height) return;
+
+    float aspectRatio = (float)main->width / (float)main->height;
+    projection = glm::perspective(
+        glm::radians(fov),
+        aspectRatio,
+        zNear,
+        zFar
     );
-    return projMatrix;
 }
 
 void Camera::setPosition(
@@ -376,4 +383,5 @@ void Camera::update() {
 void Camera::init() {
     emscripten_log(EM_LOG_CONSOLE, "init camera!");
     setEvents();
+    updateProjection();
 }

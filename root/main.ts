@@ -32,6 +32,7 @@ function waitForEmscripten(): Promise<any> {
 async function initApp(): Promise<void> {
     try {
         console.log('Waiting for Emscripten...');
+        resize();
         const module = await waitForEmscripten();
         console.log('Emscripten ready, initializing AppController...');
         

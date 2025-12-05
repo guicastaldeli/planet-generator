@@ -4,34 +4,34 @@ interface GeneratorOptions {
     shapes: Array<{ 
         id: string; 
         name: string; 
-        description: string 
+        description: string;
     }>
     rotationAxes: Array<{ 
         id: string;
-     name: string 
+        name: string;
     }>
     orbitPositions: Array<{ 
         id: number; 
         name: string; 
-        distance: number 
+        distance: number;
     }>
     sizeRange: { 
         min: number; 
         max: number; 
         step: number; 
-        default: number 
+        default: number;
     }
     rotationSpeedRange: { 
         min: number; 
         max: number; 
         step: number; 
-        default: number 
+        default: number;
     }
     orbitSpeedRange: { 
         min: number; 
         max: number; 
         step: number; 
-        default: number 
+        default: number;
     }
 }
 
@@ -159,12 +159,13 @@ export class GeneratorController {
         const sizeSlider = workingContainer.querySelector('#planet-size') as HTMLInputElement;
         if (sizeSlider && this.options.generatorOptions.sizeRange) {
             const range = this.options.generatorOptions.sizeRange;
-            sizeSlider.min = (range.min * 100).toString();
-            sizeSlider.max = (range.max * 100).toString();
-            sizeSlider.value = (range.default * 100).toString();
+            sizeSlider.min = (range.min * 50).toString();
+            sizeSlider.max = (range.max * 50).toString();
+            sizeSlider.value = (range.default * 50).toString();
             const sizeValue = workingContainer.querySelector('#size-value') as HTMLElement;
             if(sizeValue) {
-                sizeValue.textContent = range.default.toFixed(2);
+                const actualSize = parseInt(sizeSlider.value) / 50;
+                sizeValue.textContent = actualSize.toFixed(2);
             }
         }
     }
@@ -207,7 +208,7 @@ export class GeneratorController {
         const data = {
             name: nameInput.value || `Planet ${Date.now()}`,
             shape: shapeSelect.value,
-            size: parseInt(sizeSlider.value) / 100,
+            size: parseInt(sizeSlider.value) / 50,
             color: colorInput.value,
             position: parseInt(positionSelect.value),
             rotationDir: rotationSelect.value,
@@ -325,7 +326,7 @@ export class GeneratorController {
         const sizeValue = domContainer.querySelector('#size-value') as HTMLElement;
         if(sizeSlider && sizeValue) {
             sizeSlider.addEventListener('input', () => {
-                const value = parseInt(sizeSlider.value) / 100;
+                const value = parseInt(sizeSlider.value) / 50;
                 sizeValue.textContent = value.toFixed(2);
             });
         }
@@ -380,7 +381,7 @@ export class GeneratorController {
         return {
             name: nameInput?.value || `Planet ${Date.now()}`,
             shape: shapeSelect?.value || 'SPHERE',
-            size: sizeSlider ? parseInt(sizeSlider.value) / 100 : 1.0,
+            size: parseInt(sizeSlider.value) / 50,
             color: colorInput?.value || '#808080',
             rotationDir: rotationSelect?.value || 'Y',
             rotationSpeedItself: selfRotationSlider ? parseInt(selfRotationSlider.value) / 1000 : 0.01,

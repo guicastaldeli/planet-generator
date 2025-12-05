@@ -12,9 +12,20 @@ export class InfoController {
         this.init();
     }
 
-    public setupCallbacks(): void {
-        (window as any).display = (name: string, info: string) => {
-            this.display(name, info);
+    private async init(): Promise<void> {
+        await this.extractContainer();
+        await this.append();
+        this.setupEventListeners();
+    }
+
+    private async append(): Promise<void> {
+        if(this.container && this.emscriptenModule) {
+            const html = this.container.outerHTML;
+            this.emscriptenModule.ccall('appendInfoToDOM',
+                null,
+                ['string'],
+                [html]
+            );
         }
     }
 
@@ -29,13 +40,16 @@ export class InfoController {
             return;
         }
 
+        const actnsEl = domContainer.querySelector('#info--actns') as HTMLDivElement;
+        if(actnsEl) actnsEl.style.display = 'block';
+        
         const nameEl = domContainer.querySelector('#info--obj-name p');
         const infoEl = domContainer.querySelector('#info--obj-info p');
         if(nameEl && infoEl) {
             nameEl.textContent = name;
             infoEl.textContent = info;
         } else {
-            console.error('Couldm not find elements');
+            console.error('Couldnt not find elements');
         }
     }
 
@@ -55,19 +69,57 @@ export class InfoController {
         }
     }
 
-    private async append(): Promise<void> {
-        if(this.container && this.emscriptenModule) {
-            const html = this.container.outerHTML;
-            this.emscriptenModule.ccall('appendInfoToDOM',
-                null,
-                ['string'],
-                [html]
-            );
-        }
+    /*
+    ** Setup Event Listeners
+    */
+    private setupEventListeners(): void {
+        setTimeout(() => {
+            const domContainer = document.querySelector('.info--container') as HTMLDivElement;
+            this.container = domContainer;
+
+            const closeButton = domContainer.querySelector('#info--close-actn');
+            const deleteButton = domContainer.querySelector('#info--delete-actn');
+            
+            if(closeButton) {
+                closeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+
+                    if(this.emscriptenModule._closeMenu) {
+                        this.emscriptenModule._closeMenu();
+                    } else if(this.emscriptenModule.ccall) {
+                        this.emscriptenModule.ccall(
+                            'closeMenu',
+                            null,
+                            [],
+                            []
+                        );
+                    }
+                });
+            }
+            if(deleteButton) {
+                deleteButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+
+                    if(this.emscriptenModule._deletePlanet) {
+                        this.emscriptenModule._deletePlanet();
+                    } else if(this.emscriptenModule.ccall) {
+                        this.emscriptenModule.ccall(
+                            'deletePlanet',
+                            null,
+                            [],
+                            []
+                        );
+                    }
+                });
+            }
+        }, 100);
     }
 
-    private async init(): Promise<void> {
-        await this.extractContainer();
-        await this.append();
+    public setupCallbacks(): void {
+        (window as any).display = (name: string, info: string) => {
+            this.display(name, info);
+        }
     }
 }

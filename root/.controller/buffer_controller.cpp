@@ -1,6 +1,7 @@
 #include "buffer_controller.h"
 #include "../.buffers/buffers.h"
 #include "preview_controller.h"
+#include <iostream>
 
 BufferController::BufferController(
     Main* main,
@@ -166,6 +167,42 @@ void BufferController::clearBuffers() {
     if(raycaster) {
         raycaster->setIsIntersecting(false);
         raycaster->selectedPlanetIndex = -1;
+    }
+}
+
+void BufferController::deleteSelectedPlanet() {
+    if(selectedPlanetIndex == -1 || buffers->planetBuffers.empty()) {
+        std::cout << "No planet to delete" << std::endl;
+        return;
+    }
+
+    if(selectedPlanetIndex < buffers->planetBuffers.size()) {
+        buffers->
+            planetBuffers.erase(
+                buffers->planetBuffers.begin() + 
+                selectedPlanetIndex
+            );
+    }
+    if(
+        presetLoader && 
+        selectedPlanetIndex < presetLoader->getCurrentPreset().planets.size()
+    ) {
+        presetLoader->getCurrentPreset().planets.erase(
+            presetLoader->getCurrentPreset().planets.begin() + selectedPlanetIndex
+        );
+    }
+    if(
+        camera &&
+        camera->isFollowingPlanet &&
+        camera->followingPlanetIndex == selectedPlanetIndex
+    ) {
+        camera->resetToSavedPos();
+    }
+
+    selectedPlanetIndex = -1;
+    if(raycaster) {
+        raycaster->selectedPlanetIndex = -1;
+        raycaster->setIsIntersecting(false);
     }
 }
 

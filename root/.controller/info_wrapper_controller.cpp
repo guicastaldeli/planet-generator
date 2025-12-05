@@ -2,8 +2,17 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <iostream>
+#include "../camera.h"
+#include "buffer_controller.h"
 
-InfoWrapperController::InfoWrapperController() {}
+InfoWrapperController* g_infoWrapperController = nullptr;
+
+InfoWrapperController::InfoWrapperController(Camera* camera, BufferController* bufferController) :
+    camera(camera),
+    bufferController(bufferController) 
+{
+    g_infoWrapperController = this;
+}
 InfoWrapperController::~InfoWrapperController() {}
 
 extern "C" {
@@ -17,24 +26,53 @@ extern "C" {
             const infoContainer = container.querySelector('.info--container');
             if(infoContainer) {                    
                 document.body.appendChild(infoContainer);
-                console.log('Info appended to DOM from C++');
             }
         }, html);
     }
 
+    /*
+     * Display Info
+     */
     void display(const char* name, const char* info) {
         EM_ASM({
             const planetName = UTF8ToString($0);
             const planetInfo = UTF8ToString($1);
-                
-            console.log('C++ display called:', planetName, planetInfo);
-            console.log('window.display exists:', typeof window.display);
             
             if(typeof window.display === 'function') {
                 window.display(planetName, planetInfo);
             } else {
-                console.error('window.display function not found');
+                console.error('window display function not found');
             }
         }, name, info);
+    }
+
+    /*
+     * Close
+     */
+    void closeMenu() {
+        if(g_infoWrapperController && g_infoWrapperController->camera) {
+            g_infoWrapperController->camera->resetToSavedPos();
+        }
+        EM_ASM({
+            const container = document.querySelector('.info--container');
+            if(container) {
+                container.style.display = 'none';
+            }
+        });
+    }
+
+    /*
+     * Delete Planet
+     */
+    void deletePlanet() {
+        if(g_infoWrapperController && g_infoWrapperController->bufferController) {
+            g_infoWrapperController->bufferController->deleteSelectedPlanet();
+        }
+        EM_ASM({
+            const container = document.querySelector('.info--container');
+            if(container) {
+                container.style.display = 'none';
+            } 
+        });
     }
 }

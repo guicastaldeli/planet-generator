@@ -30,9 +30,9 @@ class BufferGenerator {
     private:    
         Camera* camera;
         std::unordered_map<int, float> distanceMap;
-        //glm::vec3 colorStringToVec3(const std::string& colorStr);
 
         void loadDistanceMap();
+
     public:
         BufferGenerator(Camera* camera);
         ~BufferGenerator();

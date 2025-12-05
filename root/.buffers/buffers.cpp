@@ -87,6 +87,9 @@ void Buffers::render() {
 
         glBindVertexArray(it->second);
 
+        static float previewRotation = 0.0f;
+        previewRotation += 0.5f;
+
         float orbitRadius = planetBuffer.data.distanceFromCenter;
         float orbitAngle = planetBuffer.data.orbitAngle.y;
         planetBuffer.worldPos = glm::vec3(
@@ -135,6 +138,13 @@ void Buffers::render() {
             glm::vec3 previewPosition = camera->position + cameraForward * 11.0f;
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, previewPosition);
+            if(previewPlanet.data.rotationDir == RotationAxis::X) {
+                model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
+            } else if(previewPlanet.data.rotationDir == RotationAxis::Y) {
+                model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(0.0f, 1.0f, 0.0f));
+            } else if(previewPlanet.data.rotationDir == RotationAxis::Z) {
+                model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
+            }
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
 
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");

@@ -89,24 +89,6 @@ export class GeneratorController {
         }
     }
 
-    private hexToRgb(hex: string): { 
-        r: number,
-        g: number,
-        b: number
-    } {
-        const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return res ? {
-            r: parseInt(res[1], 16) / 255,
-            g: parseInt(res[2], 16) / 255,
-            b: parseInt(res[3], 16) / 255
-        } :
-        {
-            r: 1.0,
-            g: 0.5,
-            b: 0.2
-        }
-    }
-
     /*
     ** Set Options
     */
@@ -159,13 +141,44 @@ export class GeneratorController {
         const sizeSlider = workingContainer.querySelector('#planet-size') as HTMLInputElement;
         if (sizeSlider && this.options.generatorOptions.sizeRange) {
             const range = this.options.generatorOptions.sizeRange;
-            sizeSlider.min = (range.min * 50).toString();
-            sizeSlider.max = (range.max * 50).toString();
-            sizeSlider.value = (range.default * 50).toString();
+            sizeSlider.min = range.min.toString();
+            sizeSlider.max = range.max.toString();
+            sizeSlider.step = range.step.toString();
+            sizeSlider.value = range.default.toString();
             const sizeValue = workingContainer.querySelector('#size-value') as HTMLElement;
             if(sizeValue) {
-                const actualSize = parseInt(sizeSlider.value) / 50;
+                const actualSize = Number(sizeSlider.value);
                 sizeValue.textContent = actualSize.toFixed(2);
+            }
+        }
+
+        /* Self Rotation */
+        const selfRotationSlider = workingContainer.querySelector('#self-rotation') as HTMLInputElement;
+        if(selfRotationSlider && this.options.generatorOptions.rotationSpeedRange) {
+            const range = this.options.generatorOptions.rotationSpeedRange;
+            selfRotationSlider.min = range.min.toString();
+            selfRotationSlider.max = range.max.toString();
+            selfRotationSlider.step = range.step.toString();
+            selfRotationSlider.value = range.default.toString();
+            const selfRotationValue = workingContainer.querySelector('#self-rotation-value') as HTMLElement;
+            if(selfRotationValue) {
+                const actualValue = Number(selfRotationSlider.value);
+                selfRotationValue.textContent = actualValue.toFixed(3);
+            }
+        }
+
+        /* Orbit Rotation */
+        const orbitSlider = workingContainer.querySelector('#orbit-speed') as HTMLInputElement;
+        if(orbitSlider && this.options.generatorOptions.orbitSpeedRange) {
+            const range = this.options.generatorOptions.orbitSpeedRange;
+            orbitSlider.min = range.min.toString();
+            orbitSlider.max = range.max.toString();
+            orbitSlider.step = range.step.toString();
+            orbitSlider.value = range.default.toString();
+            const orbitValue = workingContainer.querySelector('#orbit-speed-value') as HTMLElement;
+            if(orbitValue) {
+                const actualValue = Number(orbitSlider.value);
+                orbitValue.textContent = actualValue.toFixed(3);
             }
         }
     }
@@ -208,12 +221,12 @@ export class GeneratorController {
         const data = {
             name: nameInput.value || `Planet ${Date.now()}`,
             shape: shapeSelect.value,
-            size: parseInt(sizeSlider.value) / 50,
+            size: Number(sizeSlider.value),
             color: colorInput.value,
-            position: parseInt(positionSelect.value),
+            position: Number(positionSelect.value),
             rotationDir: rotationSelect.value,
-            rotationSpeedItself: parseInt(selfRotationSlider.value) / 1000,
-            rotationSpeedCenter: parseInt(orbitSlider.value) / 1000
+            rotationSpeedItself: Number(selfRotationSlider.value),
+            rotationSpeedCenter: Number(orbitSlider.value)
         }
         
         const dataStr = JSON.stringify(data);
@@ -326,7 +339,7 @@ export class GeneratorController {
         const sizeValue = domContainer.querySelector('#size-value') as HTMLElement;
         if(sizeSlider && sizeValue) {
             sizeSlider.addEventListener('input', () => {
-                const value = parseInt(sizeSlider.value) / 50;
+                const value = Number(sizeSlider.value);
                 sizeValue.textContent = value.toFixed(2);
             });
         }
@@ -336,7 +349,7 @@ export class GeneratorController {
         const selfRotationValue = domContainer.querySelector('#self-rotation-value') as HTMLElement;
         if(selfRotationSlider && selfRotationValue) {
             selfRotationSlider.addEventListener('input', () => {
-                const value = parseInt(selfRotationSlider.value) / 1000;
+                const value = Number(selfRotationSlider.value);
                 selfRotationValue.textContent = value.toFixed(3);
             });
         }
@@ -346,7 +359,7 @@ export class GeneratorController {
         const orbitValue = domContainer.querySelector('#orbit-speed-value') as HTMLElement;
         if(orbitSlider && orbitValue) {
             orbitSlider.addEventListener('input', () => {
-                const value = parseInt(orbitSlider.value) / 1000;
+                const value = Number(orbitSlider.value);
                 orbitValue.textContent = value.toFixed(3);
             });
         }
@@ -381,11 +394,11 @@ export class GeneratorController {
         return {
             name: nameInput?.value || `Planet ${Date.now()}`,
             shape: shapeSelect?.value || 'SPHERE',
-            size: parseInt(sizeSlider.value) / 50,
+            size: Number(sizeSlider.value),
             color: colorInput?.value || '#808080',
             rotationDir: rotationSelect?.value || 'Y',
-            rotationSpeedItself: selfRotationSlider ? parseInt(selfRotationSlider.value) / 1000 : 0.01,
-            rotationSpeedCenter: orbitSlider ? parseInt(orbitSlider.value) / 1000 : 0.01
+            rotationSpeedItself: Number(selfRotationSlider.value),
+            rotationSpeedCenter: Number(orbitSlider.value)
         }
     }
 

@@ -51,6 +51,9 @@ extern "C" {
                 const container = document.querySelector('#planet-creator-modal');
                 if(container) {
                     container.style.display = 'block';
+                    if(window.generatorController) {
+                        window.generatorController.showGenerator();
+                    }
                 } else {
                     console.error('Generator err');
                 }

@@ -1,4 +1,5 @@
 import { DocumentLoader } from "../out/document-loader.js";
+import { GeneratorConfig } from "./generator-config.js";
 
 interface GeneratorOptions {
     shapes: Array<{ 
@@ -44,6 +45,7 @@ export class GeneratorController {
     
     private loader: DocumentLoader;
     private container: HTMLElement | null = null;
+    private generatorConfig: GeneratorConfig | null = null;
     private options: OptionsData | null = null;
 
     private onGenerateClick?: (data: any) => void;
@@ -57,10 +59,16 @@ export class GeneratorController {
 
     private async init(): Promise<void> {
         await this.loadOptions();
+        this.generatorConfig = new GeneratorConfig(this.options);
+        
         await this.extractContainer();
         await this.append();
         await this.setOptions();
-        setTimeout(() => this.setupEventListeners(), 100);
+        
+        if(!this.container) throw new Error('FATAL ERR container');
+        this.container = document.querySelector('#planet-creator-modal');
+        
+        this.setupEventListeners();
     }
 
     private async append(): Promise<void> {
@@ -90,97 +98,91 @@ export class GeneratorController {
     }
 
     /*
-    ** Set Options
+    ** Get Data
     */
-    private async setOptions(): Promise<void> {
-        if(!this.container || !this.options) {
-            console.error('setOptions - missing container or options');
+    private getData(): any {
+        if(!this.container) {
+            console.log('no dom container!');
             return;
         }
 
-        const domContainer = document.querySelector('#planet-creator-modal');
-        const workingContainer = domContainer || this.container;
-        
-        const shapeSelect = workingContainer.querySelector('#planet-shape') as HTMLSelectElement;
-        if(shapeSelect && this.options.generatorOptions.shapes) {
-            shapeSelect.innerHTML = '';
-            this.options.generatorOptions.shapes.forEach((shape: any) => {
-                const option = document.createElement('option');
-                option.value = shape.id;
-                option.textContent = shape.name;
-                shapeSelect.appendChild(option);
-            });
-        }
+        const data: any = {};
+        this.generatorConfig!.form.forEach(config => {
+            const el = this.container!.querySelector(`#${config.id}`) as HTMLInputElement | HTMLSelectElement;
+            if(!el) return;
 
-        /* Rotation */
-        const rotationSelect = workingContainer.querySelector('#rotation-axis') as HTMLSelectElement;
-        if(rotationSelect && this.options.generatorOptions.rotationAxes) {
-            rotationSelect.innerHTML = '';
-            this.options.generatorOptions.rotationAxes.forEach((axis: any) => {
-                const option = document.createElement('option');
-                option.value = axis.id;
-                option.textContent = axis.name;
-                if(axis.id === 'Y') option.selected = true;
-                rotationSelect.appendChild(option);
-            });
-        }
-
-        /* Position */
-        const positionSelect = workingContainer.querySelector('#planet-position') as HTMLSelectElement;
-        if(positionSelect && this.options.generatorOptions.orbitPositions) {
-            positionSelect.innerHTML = '';
-            this.options.generatorOptions.orbitPositions.forEach((orbit: any) => {
-                const option = document.createElement('option');
-                option.value = orbit.id.toString();
-                option.textContent = orbit.name;
-                positionSelect.appendChild(option);
-            });
-        }
-
-        /* Size */
-        const sizeSlider = workingContainer.querySelector('#planet-size') as HTMLInputElement;
-        if (sizeSlider && this.options.generatorOptions.sizeRange) {
-            const range = this.options.generatorOptions.sizeRange;
-            sizeSlider.min = range.min.toString();
-            sizeSlider.max = range.max.toString();
-            sizeSlider.step = range.step.toString();
-            sizeSlider.value = range.default.toString();
-            const sizeValue = workingContainer.querySelector('#size-value') as HTMLElement;
-            if(sizeValue) {
-                const actualSize = Number(sizeSlider.value);
-                sizeValue.textContent = actualSize.toFixed(2);
+            let val: any;
+            switch(config.type) {
+                case 'text':
+                case 'color':
+                    val = (el as HTMLInputElement).value;
+                    break;
+                case 'select':
+                    val = (el as HTMLSelectElement).value;
+                    break;
+                case 'range':
+                    val = Number((el as HTMLInputElement).value);
+                    break;
             }
-        }
 
-        /* Self Rotation */
-        const selfRotationSlider = workingContainer.querySelector('#self-rotation') as HTMLInputElement;
-        if(selfRotationSlider && this.options.generatorOptions.rotationSpeedRange) {
-            const range = this.options.generatorOptions.rotationSpeedRange;
-            selfRotationSlider.min = range.min.toString();
-            selfRotationSlider.max = range.max.toString();
-            selfRotationSlider.step = range.step.toString();
-            selfRotationSlider.value = range.default.toString();
-            const selfRotationValue = workingContainer.querySelector('#self-rotation-value') as HTMLElement;
-            if(selfRotationValue) {
-                const actualValue = Number(selfRotationSlider.value);
-                selfRotationValue.textContent = actualValue.toFixed(3);
+            let key = config.id;
+            if(key.startsWith('planet-')) {
+                key = key.substring(7);
             }
-        }
 
-        /* Orbit Rotation */
-        const orbitSlider = workingContainer.querySelector('#orbit-speed') as HTMLInputElement;
-        if(orbitSlider && this.options.generatorOptions.orbitSpeedRange) {
-            const range = this.options.generatorOptions.orbitSpeedRange;
-            orbitSlider.min = range.min.toString();
-            orbitSlider.max = range.max.toString();
-            orbitSlider.step = range.step.toString();
-            orbitSlider.value = range.default.toString();
-            const orbitValue = workingContainer.querySelector('#orbit-speed-value') as HTMLElement;
-            if(orbitValue) {
-                const actualValue = Number(orbitSlider.value);
-                orbitValue.textContent = actualValue.toFixed(3);
-            }
+            const regex = /-([a-z])/g
+            key = key.replace(regex, (_, l) => l.toUpperCase());
+
+            data[key] = val;
+        });
+        return data;
+    }
+
+    /*
+    ** Set Options
+    */
+    private async setOptions(): Promise<void> {
+        const domContainer = document.querySelector('#planet-creator-modal') || this.container;
+        if(!domContainer || !this.options || !this.generatorConfig) {
+            console.error('set options err');
+            return;
         }
+    
+        this.generatorConfig.options.forEach(config => {
+            const el = domContainer.querySelector(`#${config.id}`) as HTMLElement;
+            if(!el) {
+                console.error(`Element #${config.id} not found`);
+                console.log('Available elements in container:', 
+                    Array.from(domContainer.querySelectorAll('*[id]')).map(el => el.id));
+                return;
+            }
+
+            const data = this.generatorConfig!.getProp(
+                this.options!.generatorOptions, 
+                config.dataPath
+            );
+            if(!data) {
+                console.error('data err');
+                return;
+            }
+
+            switch(config.type) {
+                case 'select':
+                    this.generatorConfig!.setSelect(
+                        el as HTMLSelectElement, 
+                        data, 
+                        config.createOption!
+                    );
+                    break;
+                case 'range':
+                    if(config.updateElement) {
+                        config.updateElement(el as HTMLInputElement, data);
+                    }
+                    break;
+                default:
+                    console.error('ERRR');
+            }
+        });
     }
 
     /*
@@ -203,60 +205,40 @@ export class GeneratorController {
     ** Generate
     */
     private generate(): void {
-        const domContainer = document.querySelector('#planet-creator-modal');
-        if(!domContainer) {
+        if(!this.container) {
             console.error('container not found in DOM');
             return;
         }
         
-        const nameInput = domContainer.querySelector('#planet-name') as HTMLInputElement;
-        const shapeSelect = domContainer.querySelector('#planet-shape') as HTMLSelectElement;
-        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
-        const colorInput = domContainer.querySelector('#planet-color') as HTMLInputElement;
-        const positionSelect = domContainer.querySelector('#planet-position') as HTMLSelectElement;
-        const rotationSelect = domContainer.querySelector('#rotation-axis') as HTMLSelectElement;
-        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
-        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
+        const data = this.getData();
+        const dataObj = {
+            name: data.name,
+            shape: data.shape,
+            size: data.size,
+            color: data.color,
+            position: Number(data.position),
+            rotationDir: data.rotationAxis,
+            rotationSpeedItself: data.selfRotation,
+            rotationSpeedCenter: data.orbitSpeed
+        };
+        const dataStr = JSON.stringify(dataObj);
 
-        const data = {
-            name: nameInput.value || `Planet ${Date.now()}`,
-            shape: shapeSelect.value,
-            size: Number(sizeSlider.value),
-            color: colorInput.value,
-            position: Number(positionSelect.value),
-            rotationDir: rotationSelect.value,
-            rotationSpeedItself: Number(selfRotationSlider.value),
-            rotationSpeedCenter: Number(orbitSlider.value)
-        }
-        
-        const dataStr = JSON.stringify(data);
         if(
             this.emscriptenModule._malloc && 
             this.emscriptenModule.stringToUTF8 && 
             this.emscriptenModule.lengthBytesUTF8
         ) {
-            console.log('Using manual memory allocation');
             try {
                 const byteLength = this.emscriptenModule.lengthBytesUTF8(dataStr) + 1;
-                console.log('Allocating', byteLength, 'bytes');
-                
                 const ptr = this.emscriptenModule._malloc(byteLength);
-                console.log('Allocated at pointer:', ptr);
                 
                 if(ptr === 0) {
                     console.error('Failed to allocate memory');
                 } else {
                     this.emscriptenModule.stringToUTF8(dataStr, ptr, byteLength);
-                    console.log('String copied to WebAssembly memory');
-                    
-                    console.log('Calling _generatePlanetParser with pointer:', ptr);
                     this.emscriptenModule._generatePlanetParser(ptr);
-                    
                     this.emscriptenModule._free(ptr);
-                    console.log('Memory freed');
-                    
-                    console.log('Planet generation process completed');
-                    (domContainer as HTMLElement).style.display = 'none';
+                    (this.container as HTMLElement).style.display = 'none';
                     return;
                 }
             } catch (err) {
@@ -271,23 +253,20 @@ export class GeneratorController {
                     ['string'], 
                     [dataStr]
                 );
-                console.log('Planet generation process completed');
-                (domContainer as HTMLElement).style.display = 'none';
+                (this.container as HTMLElement).style.display = 'none';
                 return;
             } catch (err) {
                 console.error('ccall failed:', err);
             }
         }
-        console.error('No valid method found for planet generation');
     }
 
     /*
     ** Cancel Generation
     */
     private cancelGeneration(): void {
-        const domContainer = document.querySelector('#planet-creator-modal');
-        if(domContainer) {
-            (domContainer as HTMLElement).style.display = 'none';
+        if(this.container) {
+            (this.container as HTMLElement).style.display = 'none';
         }
 
         if(this.emscriptenModule._cleanupPreview) {
@@ -306,8 +285,7 @@ export class GeneratorController {
     ** Setup Event Listeners
     */
     public setupEventListeners(): void {
-        const domContainer = document.querySelector('#planet-creator-modal');
-        if(!domContainer) {
+        if(!this.container) {
             console.error('setupEventListeners - modal not found in DOM');
             return;
         }
@@ -344,28 +322,42 @@ export class GeneratorController {
             updateTimeout = setTimeout(updatePreview, 100);
         }
 
-        const formInputs = domContainer.querySelectorAll('input, select, range');
-        formInputs.forEach(input => {
-            input.addEventListener('input', debouncedUpdate);
-            input.addEventListener('change', debouncedUpdate);
-        });
+        this.generatorConfig!.form.forEach(config => {
+            const el = this.container!.querySelector(`#${config.id}`);
+            if(el) {
+                el.addEventListener('input', debouncedUpdate);
+                el.addEventListener('change', debouncedUpdate);
+                if(config.type) {
+                    el.addEventListener('input', () => {
+                        const valEl = this.container!.querySelector(`#${config.id}-value`) as HTMLElement;
+                        if(valEl) {
+                            const precision = config.id.includes('rotation') ? 3 : 2;
+                            valEl.textContent = Number((el as HTMLInputElement).value).toFixed(precision);
+                        }
+                    });
+                }
+            }
+        })
         
-        domContainer.querySelector('#create-planet-btn')?.addEventListener('click', () => {
-            console.log('Create planet button clicked!');
-            this.generate();
-        });
-        domContainer.querySelector('.close')?.addEventListener('click', () => {
-            console.log('Close button clicked!');
-            this.cancelGeneration();
-        });
-        domContainer.querySelector('#cancel-planet-btn')?.addEventListener('click', () => {
-            console.log('Close button clicked!');
-            this.cancelGeneration();
-        });
+        this.container.querySelector('#create-planet-btn')
+            ?.addEventListener('click', () => {
+                this.generate();
+            }
+        );
+        this.container.querySelector('.close')
+            ?.addEventListener('click', () => {
+                this.cancelGeneration();
+            }
+        );
+        this.container.querySelector('#cancel-planet-btn')
+            ?.addEventListener('click', () => {
+                this.cancelGeneration();
+            }
+        );
         
         /* Size Slider */
-        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
-        const sizeValue = domContainer.querySelector('#size-value') as HTMLElement;
+        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
+        const sizeValue = this.container.querySelector('#size-value') as HTMLElement;
         if(sizeSlider && sizeValue) {
             sizeSlider.addEventListener('input', () => {
                 const value = Number(sizeSlider.value);
@@ -374,8 +366,8 @@ export class GeneratorController {
         }
 
         /* Self Rotation */
-        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
-        const selfRotationValue = domContainer.querySelector('#self-rotation-value') as HTMLElement;
+        const selfRotationSlider = this.container.querySelector('#self-rotation') as HTMLInputElement;
+        const selfRotationValue = this.container.querySelector('#self-rotation-value') as HTMLElement;
         if(selfRotationSlider && selfRotationValue) {
             selfRotationSlider.addEventListener('input', () => {
                 const value = Number(selfRotationSlider.value);
@@ -384,8 +376,8 @@ export class GeneratorController {
         }
         
         /* Orbit Rotation */
-        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
-        const orbitValue = domContainer.querySelector('#orbit-speed-value') as HTMLElement;
+        const orbitSlider = this.container.querySelector('#orbit-speed') as HTMLInputElement;
+        const orbitValue = this.container.querySelector('#orbit-speed-value') as HTMLElement;
         if(orbitSlider && orbitValue) {
             orbitSlider.addEventListener('input', () => {
                 const value = Number(orbitSlider.value);
@@ -403,31 +395,86 @@ export class GeneratorController {
     }
 
     /*
+    ** Reset Form Values
+    */
+    private resetFormValues(): void {
+        if(!this.container) return;
+
+        this.generatorConfig!.form.forEach(config => {
+            const el = this.container!.querySelector(`#${config.id}`) as HTMLInputElement | HTMLSelectElement;
+            if(!el) return;
+
+            let defaultVal: any;
+            if(typeof config.defaultValue === 'function') {
+                defaultVal = config.defaultValue();
+            } else  {
+                defaultVal = config.defaultValue;
+            }
+
+            switch(config.type) {
+                case 'text':
+                case 'color':
+                    (el as HTMLInputElement).value = defaultVal;
+                    break;
+                case 'select':
+                    const select = el as HTMLSelectElement;
+                    for(let i = 0; i < select.options.length; i++) {
+                        if(select.options[i].value === defaultVal) {
+                            select.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    break;
+                case 'range':
+                    const range = el as HTMLInputElement;
+                    range.value = defaultVal.toString();
+                    const valEl = this.container!.querySelector(`#${config.id}-value`) as HTMLElement;
+                    if(valEl) {
+                        const precision = config.id.includes('rotation') ? 3 : 2;
+                        valEl.textContent = Number(range.value).toFixed(precision);
+                    }
+                    break;
+            }
+        });
+    }
+
+    /*
     ** Get Current Data
     */
     private getCurrentData(): any {
-        const domContainer = document.querySelector('#planet-creator-modal');
-        if(!domContainer) {
-            console.log('no dom container!');
-            return;
+        if(!this.container || !this.generatorConfig) {
+            console.log('no container or config!');
+            return {};
         }
-        
-        const nameInput = domContainer.querySelector('#planet-name') as HTMLInputElement;
-        const shapeSelect = domContainer.querySelector('#planet-shape') as HTMLSelectElement;
-        const sizeSlider = domContainer.querySelector('#planet-size') as HTMLInputElement;
-        const colorInput = domContainer.querySelector('#planet-color') as HTMLInputElement;
-        const rotationSelect = domContainer.querySelector('#rotation-axis') as HTMLSelectElement;
-        const selfRotationSlider = domContainer.querySelector('#self-rotation') as HTMLInputElement;
-        const orbitSlider = domContainer.querySelector('#orbit-speed') as HTMLInputElement;
-        
-        return {
-            name: nameInput?.value || `Planet ${Date.now()}`,
-            shape: shapeSelect?.value || 'SPHERE',
-            size: Number(sizeSlider.value),
-            color: colorInput?.value || '#808080',
-            rotationDir: rotationSelect?.value || 'Y',
-            rotationSpeedItself: Number(selfRotationSlider.value),
-            rotationSpeedCenter: Number(orbitSlider.value)
+
+        const data: any = {};
+        this.generatorConfig.form.forEach(config => {
+            const el = this.container!.querySelector(`#${config.id}`) as HTMLInputElement | HTMLSelectElement;
+            if(!el) {
+                console.warn(`Element #${config.id} not found`);
+                return;
+            }
+
+            const val = this.generatorConfig?.getElementValue(el, config.type);
+            const map = this.generatorConfig?.fieldMap[config.id as keyof typeof this.generatorConfig.fieldMap];
+            if(map) {
+                data[map.outputKey] = map.transform(val!);
+            } else {
+                const key = this.generatorConfig?.idToCamelCase(config.id);
+                data[key!] = val;
+            }
+        });
+
+        return data;
+    }
+
+    /*
+    ** Show Generator
+    */
+    public showGenerator(): void {
+        if(this.container) {
+            (this.container as HTMLElement).style.display = 'block';
+            this.resetFormValues();
         }
     }
 

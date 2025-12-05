@@ -182,8 +182,6 @@ void Camera::updateFollowing() {
 ** Reset to Position
 */
 void Camera::resetToSavedPos() {
-    if(!panningLocked && !rotationLocked) return;
-
     position = savedPosition;
     target = savedTarget;
     updateVectors();

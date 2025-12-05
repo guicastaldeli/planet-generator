@@ -163,12 +163,34 @@ extern "C" {
     }
 
     /*
+     * Cleanup Preview
+     */
+    void cleanupPreview() {
+        if(g_generatorWrapperController && g_generatorWrapperController->bufferController) {
+            g_generatorWrapperController->
+                bufferController->
+                previewController->cleanupPreview();
+        }
+    }
+
+    /*
+     * Hide Generator
+     */
+    void hideGenerator() {
+        EM_ASM({
+            const container = document.querySelector('#planet-creator-modal');
+            if(container) {
+                container.style.display = 'none';
+            }
+        });
+        cleanupPreview();
+    }
+
+    /*
      * Generate Planet
      */
     void generatePlanetParser(const char* planetData) {
-        g_generatorWrapperController->
-            bufferController->
-            previewController->exitPreview();
+        cleanupPreview();
 
         printf("Received planet data: %s\n", planetData);
         if(!planetData || strlen(planetData) == 0) {
@@ -274,8 +296,13 @@ extern "C" {
                     orbitRadius * sin(glm::radians(initialAngle))
                 );
                 planetBuffer.worldPos = planetPosition;
-                g_generatorWrapperController->bufferController->buffers->createBufferForPlanet(planetBuffer);
-                g_generatorWrapperController->bufferController->buffers->planetBuffers.push_back(std::move(planetBuffer));
+                g_generatorWrapperController->
+                    bufferController->
+                    buffers->createBufferForPlanet(planetBuffer);
+                g_generatorWrapperController->
+                    bufferController->
+                    buffers->
+                    planetBuffers.push_back(std::move(planetBuffer));
             }
 
             printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);

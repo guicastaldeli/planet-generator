@@ -12,7 +12,6 @@ class PreviewController {
 
         void lockCamera();
         void unlockCamera();
-        void positionateCamera();
 
     public:
         PreviewController(BufferController* bufferController, Camera* camera);

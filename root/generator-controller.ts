@@ -282,6 +282,27 @@ export class GeneratorController {
     }
 
     /*
+    ** Cancel Generation
+    */
+    private cancelGeneration(): void {
+        const domContainer = document.querySelector('#planet-creator-modal');
+        if(domContainer) {
+            (domContainer as HTMLElement).style.display = 'none';
+        }
+
+        if(this.emscriptenModule._cleanupPreview) {
+            this.emscriptenModule._cleanupPreview();
+        } else if(this.emscriptenModule.ccall) {
+            this.emscriptenModule.ccall(
+                'cleanupPreview',
+                null,
+                [],
+                []
+            );
+        }
+    }
+
+    /*
     ** Setup Event Listeners
     */
     public setupEventListeners(): void {
@@ -332,6 +353,14 @@ export class GeneratorController {
         domContainer.querySelector('#create-planet-btn')?.addEventListener('click', () => {
             console.log('Create planet button clicked!');
             this.generate();
+        });
+        domContainer.querySelector('.close')?.addEventListener('click', () => {
+            console.log('Close button clicked!');
+            this.cancelGeneration();
+        });
+        domContainer.querySelector('#cancel-planet-btn')?.addEventListener('click', () => {
+            console.log('Close button clicked!');
+            this.cancelGeneration();
         });
         
         /* Size Slider */
@@ -417,7 +446,24 @@ export class GeneratorController {
             }
         });
         this.onCancel(() => {
-            this.emscriptenModule._hideGenerator();
+            if(this.emscriptenModule._cleanupPreview) {
+                this.emscriptenModule._cleanupPreview();
+            } else if(this.emscriptenModule.ccall) {
+                this.emscriptenModule.ccall(
+                    'cleanupPreview',
+                    null,
+                    [],
+                    []
+                );
+                this.emscriptenModule.ccall(
+                    'hideGenerator',
+                    null,
+                    [],
+                    []
+                );
+            } else if(this.emscriptenModule._hideGenerator) {
+                this.emscriptenModule._hideGenerator();
+            }
         });
     }
 }

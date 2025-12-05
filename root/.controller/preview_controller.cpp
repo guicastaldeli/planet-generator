@@ -19,8 +19,8 @@ PreviewController::~PreviewController() {
  */
 void PreviewController::lockCamera() {
     if(camera) {
-        camera->lockPanning(false);
-        camera->lockRotation(false);
+        camera->lockPanning(true);
+        camera->lockRotation(true);
     }
 }
 
@@ -32,17 +32,6 @@ void PreviewController::unlockCamera() {
 }
 
 /*
-** Positionate Camera
-*/
-void PreviewController::positionateCamera() {
-    if(isPreviewing && camera) {
-        camera->setPosition(0.0f, 0.0f, 2.0f, false);
-        camera->target = glm::vec3(10.0f, 0.0f, -60.0f);
-        camera->updateVectors();
-    }
-}
-
-/*
 ** Preview
 */
 void PreviewController::preview() {
@@ -50,21 +39,26 @@ void PreviewController::preview() {
     isPreviewing = true;
     if(isPreviewing && isGeneratorActive) {
         lockCamera();
-        positionateCamera();
+        camera->setPosition(0.0f, 0.0f, 2.0f, false);
+        camera->target = glm::vec3(10.0f, 0.0f, -60.0f);
+        camera->updateVectors();
     }
 }
 
 void PreviewController::exitPreview() {
+    isGeneratorActive = false;
     isPreviewing = false;
-    unlockCamera();
-    camera->releaseCamera();
+    if(!isPreviewing && !isGeneratorActive) {
+        unlockCamera();
+        camera->releaseCamera();
+    }
 }
 
 /*
 ** Start Generator Preview
 */
 void PreviewController::startGeneratorPreview() {
-    //if(isGeneratorActive) cleanupPreview();
+    if(isGeneratorActive) cleanupPreview();
 
     if(camera) {
         emscripten_console_log("camera");
@@ -98,14 +92,8 @@ void PreviewController::startGeneratorPreview() {
 ** Update Preview
 */
 void PreviewController::updatePreview(const PlanetData& data) {
-    if(!isGeneratorActive) {
-        emscripten_log(EM_LOG_CONSOLE, "Cannot update preview - not in generator mode!");
-        return;
-    }
-    if(!bufferController || !bufferController->buffers) {
-        emscripten_log(EM_LOG_CONSOLE, "Cannot update preview - not in generator mode!");
-        return;
-    }
+    if(!isGeneratorActive) return;
+    if(!bufferController || !bufferController->buffers) return;
 
     PlanetData previewData = data;
     previewData.id = -1;
@@ -118,19 +106,19 @@ void PreviewController::updatePreview(const PlanetData& data) {
 ** Cleanup Preview
 */
 void PreviewController::cleanupPreview() {
-    if(!isGeneratorActive) {
-        emscripten_log(EM_LOG_CONSOLE, "No generator active");
-        return;
-    }
-    if(bufferController && bufferController->buffers) {
-        bufferController->buffers->cleanupPreviewPlanet();
+    if(camera) {
+        camera->resetToSavedPos();
+        camera->releaseCamera();
     }
     if(isPreviewing) {
         exitPreview();
+    }
+    if(bufferController && bufferController->buffers) {
+        bufferController->buffers->cleanupPreviewPlanet();
     }
 
     isGeneratorActive = false;
     isPreviewing = false;
 
-    emscripten_log(EM_LOG_CONSOLE, "Cannot update preview - not in generator mode!");
+    emscripten_log(EM_LOG_CONSOLE, "Cleanup completed!");
 }

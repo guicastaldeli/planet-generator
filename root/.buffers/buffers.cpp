@@ -126,8 +126,15 @@ void Buffers::render() {
             static float previewRotation = 0.0f;
             previewRotation += 0.5f;
 
+            glm::vec3 cameraForward;
+            cameraForward.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+            cameraForward.y = sin(glm::radians(camera->pitch));
+            cameraForward.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+            cameraForward = glm::normalize(cameraForward);
+
+            glm::vec3 previewPosition = camera->position + cameraForward * 11.0f;
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
+            model = glm::translate(model, previewPosition);
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
 
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");

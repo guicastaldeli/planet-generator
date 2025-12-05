@@ -1,5 +1,6 @@
 #include "preview_controller.h"
 #include "../.buffers/buffers.h"
+#include <emscripten.h>
 
 PreviewController::PreviewController(BufferController* bufferController, Camera* camera) :
     bufferController(bufferController),
@@ -18,8 +19,8 @@ PreviewController::~PreviewController() {
  */
 void PreviewController::lockCamera() {
     if(camera) {
-        camera->lockPanning(true);
-        camera->lockRotation(true);
+        camera->lockPanning(false);
+        camera->lockRotation(false);
     }
 }
 
@@ -35,7 +36,9 @@ void PreviewController::unlockCamera() {
 */
 void PreviewController::positionateCamera() {
     if(isPreviewing && camera) {
-        camera->setPosition(5.0f, 5.0f, 5.0f, false);
+        camera->setPosition(0.0f, 0.0f, 2.0f, false);
+        camera->target = glm::vec3(10.0f, 0.0f, -60.0f);
+        camera->updateVectors();
     }
 }
 
@@ -63,11 +66,12 @@ void PreviewController::exitPreview() {
 void PreviewController::startGeneratorPreview() {
     //if(isGeneratorActive) cleanupPreview();
 
-    isGeneratorActive = true;
-    isPreviewing = true;
-
     if(camera) {
+        emscripten_console_log("camera");
         camera->saveCurrentPosBefore();
+        preview();
+    } else {
+        emscripten_console_log("no camera");
         preview();
     }
 

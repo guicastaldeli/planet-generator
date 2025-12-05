@@ -11,7 +11,7 @@
 class Main;
 class BufferController;
 class Camera {
-    private:
+    public:
         ShaderController* shaderController;
 
         float yaw;

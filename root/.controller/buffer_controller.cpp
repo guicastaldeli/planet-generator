@@ -40,7 +40,6 @@ void BufferController::initPreviewController() {
 }
 
 void BufferController::init() {
-    initBuffers();
     initPresetLoader();
     initGenerator();
     initPreviewController();

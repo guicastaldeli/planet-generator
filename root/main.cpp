@@ -42,10 +42,14 @@ void Main::init() {
     shaderLoader->load();
     ShaderLoader::setCallback([this] {
         bufferController = new BufferController(this, nullptr, shaderLoader);
-        bufferController->init();
+        bufferController->initBuffers();
+
         camera = new Camera(this, shaderLoader->shaderController, bufferController);
         camera->init();
+        
         bufferController->setCamera(camera);
+        bufferController->init();
+
         controlsWrapperController = new ControlsWrapperController();
         infoWapperController = new InfoWrapperController();
         generatorWrapperController = new GeneratorWrapperController(

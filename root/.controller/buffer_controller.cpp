@@ -130,9 +130,21 @@ void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
 ** Get Selected Planet
 */
 const PlanetBuffer* BufferController::getSelectedPlanet() const {
-    if(selectedPlanetIndex >= 0 && selectedPlanetIndex < buffers->planetBuffers.size()) {
+    if(
+        camera && 
+        camera->isFollowingPlanet &&
+        camera->followingPlanetIndex != -1
+    ) {
+        if(camera->followingPlanetIndex < buffers->planetBuffers.size()) {
+            return &buffers->planetBuffers[camera->followingPlanetIndex];
+        }
+    }
+    if(selectedPlanetIndex >= 0 && 
+        selectedPlanetIndex < buffers->planetBuffers.size()
+    ) {
         return &buffers->planetBuffers[selectedPlanetIndex];
     }
+
     return nullptr;
 }
 

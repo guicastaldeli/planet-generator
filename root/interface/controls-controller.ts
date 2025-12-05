@@ -12,6 +12,7 @@ export class ControlsController {
     private onImportPresetClick?: () => void;
     private onExportPresetClick?: () => void;
     private onResetToDefaultClick?: () => void;
+    private onClearClick?: () => void;
     
     constructor(module: any) {
         this.emscriptenModule = module;
@@ -89,6 +90,11 @@ export class ControlsController {
                 this.onResetToDefaultClick?.();
             }
         );
+        container.querySelector('#control--actn-clear')
+            ?.addEventListener('click', () => {
+                this.onClearClick?.();
+            }
+        );
     }
 
     /*
@@ -132,6 +138,10 @@ export class ControlsController {
         this.onResetToDefaultClick = cb;
     }
 
+    public onClear(cb: () => void): void {
+        this.onClearClick = cb;
+    }
+
     public setupCallbacks(): void {
         this.onControlsMenu(() => {
             this.emscriptenModule._onControlsMenu();
@@ -147,6 +157,9 @@ export class ControlsController {
         });
         this.onReset(() => {
             this.emscriptenModule._onResetToDefault();
+        });
+        this.onClear(() => {
+            this.emscriptenModule._onClear();
         });
     }
 }

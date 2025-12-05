@@ -157,10 +157,6 @@ void BufferController::setCamera(Camera* cam) {
 /*
 ** Render
 */
-// ...existing code...
-/*
-** Render
-*/
 void BufferController::render(float deltaTime) {
     static bool presetLoaded = false;
 

@@ -23,35 +23,57 @@ extern "C" {
             }
         }, html);
     }
-}
 
-void onCustomPreset() {
-    std::cout << "Custom button clicked from TypeScript!" << std::endl;
+    /*
+     * Controls Menu
+     */
+    void onControlsMenu() {
+        std::cout << "Main button clicked from TypeScript!" << std::endl;
+    }
+    
+    /*
+     * Custom Preset
+     */
+    void onCustomPreset() {
+        std::cout << "Custom button clicked from TypeScript!" << std::endl;
+    
+        EM_ASM({
+            (function() {
+                if(typeof window._showGenerator !== 'undefined') {
+                    console.log('onCustomPreset call');
+                    window._showGenerator();
+                } else {
+                    console.error('showGenerator not found!');
+                }
+            })();
+        });
+    }
+    
+    /*
+     * Import Preset
+     */
+    void onImportPreset() {
+        std::cout << "Import button clicked from TypeScript!" << std::endl;
+    }
+    
+    /*
+     * Export Preset
+     */
+    void onExportPreset() {
+        std::cout << "Export button clicked from TypeScript!" << std::endl;
+    }
+    
+    /*
+     * Reset to Default Preset
+     */
+    void onResetToDefault() {
+        std::cout << "Reset button clicked from TypeScript!" << std::endl;
+    }
 
-    EM_ASM({
-        (function() {
-            if(typeof window._showGenerator !== 'undefined') {
-                console.log('onCustomPreset call');
-                window._showGenerator();
-            } else {
-                console.error('showGenerator not found!');
-            }
-        })();
-    });
-}
-
-void onImportPreset() {
-    std::cout << "Import button clicked from TypeScript!" << std::endl;
-}
-
-void onExportPreset() {
-    std::cout << "Export button clicked from TypeScript!" << std::endl;
-}
-
-void onResetToDefault() {
-    std::cout << "Reset button clicked from TypeScript!" << std::endl;
-}
-
-void onControlsMenu() {
-    std::cout << "Main button clicked from TypeScript!" << std::endl;
+    /*
+     * Clear Preset
+     */
+    void onClear() {
+        std::cout << "Clear button clicked from TypeScript!" << std::endl;
+    }
 }

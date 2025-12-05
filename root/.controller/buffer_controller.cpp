@@ -14,7 +14,8 @@ BufferController::BufferController(
     presetLoader(nullptr),
     buffers(nullptr),
     raycaster(nullptr),
-    selectedPlanetIndex(-1)
+    selectedPlanetIndex(-1),
+    presetLoaded(false)
 {};
 BufferController::~BufferController() {};
 
@@ -154,12 +155,24 @@ void BufferController::setCamera(Camera* cam) {
     }
 }
 
+void BufferController::clearBuffers() {
+    if(buffers) buffers->clearBuffers();
+    if(presetLoader) {
+        presetLoader->getCurrentPreset().planets.clear();
+        currentPreset = presetLoader->getCurrentPreset();
+    }
+
+    selectedPlanetIndex = -1;
+    if(raycaster) {
+        raycaster->setIsIntersecting(false);
+        raycaster->selectedPlanetIndex = -1;
+    }
+}
+
 /*
 ** Render
 */
 void BufferController::render(float deltaTime) {
-    static bool presetLoaded = false;
-
     if(!presetLoaded) {
         if(presetLoader->loadDefaultPreset()) {
             currentPreset = presetLoader->getCurrentPreset();
@@ -186,12 +199,7 @@ void BufferController::render(float deltaTime) {
             return;
         }
     }
-    
-    if(!buffers->planetBuffers.empty()) {
-        bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
-        updatePlanetPositions();
-        buffers->render();
-    } else {
-        printf("ERR: no planets to render!");
-    }
+    bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
+    updatePlanetPositions();
+    buffers->render();
 }

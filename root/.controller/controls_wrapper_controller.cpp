@@ -1,7 +1,14 @@
 #include "controls_wrapper_controller.h"
+#include "buffer_controller.h"
 #include <iostream>
 
-ControlsWrapperController::ControlsWrapperController() {}
+BufferController* g_bufferController = nullptr;
+
+ControlsWrapperController::ControlsWrapperController(BufferController* bufferController) :
+    bufferController(bufferController) 
+{
+    g_bufferController = bufferController;
+}
 ControlsWrapperController::~ControlsWrapperController() {}
 
 extern "C" {
@@ -75,5 +82,8 @@ extern "C" {
      */
     void onClear() {
         std::cout << "Clear button clicked from TypeScript!" << std::endl;
+        if(g_bufferController) {
+            g_bufferController->clearBuffers();
+        }
     }
 }

@@ -58,7 +58,12 @@ void PreviewController::exitPreview() {
 ** Start Generator Preview
 */
 void PreviewController::startGeneratorPreview() {
-    if(isGeneratorActive) cleanupPreview();
+    if(isGeneratorActive && isPreviewing) {
+        cleanupPreview();
+    }
+    
+    isGeneratorActive = true;
+    isPreviewing = true;
 
     if(camera) {
         emscripten_console_log("camera");

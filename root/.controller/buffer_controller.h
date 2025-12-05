@@ -17,6 +17,7 @@ class BufferController {
         int MIN_PLANETS = 0;
         int MAX_PLANETS = 15;
         int selectedPlanetIndex;
+        bool presetLoaded;
         
     public:
         BufferController(
@@ -42,6 +43,7 @@ class BufferController {
         void init();
         void render(float deltaTime);
 
+        void clearBuffers();
         void updatePlanetPositions();
         int checkPlanetIntersections(double mosueX, double mouseY);
         void handleRaycasterRender(double mouseX, double mouseY);

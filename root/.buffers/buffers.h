@@ -39,6 +39,8 @@ class Buffers {
         }
 
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
+        void clearBuffers();
+
         void render();
         void init();
 };

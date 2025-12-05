@@ -195,6 +195,10 @@ void Buffers::cleanupPreviewPlanet() {
     previewPlanet = PlanetBuffer();
 }
 
+void Buffers::clearBuffers() {
+    planetBuffers.clear();
+}
+
 /*
 ** Init
 */

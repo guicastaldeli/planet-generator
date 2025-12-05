@@ -1,9 +1,13 @@
 #pragma once
 #include <emscripten.h>
 
+class BufferController;
 class ControlsWrapperController {
+    private:
+        BufferController* bufferController;
+        
     public:
-        ControlsWrapperController();
+        ControlsWrapperController(BufferController* bufferController);
         ~ControlsWrapperController();    
 };
 

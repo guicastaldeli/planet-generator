@@ -79,6 +79,11 @@ export class GeneratorController {
                 ['string'],
                 [html]
             );
+            return new Promise(res => {
+                setTimeout(() => {
+                    res();
+                }, 100);
+            });
         }
     }
 
@@ -322,67 +327,13 @@ export class GeneratorController {
             updateTimeout = setTimeout(updatePreview, 100);
         }
 
-        this.generatorConfig!.form.forEach(config => {
-            const el = this.container!.querySelector(`#${config.id}`);
-            if(el) {
-                el.addEventListener('input', debouncedUpdate);
-                el.addEventListener('change', debouncedUpdate);
-                if(config.type) {
-                    el.addEventListener('input', () => {
-                        const valEl = this.container!.querySelector(`#${config.id}-value`) as HTMLElement;
-                        if(valEl) {
-                            const precision = config.id.includes('rotation') ? 3 : 2;
-                            valEl.textContent = Number((el as HTMLInputElement).value).toFixed(precision);
-                        }
-                    });
-                }
-            }
-        })
-        
-        this.container.querySelector('#create-planet-btn')
-            ?.addEventListener('click', () => {
-                this.generate();
-            }
-        );
-        this.container.querySelector('.close')
-            ?.addEventListener('click', () => {
-                this.cancelGeneration();
-            }
-        );
-        this.container.querySelector('#cancel-planet-btn')
-            ?.addEventListener('click', () => {
-                this.cancelGeneration();
-            }
-        );
-        
-        /* Size Slider */
-        const sizeSlider = this.container.querySelector('#planet-size') as HTMLInputElement;
-        const sizeValue = this.container.querySelector('#size-value') as HTMLElement;
-        if(sizeSlider && sizeValue) {
-            sizeSlider.addEventListener('input', () => {
-                const value = Number(sizeSlider.value);
-                sizeValue.textContent = value.toFixed(2);
-            });
-        }
-
-        /* Self Rotation */
-        const selfRotationSlider = this.container.querySelector('#self-rotation') as HTMLInputElement;
-        const selfRotationValue = this.container.querySelector('#self-rotation-value') as HTMLElement;
-        if(selfRotationSlider && selfRotationValue) {
-            selfRotationSlider.addEventListener('input', () => {
-                const value = Number(selfRotationSlider.value);
-                selfRotationValue.textContent = value.toFixed(3);
-            });
-        }
-        
-        /* Orbit Rotation */
-        const orbitSlider = this.container.querySelector('#orbit-speed') as HTMLInputElement;
-        const orbitValue = this.container.querySelector('#orbit-speed-value') as HTMLElement;
-        if(orbitSlider && orbitValue) {
-            orbitSlider.addEventListener('input', () => {
-                const value = Number(orbitSlider.value);
-                orbitValue.textContent = value.toFixed(3);
-            });
+        if(this.generatorConfig) {
+            this.generatorConfig.setupFormElementListeners(this.container, debouncedUpdate);
+            this.generatorConfig.setupButtonListeners(
+            this.container,
+                () => this.generate(),
+                () => this.cancelGeneration()
+            );
         }
     }
 

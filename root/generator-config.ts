@@ -217,4 +217,55 @@ export class GeneratorConfig {
         const regex = /-([a-z])/g;
         return id.replace(regex, (_, l) => l.toUpperCase());
     }
+
+    public setupFormElementListeners(container: HTMLElement, update: () => void): void {
+        this.form.forEach(config => {
+            const el = container.querySelector(`#${config.id}`);
+            if(!el) {
+                console.warn(`Element #${config.id} not found for event listener`);
+                return;
+            }
+
+            el.addEventListener('input', update);
+            el.addEventListener('change', update);
+            if(config.type === 'range') this.setupRangeValueDisplay(container, config.id);
+        });
+    }
+
+    private setupRangeValueDisplay(container: HTMLElement, id: string) {
+        const slider = container?.querySelector(`#${id}`) as HTMLInputElement;
+        const valueDisplayId = 'size-value';
+        const valueDisplay = container?.querySelector(`#${valueDisplayId}`) as HTMLElement;
+        if(!slider || !valueDisplay) {
+            console.warn(`Slider or value display not found for ${id}`);
+            return;
+        }
+
+        const precision = id.includes('rotation') ? 3 : 2;
+        valueDisplay.textContent = Number(slider.value).toFixed(precision);
+        slider.addEventListener('input', () => {
+            const val = Number(slider.value);
+            valueDisplay.textContent = val.toFixed(precision);
+        });
+    }
+
+    public setupButtonListeners(
+        container: HTMLElement, 
+        generate: () => void, 
+        cancelGeneration: () => void
+    ): void {
+        const createBtn = container?.querySelector('#create-planet-btn');
+        const closeBtn = container?.querySelector('.close');
+        const cancelBtn = container?.querySelector('#cancel-planet-btn');
+
+        if(createBtn) {
+            createBtn.addEventListener('click', () => generate());
+        }
+        if(closeBtn) {
+            closeBtn.addEventListener('click', () => cancelGeneration());
+        }
+        if(cancelBtn) {
+            cancelBtn.addEventListener('click', () => cancelGeneration());
+        }
+    }
 }

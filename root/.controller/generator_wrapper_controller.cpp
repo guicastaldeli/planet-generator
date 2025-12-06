@@ -79,8 +79,6 @@ extern "C" {
      * Update Preview
      */
     void updatePreviewPlanet(const char* data) {
-        printf("=== DEBUG: updatePreviewPlanet called ===\n");
-    
         if(!g_generatorWrapperController) {
             printf("ERROR: g_generatorWrapperController is null!\n");
             return;
@@ -93,17 +91,10 @@ extern "C" {
             printf("ERROR: data string is empty!\n");
             return;
         }
-        
-        printf("Data string received (length: %zu): %s\n", strlen(data), data);
 
         try {
             std::string dataStr(data);
             auto planetData = DataParser::Parser::parse(dataStr);
-            
-            printf("Preview update received - shape: %s\n", 
-                planetData.hasKey("shape") ? planetData["shape"].asString().c_str() : "default");
-            printf("Preview update - size: %.2f\n", 
-                planetData.hasKey("size") ? planetData["size"].asFloat() : 1.0f);
 
             PlanetData previewPlanet;
             previewPlanet.id = -1;
@@ -114,7 +105,6 @@ extern "C" {
 
             if(planetData.hasKey("shape")) {
                 std::string shape = planetData["shape"].asString();
-                printf("Converting shape: %s\n", shape.c_str());
                 previewPlanet.shape = g_generatorWrapperController->
                     bufferController->
                     bufferGenerator->shapeToBufferType(shape);
@@ -157,9 +147,6 @@ extern "C" {
             g_generatorWrapperController->
                 bufferController->
                 previewController->updatePreview(previewPlanet);
-                
-            printf("Preview update call completed\n");
-            
         } catch(const std::exception& err) {
             printf("Error updating preview planet: %s\n", err.what());
         }

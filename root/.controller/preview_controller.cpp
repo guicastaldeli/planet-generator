@@ -58,9 +58,7 @@ void PreviewController::exitPreview() {
 ** Start Generator Preview
 */
 void PreviewController::startGeneratorPreview() {
-    if(isGeneratorActive && isPreviewing) {
-        cleanupPreview();
-    }
+    
     
     isGeneratorActive = true;
     isPreviewing = true;

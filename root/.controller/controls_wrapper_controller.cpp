@@ -91,6 +91,13 @@ extern "C" {
      */
     void onExportPreset() {
         std::cout << "Export button clicked from TypeScript!" << std::endl;
+        if(g_bufferController && g_bufferController->presetManager) {
+            PresetExporter* exporter = g_bufferController->presetManager->getPresetExporter();
+            if(exporter) {
+                PresetData currentPreset = g_bufferController->getCurrentPreset();
+                exporter->exportPreset(currentPreset);
+            }
+        }
     }
     
     /*

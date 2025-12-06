@@ -35,6 +35,7 @@ class Camera {
         glm::vec3 savedTarget;
         bool panningLocked;
         bool rotationLocked;
+        bool zoomLocked;
 
         bool isFollowingPlanet;
         int followingPlanetIndex;
@@ -45,6 +46,9 @@ class Camera {
         void rotate(float deltaX, float deltaY);
         void pan(float deltaX, float deltaY);
         void zoom(float delta);
+
+        void lockZoom(bool lock);
+        bool isZoomLocked() const;
         
         Camera(
             Main* main, 

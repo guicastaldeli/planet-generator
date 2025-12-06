@@ -1,3 +1,4 @@
+#pragma once
 #include "preset_loader.h"
 #include "preset_saver.h"
 #include "preset_reset.h"

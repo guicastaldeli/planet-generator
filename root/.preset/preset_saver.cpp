@@ -63,10 +63,26 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
         data.rotationSpeedCenter = value["rotationSpeedCenter"].asFloat();
 
         std::string shapeStr = value["shape"].asString();
-        bufferController->bufferGenerator->shapeToBufferType(shapeStr);
+        if(shapeStr == "SPHERE") {
+            data.shape = BufferData::Type::SPHERE;
+        } else if(shapeStr == "CUBE") {
+            data.shape = BufferData::Type::CUBE;
+        } else if(shapeStr == "TRIANGLE") {
+            data.shape = BufferData::Type::TRIANGLE;
+        } else {
+            data.shape = BufferData::Type::SPHERE;
+        }
 
         std::string rotationStr = value["rotationDir"].asString();
-        bufferController->bufferGenerator->rotationToBufferType(rotationStr);
+        if(rotationStr == "X") {
+            data.rotationDir = RotationAxis::X;
+        } else if(rotationStr == "Y") {
+            data.rotationDir = RotationAxis::Y;
+        } else if(rotationStr == "Z") {
+            data.rotationDir = RotationAxis::Z;
+        } else {
+            data.rotationDir = RotationAxis::Y;
+        }
 
         if(value.hasKey("currentRotation")) {
             const Value& rot = value["currentRotation"];

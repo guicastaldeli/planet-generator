@@ -13,6 +13,8 @@ class Buffers {
         ShaderController* shaderController;
         BufferController* bufferController;
 
+        bool isPreviewMode;
+
         std::unordered_map<BufferData::Type, GLuint> vaos;
         std::unordered_map<BufferData::Type, GLuint> vbos;
         std::unordered_map<BufferData::Type, GLuint> ebos;
@@ -40,6 +42,9 @@ class Buffers {
 
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
         void clearBuffers();
+
+        void setPreviewMode(bool preview);
+        bool isInPreviewMode() const;
 
         void render();
         void init();

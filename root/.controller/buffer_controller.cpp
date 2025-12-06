@@ -193,33 +193,30 @@ void BufferController::clearBuffers() {
 
 void BufferController::deleteSelectedPlanet() {
     if(selectedPlanetIndex == -1 || buffers->planetBuffers.empty()) {
-        std::cout << "No planet to delete" << std::endl;
         return;
     }
 
     if(selectedPlanetIndex < buffers->planetBuffers.size()) {
-        buffers->
-            planetBuffers.erase(
-                buffers->planetBuffers.begin() + 
-                selectedPlanetIndex
-            );
+        std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
+        buffers->planetBuffers.erase(
+            buffers->planetBuffers.begin() + selectedPlanetIndex
+        );
     }
-    if(
-        presetManager->getPresetLoader() && 
-        selectedPlanetIndex < presetManager->getPresetLoader()->getCurrentPreset().planets.size()
-    ) {
+    if(selectedPlanetIndex < currentPreset.planets.size()) {
+        std::string planetName = currentPreset.planets[selectedPlanetIndex].name;
+        currentPreset.planets.erase(
+            currentPreset.planets.begin() + selectedPlanetIndex
+        );
+    }
+    if(presetManager->getPresetLoader() && 
+       selectedPlanetIndex < presetManager->getPresetLoader()->getCurrentPreset().planets.size()) {
         presetManager->getPresetLoader()->getCurrentPreset().planets.erase(
             presetManager->getPresetLoader()->getCurrentPreset().planets.begin() + selectedPlanetIndex
         );
     }
-    if(
-        camera &&
-        camera->isFollowingPlanet &&
-        camera->followingPlanetIndex == selectedPlanetIndex
-    ) {
+    if(camera && camera->isFollowingPlanet && camera->followingPlanetIndex == selectedPlanetIndex) {
         camera->resetToSavedPos();
     }
-
     selectedPlanetIndex = -1;
     if(raycaster) {
         raycaster->selectedPlanetIndex = -1;
@@ -231,8 +228,6 @@ void BufferController::deleteSelectedPlanet() {
 ** Load Preset Data
 */
 void BufferController::loadPresetData(PresetData& preset) {
-    clearBuffers();
-
     currentPreset = preset;
     presetLoaded = true;
 

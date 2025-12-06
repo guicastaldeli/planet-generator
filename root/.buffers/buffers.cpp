@@ -14,7 +14,8 @@ Buffers::Buffers(
 ) :
     camera(camera),
     shaderController(shaderController),
-    bufferController(bufferController)
+    bufferController(bufferController),
+    isPreviewMode(false)
 {}
 Buffers::~Buffers() {
     for(auto& [type, v] : vaos) {
@@ -81,45 +82,47 @@ void Buffers::createBufferForPlanet(const PlanetBuffer& planetBuffer) {
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
     
-    for(auto& planetBuffer : planetBuffers) {
-        auto it = vaos.find(planetBuffer.data.shape);
-        if(it == vaos.end()) continue;
-
-        glBindVertexArray(it->second);
-
-        static float previewRotation = 0.0f;
-        previewRotation += 0.5f;
-
-        float orbitRadius = planetBuffer.data.distanceFromCenter;
-        float orbitAngle = planetBuffer.data.orbitAngle.y;
-        planetBuffer.worldPos = glm::vec3(
-            orbitRadius * cos(glm::radians(orbitAngle)),
-            0.0f,
-            orbitRadius * sin(glm::radians(orbitAngle))
-        );
-
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, planetBuffer.worldPos);
-        model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(planetBuffer.data.size));
-
-        unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        
-        int isThisPlanetHovered = (
-            bufferController->raycaster->selectedPlanetIndex == &planetBuffer - &planetBuffers[0]
-        ) ? 1 : 0;
-        GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
-        if(hoverLoc != -1) {
-            glUniform1f(hoverLoc, (float)isThisPlanetHovered);
+    if(!isPreviewMode) {
+        for(auto& planetBuffer : planetBuffers) {
+            auto it = vaos.find(planetBuffer.data.shape);
+            if(it == vaos.end()) continue;
+    
+            glBindVertexArray(it->second);
+    
+            static float previewRotation = 0.0f;
+            previewRotation += 0.5f;
+    
+            float orbitRadius = planetBuffer.data.distanceFromCenter;
+            float orbitAngle = planetBuffer.data.orbitAngle.y;
+            planetBuffer.worldPos = glm::vec3(
+                orbitRadius * cos(glm::radians(orbitAngle)),
+                0.0f,
+                orbitRadius * sin(glm::radians(orbitAngle))
+            );
+    
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, planetBuffer.worldPos);
+            model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(planetBuffer.data.size));
+    
+            unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            
+            int isThisPlanetHovered = (
+                bufferController->raycaster->selectedPlanetIndex == &planetBuffer - &planetBuffers[0]
+            ) ? 1 : 0;
+            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
+            if(hoverLoc != -1) {
+                glUniform1f(hoverLoc, (float)isThisPlanetHovered);
+            }
+    
+            glDrawElements(
+                GL_TRIANGLES,
+                indexCounts[planetBuffer.data.shape],
+                GL_UNSIGNED_INT,
+                0
+            );
         }
-
-        glDrawElements(
-            GL_TRIANGLES,
-            indexCounts[planetBuffer.data.shape],
-            GL_UNSIGNED_INT,
-            0
-        );
     }
     if(!previewPlanet.data.name.empty()) {
         auto it = vaos.find(previewPlanet.data.shape);
@@ -134,8 +137,8 @@ void Buffers::render() {
             cameraForward.y = sin(glm::radians(camera->pitch));
             cameraForward.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
             cameraForward = glm::normalize(cameraForward);
+            glm::vec3 previewPosition = camera->position + cameraForward;
 
-            glm::vec3 previewPosition = camera->position + cameraForward * 11.0f;
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, previewPosition);
             if(previewPlanet.data.rotationDir == RotationAxis::X) {
@@ -197,6 +200,14 @@ void Buffers::cleanupPreviewPlanet() {
 
 void Buffers::clearBuffers() {
     planetBuffers.clear();
+}
+
+void Buffers::setPreviewMode(bool preview) {
+    isPreviewMode = preview;
+}
+
+bool Buffers::isInPreviewMode() const {
+    return isPreviewMode;
 }
 
 /*

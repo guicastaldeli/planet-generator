@@ -1,13 +1,14 @@
 #include "camera.h"
 #include "main.h"
 #include ".buffers/buffers.h"
+#include ".controller/buffer_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include ".controller/buffer_controller.h"
+#include <iostream>
 
 Camera::Camera(
     Main* main, 
@@ -34,6 +35,7 @@ Camera::Camera(
     zoomSpeed(0.1f),
     panningLocked(false),
     rotationLocked(false),
+    zoomLocked(false),
     savedPosition(0.0f, 0.0f, 3.0f),
     savedTarget(0.0f, 0.0f, 0.0f),
     isFollowingPlanet(false),
@@ -129,6 +131,8 @@ void Camera::saveCurrentPosBefore() {
 ** Zoom
 */
 void Camera::zoom(float delta) {
+    if(zoomLocked) return;
+    
     float prevZoomLevel = zoomLevel;
     zoomLevel += delta * zoomSpeed;
     if(zoomLevel < 1.0f) zoomLevel = 1.0f;
@@ -142,6 +146,14 @@ void Camera::zoom(float delta) {
     }
 }
 
+void Camera::lockZoom(bool lock) {
+    zoomLocked = lock;
+}
+
+bool Camera::isZoomLocked() const {
+    return zoomLocked;
+}
+
 void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
     if(panningLocked) saveCurrentPos();
     target = planetPosition;
@@ -152,7 +164,7 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
     }
 
     float baseDistance = planetSize * 3.0f;
-    float distance = baseDistance * (45.0f / zoomLevel);
+    float distance = baseDistance;
     glm::vec3 directionToPlanet = glm::normalize(planetPosition - position);
     followingPlanetOffset = -directionToPlanet * distance;
     position = planetPosition + followingPlanetOffset;

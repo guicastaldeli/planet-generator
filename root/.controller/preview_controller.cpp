@@ -21,6 +21,7 @@ void PreviewController::lockCamera() {
     if(camera) {
         camera->lockPanning(true);
         camera->lockRotation(true);
+        camera->lockZoom(true);
     }
 }
 
@@ -28,6 +29,7 @@ void PreviewController::unlockCamera() {
     if(camera) {
         camera->lockPanning(false);
         camera->lockRotation(false);
+        camera->lockZoom(false);
     }
 }
 
@@ -38,10 +40,8 @@ void PreviewController::preview() {
     isGeneratorActive = true;
     isPreviewing = true;
     if(isPreviewing && isGeneratorActive) {
+        camera->saveCurrentPosBefore();
         lockCamera();
-        camera->setPosition(0.0f, 0.0f, 2.0f, false);
-        camera->target = glm::vec3(10.0f, 0.0f, -60.0f);
-        camera->updateVectors();
     }
 }
 
@@ -58,8 +58,6 @@ void PreviewController::exitPreview() {
 ** Start Generator Preview
 */
 void PreviewController::startGeneratorPreview() {
-    
-    
     isGeneratorActive = true;
     isPreviewing = true;
 
@@ -88,6 +86,7 @@ void PreviewController::startGeneratorPreview() {
 
     if(bufferController && bufferController->buffers) {
         bufferController->buffers->setupPreviewPlanet(previewData);
+        bufferController->buffers->setPreviewMode(true);
     }
 }
 
@@ -111,13 +110,14 @@ void PreviewController::updatePreview(const PlanetData& data) {
 void PreviewController::cleanupPreview() {
     if(camera) {
         camera->resetToSavedPos();
-        camera->releaseCamera();
+        unlockCamera();
     }
     if(isPreviewing) {
         exitPreview();
     }
     if(bufferController && bufferController->buffers) {
         bufferController->buffers->cleanupPreviewPlanet();
+        bufferController->buffers->setPreviewMode(false);
     }
 
     isGeneratorActive = false;

@@ -1,4 +1,3 @@
-#pragma once
 #include "preset_loader.h"
 #include "preset_data.h"
 #include "../_data/data_parser.h"

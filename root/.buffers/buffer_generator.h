@@ -46,8 +46,8 @@ class BufferGenerator {
 
         BufferData::Type shapeToBufferType(const std::string& name);
         RotationAxis rotationToBufferType(const std::string& axis);
-        std::string BufferGenerator::shapeToString(BufferData::Type type);
-        std::string BufferGenerator::rotationToString(RotationAxis axis);
+        std::string shapeToString(BufferData::Type type);
+        std::string rotationToString(RotationAxis axis);
 };
 
 #ifdef __cplusplus

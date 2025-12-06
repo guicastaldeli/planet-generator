@@ -34,6 +34,41 @@ void ShaderLoader::onDataLoaded() {
                 EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
                 EM_ASM({ console.groupEnd() });
                 break;
+            case COLOR:
+                EM_ASM({ console.groupCollapsed("Color Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case TEXTURE:
+                EM_ASM({ console.groupCollapsed("Texture Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case AMBIENT_LIGHT:
+                EM_ASM({ console.groupCollapsed("Ambient Light Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case POINT_LIGHT:
+                EM_ASM({ console.groupCollapsed("Point Light Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case SKYBOX:
+                EM_ASM({ console.groupCollapsed("Skybox Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case FRESNEL:
+                EM_ASM({ console.groupCollapsed("Fresnel Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
+            case NOISE:
+                EM_ASM({ console.groupCollapsed("Noise Shader") });
+                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
+                EM_ASM({ console.groupEnd() });
+                break;
         }
     }
     if(dataCallback) {
@@ -41,8 +76,8 @@ void ShaderLoader::onDataLoaded() {
         dataCallback = nullptr;
         callback();
     }
-
 }
+
 void ShaderLoader::setCallback(std::function<void()> callback) {
     dataCallback = callback;
 }
@@ -74,8 +109,10 @@ void ShaderLoader::load() {
     loadedData.clear();
     request.clear();
 
-    addUrl("_shaders/frag.glsl", FRAG);
-    addUrl("_shaders/vertex.glsl", VERTEX);
+    for(const auto& file : files) {
+        std::string path = "_shaders/" + file.fileName;
+        addUrl(path, file.type);
+    }
     pendingLoads = request.size();
     printf("\nStarting to load %d shaders...\n", pendingLoads);
 

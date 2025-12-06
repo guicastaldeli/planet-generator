@@ -5,7 +5,14 @@
 
 enum Type {
     VERTEX,
-    FRAG
+    FRAG,
+    COLOR,
+    TEXTURE,
+    AMBIENT_LIGHT,
+    POINT_LIGHT,
+    SKYBOX,
+    FRESNEL,
+    NOISE
 };
 
 struct Request {
@@ -13,9 +20,25 @@ struct Request {
     Type type;
 };
 
+struct File {
+    std::string fileName;
+    Type type;
+};
+
 class ShaderController;
 class ShaderLoader {
     private:
+        std::vector<File> files = {
+            { "vertex.glsl", VERTEX },
+            { "frag.glsl", FRAG },
+            { "color.glsl", COLOR} ,
+            { "texture.glsl", TEXTURE },
+            { "ambient_light.glsl", AMBIENT_LIGHT },
+            { "point_light.glsl", POINT_LIGHT },
+            { "skybox.glsl", SKYBOX },
+            { "fresnel.glsl", FRESNEL },
+            { "noise.glsl", NOISE }
+        };
         static std::unordered_map<Type, std::string> loadedData;
         static std::vector<Request> request;
         static std::function<void()> dataCallback;

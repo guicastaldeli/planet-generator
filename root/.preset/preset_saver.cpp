@@ -178,7 +178,6 @@ bool PresetSaver::saveToLocalStorage(PresetData& preset) {
             const dataStr = UTF8ToString($1);
             localStorage.setItem(key, dataStr);
             console.log('Preset saved to localStorage with key:', key);
-            console.log('JSON saved:', dataStr);
             return 1;
         } catch(err) {
             console.error('Error saving to local storage', err);

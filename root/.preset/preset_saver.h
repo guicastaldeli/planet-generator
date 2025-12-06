@@ -3,9 +3,12 @@
 #include "../_data/data_parser.h"
 
 class BufferController;
+class PresetManager;
 class PresetSaver {
     private:
         BufferController* bufferController;
+        PresetManager* presetManager;
+        
         const std::string key = "savedPreset";
 
         DataParser::Value presetToVal(PresetData& preset);
@@ -14,7 +17,7 @@ class PresetSaver {
         bool valueToPlanet(const DataParser::Value& val, PlanetData& planet);
 
     public:
-        PresetSaver(BufferController* bufferController);
+        PresetSaver(BufferController* bufferController, PresetManager* presetManager);
         ~PresetSaver();
 
         bool saveToLocalStorage(PresetData& preset);
@@ -24,4 +27,7 @@ class PresetSaver {
 
         std::string presetToJson(PresetData& preset);
         bool jsonToPreset(const std::string& data, PresetData& preset);
+
+        bool save();
+        bool load();
 };

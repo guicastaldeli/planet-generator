@@ -52,6 +52,10 @@ void BufferController::init() {
     initPreviewController();
 }
 
+PresetData BufferController::getCurrentPreset() const {
+    return currentPreset;
+}
+
 /*
 ** Update Planet Positions
 */
@@ -220,6 +224,33 @@ void BufferController::deleteSelectedPlanet() {
     if(raycaster) {
         raycaster->selectedPlanetIndex = -1;
         raycaster->setIsIntersecting(false);
+    }
+}
+
+/*
+** Load Preset Data
+*/
+void BufferController::loadPresetData(PresetData& preset) {
+    clearBuffers();
+
+    currentPreset = preset;
+    presetLoaded = true;
+
+    std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
+    buffers->planetBuffers.clear();
+    for(auto& planetBuffer : newPlanetBuffers) {
+        float orbitRadius = planetBuffer.data.distanceFromCenter;
+        float initialAngle = planetBuffer.data.orbitAngle.y;
+        
+        glm::vec3 planetPosition(
+            orbitRadius * cos(glm::radians(initialAngle)),
+            0.0f,
+            orbitRadius * sin(glm::radians(initialAngle))
+        );
+        planetBuffer.worldPos = planetPosition;
+        planetBuffer.isPreview = false;
+        buffers->createBufferForPlanet(planetBuffer);
+        buffers->planetBuffers.push_back(std::move(planetBuffer));
     }
 }
 

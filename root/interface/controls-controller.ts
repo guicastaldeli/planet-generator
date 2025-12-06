@@ -9,6 +9,7 @@ export class ControlsController {
 
     private onControlsMenuClick?: () => void;
     private onCustomPresetClick?: () => void;
+    private onSavePresetClick?: () => void;
     private onImportPresetClick?: () => void;
     private onExportPresetClick?: () => void;
     private onResetToDefaultClick?: () => void;
@@ -75,6 +76,12 @@ export class ControlsController {
                 this.emscriptenModule._showGenerator();
             }
         );
+        container.querySelector('#control--actn-save')
+            ?.addEventListener('click', () => {
+                this.onSavePresetClick?.();
+                this.emscriptenModule._onSavePreset();
+            }
+        );
         container.querySelector('#control--actn-import')
             ?.addEventListener('click', () => {
                 this.onImportPresetClick?.();
@@ -126,6 +133,10 @@ export class ControlsController {
         this.onCustomPresetClick = cb;
     }
 
+    public onSave(cb: () => void): void {
+        this.onSavePresetClick = cb;
+    }
+
     public onImport(cb: () => void): void {
         this.onImportPresetClick = cb;
     }
@@ -148,6 +159,9 @@ export class ControlsController {
         });
         this.onCustom(() => {
             this.emscriptenModule._onCustomPreset();
+        });
+        this.onSave(() => {
+            this.emscriptenModule._onSavePreset();
         });
         this.onImport(() => {
             this.emscriptenModule._onImportPreset();

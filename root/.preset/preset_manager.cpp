@@ -4,7 +4,7 @@ PresetManager::PresetManager(BufferController* bufferController) :
     bufferController(bufferController)
 {
     presetLoader = new PresetLoader(this);
-    presetSaver = new PresetSaver(bufferController);
+    presetSaver = new PresetSaver(bufferController, this);
     presetImporter = new PresetImporter();
     presetExporter = new PresetExporter();
     presetReset = new PresetReset(bufferController);

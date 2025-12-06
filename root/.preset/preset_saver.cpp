@@ -1,12 +1,15 @@
 #include "preset_saver.h"
 #include "../.controller/buffer_controller.h"
+#include "preset_manager.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <iostream>
 #include <sstream>
 
-PresetSaver::PresetSaver(BufferController* bufferController) :
-    bufferController(bufferController) 
+PresetSaver::PresetSaver(BufferController* bufferController, PresetManager* presetManager) :
+    bufferController(bufferController),
+    presetManager(presetManager),
+    key("savedPreset")
 {};
 PresetSaver::~PresetSaver() {};
 
@@ -156,7 +159,7 @@ bool PresetSaver::saveToLocalStorage(PresetData& preset) {
     bool success = EM_ASM_INT({
         try {
             const key = UTF8ToString($0);
-            const dataStr = UTF8ToString($0);
+            const dataStr = UTF8ToString($1);
             localStorage.setItem(key, dataStr);
             console.log('Preset saved to localStorage with key:', key);
             console.log('JSON saved:', dataStr);
@@ -176,11 +179,11 @@ bool PresetSaver::loadFromLocalStorage(PresetData& preset) {
     char* str = (char*)EM_ASM_INT({
         try {
             const key = UTF8ToString($0);
-            const data = UTF8ToString($0);
+            const data = localStorage.getItem(key);
             if(data) {
                 console.log('Found preset in localstorage with key: ', key);
                 var lengthBytes = lengthBytesUTF8(data) + 1;
-                var strPtr= _malloc(lengthBytes);
+                var strPtr = _malloc(lengthBytes);
                 stringToUTF8(data, strPtr, lengthBytes);
                 return strPtr;
             } else {
@@ -221,4 +224,52 @@ void PresetSaver::clearLocalStorage() {
             console.error('Error clearing localStorage:', err);
         }
     }, key.c_str());
+}
+
+/*
+**
+*** Save
+**
+*/
+bool PresetSaver::save() {
+    if(!bufferController) {
+        std::cerr << "No bufferController!, ERR. **save" << std::endl;
+        return false;
+    }
+
+    PresetData currentPreset = bufferController->getCurrentPreset();
+    if (currentPreset.planets.empty()) {
+        std::cerr << "Cannot save: preset has no planets" << std::endl;
+        return false;
+    }
+
+    bool success = saveToLocalStorage(bufferController->currentPreset);
+    if (success) {
+        std::cout << "Preset saved to localStorage successfully!" << std::endl;
+    } else {
+        std::cerr << "Failed to save preset to localStorage" << std::endl;
+    }
+
+    return success;
+}
+
+/*
+**
+*** Save
+**
+*/
+bool PresetSaver::load() {
+     if (!bufferController) {
+        std::cerr << "No bufferController!, ERR. **load" << std::endl;
+        return false;
+    }
+
+    PresetData loadedPreset;
+    if(loadFromLocalStorage(loadedPreset)) {
+        presetManager->getPresetLoader()->setCurrentPreset(loadedPreset);
+        bufferController->loadPresetData(loadedPreset);
+        return true;
+    }
+
+    return false;
 }

@@ -55,6 +55,29 @@ extern "C" {
             })();
         });
     }
+
+    /*
+     * Save Preset
+     */
+    void onSavePreset() {
+        std::cout << "Save button clicked from TypeScript!" << std::endl;
+        if(g_bufferController) {
+            if(g_bufferController->
+                presetManager->
+                getPresetSaver()->
+                save()
+            ) {
+                std::cout << "Preset saved!" << std::endl;
+                EM_ASM({
+                    if(typeof window.onSave === 'function') {
+                        window.onSave()
+                    }
+                });
+            } else {
+                std::cout << "Failed to save preset!" << std::endl;
+            }
+        }
+    }
     
     /*
      * Import Preset

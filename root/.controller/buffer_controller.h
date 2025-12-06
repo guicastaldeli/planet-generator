@@ -44,6 +44,7 @@ class BufferController {
         void render(float deltaTime);
 
         void clearBuffers();
+        void loadPresetData(PresetData& preset);
         void updatePlanetPositions();
         int checkPlanetIntersections(double mosueX, double mouseY);
         void handleRaycasterRender(double mouseX, double mouseY);
@@ -52,4 +53,5 @@ class BufferController {
         const PlanetBuffer* getSelectedPlanet() const;
         int getSelectedPlanetIndex() const;
         void deleteSelectedPlanet();
+        PresetData getCurrentPreset() const;
 };

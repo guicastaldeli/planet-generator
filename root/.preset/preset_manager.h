@@ -1,5 +1,5 @@
 #include "preset_loader.h"
-#include "preset_save.h"
+#include "preset_saver.h"
 #include "preset_reset.h"
 #include "preset_importer.h"
 #include "preset_exporter.h"
@@ -10,7 +10,7 @@ class PresetManager {
         BufferController* bufferController;
         
         PresetLoader* presetLoader;
-        PresetSave* presetSave;
+        PresetSaver* presetSaver;
         PresetImporter* presetImporter;
         PresetExporter* presetExporter;
         PresetReset* presetReset;
@@ -22,7 +22,7 @@ class PresetManager {
         ~PresetManager();
 
         PresetLoader* getPresetLoader();
-        PresetSave* getPresetSave();
+        PresetSaver* getPresetSaver();
         PresetImporter* getPresetImporter();
         PresetExporter* getPresetExporter();
         PresetReset* getPresetReset();

@@ -1,12 +1,16 @@
+#pragma once
 #include "preset_loader.h"
 #include "preset_data.h"
 #include "../_data/data_parser.h"
+#include "preset_manager.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 
-PresetLoader::PresetLoader() {};
+PresetLoader::PresetLoader(PresetManager* presetManager) :
+    presetManager(presetManager) 
+{};
 PresetLoader::~PresetLoader() {};
 
 /*
@@ -110,6 +114,21 @@ bool PresetLoader::loadPreset(const std::string& path) {
 }
 
 bool PresetLoader::loadDefaultPreset() {
+    if(presetManager->getPresetSaver()->hasSavedPreset()) {
+        std::cout << "Attempting to load preset from localStorage..." << std::endl;
+        PresetData localStorageData;
+        if(presetManager->getPresetSaver()->loadFromLocalStorage(localStorageData)) {
+            std::cout << "Successfully loaded preset from localStorage!" << std::endl;
+            currentPreset = localStorageData;
+            return true;
+        } else {
+            std::cout << "Failed to load from localStorage, falling back to file" << std::endl;
+        }
+    } else {
+        std::cout << "No saved preset in localStorage" << std::endl;
+    }
+
+    std::cout << "Loading default preset from file: " << defaultPresetPath << std::endl;
     return loadPreset(defaultPresetPath);
 }
 

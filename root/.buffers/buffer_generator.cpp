@@ -90,6 +90,35 @@ RotationAxis BufferGenerator::rotationToBufferType(const std::string& axis) {
 }
 
 /*
+** Shape to String
+*/
+std::string BufferGenerator::shapeToString(BufferData::Type type) {
+    static const std::unordered_map<BufferData::Type, std::string> map = {
+        { BufferData::Type::SPHERE, "SPHERE" },
+        { BufferData::Type::CUBE, "CUBE", },
+        { BufferData::Type::TRIANGLE, "TRIANGLE" }
+    };
+
+    auto it = map.find(type);
+    return it != map.end() ? it->second : "SPHERE";
+}
+
+/*
+** Rotation
+*/
+std::string BufferGenerator::rotationToString(RotationAxis axis) {
+    static const std::unordered_map<RotationAxis, std::string> map = {
+        { RotationAxis::X, "X" },
+        { RotationAxis::Y, "Y" },
+        { RotationAxis::Z, "Z" }
+    };
+
+    auto it = map.find(axis);
+    return it != map.end() ? it->second : "Y";
+}
+
+
+/*
 ** Calculate Distance from Pos
 */
 float BufferGenerator::calculateDistanceFromPosition(int position) {

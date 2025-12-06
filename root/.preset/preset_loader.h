@@ -1,13 +1,15 @@
 #pragma once
 #include "preset_data.h"
 
+class PresetManager;
 class PresetLoader {
     private:
+        PresetManager* presetManager;
         std::string defaultPresetPath;
         PresetData currentPreset;
 
     public:
-        PresetLoader();
+        PresetLoader(PresetManager* presetManager);
         ~PresetLoader();
 
         void setPath(std::string& path);

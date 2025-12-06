@@ -3,8 +3,8 @@
 PresetManager::PresetManager(BufferController* bufferController) :
     bufferController(bufferController)
 {
-    presetLoader = new PresetLoader();
-    presetSave = new PresetSave();
+    presetLoader = new PresetLoader(this);
+    presetSaver = new PresetSaver(bufferController);
     presetImporter = new PresetImporter();
     presetExporter = new PresetExporter();
     presetReset = new PresetReset(bufferController);
@@ -21,8 +21,8 @@ PresetLoader* PresetManager::getPresetLoader() {
 /*
 ** Preset Save
 */
-PresetSave* PresetManager::getPresetSave() {
-    return presetSave;
+PresetSaver* PresetManager::getPresetSaver() {
+    return presetSaver;
 }
 
 /*

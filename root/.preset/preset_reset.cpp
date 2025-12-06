@@ -19,8 +19,8 @@ void PresetReset::resetToDefault() {
         bufferController->
             presetManager->
             getPresetLoader()-> 
-            loadDefaultPreset()
-        ) {
+            loadDefaultPresetFile()
+    ) {
         bufferController->currentPreset = bufferController->
             presetManager->
             getPresetLoader()-> 
@@ -47,6 +47,7 @@ void PresetReset::resetToDefault() {
             bufferController->buffers->planetBuffers.push_back(std::move(planetBuffer));
         }
         std::cout << "Reseted to default!" << std::endl;
+        bufferController->presetManager->getPresetSaver()->save();
     } else {
         std::cout << "Failed to reset!" << std::endl;
     }

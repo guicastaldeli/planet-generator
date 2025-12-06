@@ -272,6 +272,7 @@ extern "C" {
             }
 
             preset.planets.push_back(newPlanet);
+            g_generatorWrapperController->bufferController->currentPreset.planets.push_back(newPlanet);
             auto newPlanetBuffers = g_generatorWrapperController->
                 bufferController->
                 bufferGenerator->generateFromPreset(preset);

@@ -131,6 +131,11 @@ bool PresetLoader::loadDefaultPreset() {
     return loadPreset(defaultPresetPath);
 }
 
+
+bool PresetLoader::loadDefaultPresetFile() {
+    return loadPreset(defaultPresetPath);
+}
+
 /*
 ** Validate Preset
 */

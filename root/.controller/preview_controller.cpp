@@ -8,9 +8,7 @@ PreviewController::PreviewController(BufferController* bufferController, Camera*
     isPreviewing(false),
     isGeneratorActive(false)
 {};
-PreviewController::~PreviewController() {
-    cleanupPreview();
-};
+PreviewController::~PreviewController() {};
 
 /*
  *
@@ -108,6 +106,8 @@ void PreviewController::updatePreview(const PlanetData& data) {
 ** Cleanup Preview
 */
 void PreviewController::cleanupPreview() {
+    if(!isPreviewing && !isGeneratorActive) return;
+
     if(camera) {
         camera->resetToSavedPos();
         unlockCamera();

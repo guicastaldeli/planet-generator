@@ -137,6 +137,7 @@ void Buffers::render() {
             cameraForward.y = sin(glm::radians(camera->pitch));
             cameraForward.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
             cameraForward = glm::normalize(cameraForward);
+
             glm::vec3 previewPosition = camera->position + cameraForward;
 
             glm::mat4 model = glm::mat4(1.0f);

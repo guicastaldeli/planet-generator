@@ -6,10 +6,15 @@
 #include <sstream>
 #include <algorithm>
 
-PresetLoader::PresetLoader(const std::string& path) :
-    defaultPresetPath(path) 
-{};
+PresetLoader::PresetLoader() {};
 PresetLoader::~PresetLoader() {};
+
+/*
+** Set Path
+*/
+void PresetLoader::setPath(std::string& path) {
+    defaultPresetPath = path;
+}
 
 /*
 ** Parse

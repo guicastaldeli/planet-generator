@@ -1,5 +1,5 @@
 #pragma once
-#include "../.preset/preset_loader.h"
+#include "../.preset/preset_manager.h"
 #include "../.buffers/buffer_generator.h"
 #include "../camera.h"
 #include "../shader_loader.h"
@@ -8,7 +8,7 @@
 
 class PreviewController;
 class BufferController {
-    private:
+    public:
         Main* main;
         ShaderLoader* shaderLoader;
         std::vector<PlanetBuffer> planetBuffers;
@@ -19,7 +19,6 @@ class BufferController {
         int selectedPlanetIndex;
         bool presetLoaded;
         
-    public:
         BufferController(
             Main* main, 
             Camera* Camera, 
@@ -31,11 +30,12 @@ class BufferController {
         Camera* camera;
         Raycaster* raycaster;
         BufferGenerator* bufferGenerator;
-        PresetLoader* presetLoader;
+        PresetManager* presetManager;
         PreviewController* previewController;
 
         void initBuffers();
-        void initPresetLoader();
+        void initPresetManager();
+        void setPresetPath();
         void initGenerator();
         void initPreviewController();
 
@@ -48,6 +48,7 @@ class BufferController {
         int checkPlanetIntersections(double mosueX, double mouseY);
         void handleRaycasterRender(double mouseX, double mouseY);
         void handleRaycasterClick(double mouseX, double mouseY);
+
         const PlanetBuffer* getSelectedPlanet() const;
         int getSelectedPlanetIndex() const;
         void deleteSelectedPlanet();

@@ -75,6 +75,12 @@ extern "C" {
      */
     void onResetToDefault() {
         std::cout << "Reset button clicked from TypeScript!" << std::endl;
+        if(g_bufferController) {
+            g_bufferController->
+                presetManager->
+                getPresetReset()->
+                resetToDefault();
+        }
     }
 
     /*

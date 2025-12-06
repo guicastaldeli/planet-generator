@@ -104,7 +104,9 @@ void Main::init() {
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);
         generatorWrapperController = new GeneratorWrapperController(
-            bufferController->presetLoader,
+            bufferController->
+                presetManager->
+                getPresetLoader(),
             bufferController
         );
     });

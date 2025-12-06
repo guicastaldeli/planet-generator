@@ -3,13 +3,14 @@
 
 class PresetLoader {
     private:
-        const std::string defaultPresetPath;
+        std::string defaultPresetPath;
         PresetData currentPreset;
 
     public:
-        PresetLoader(const std::string& defaultPresetPath);
+        PresetLoader();
         ~PresetLoader();
 
+        void setPath(std::string& path);
         bool parse(const std::string& data);
         bool loadPreset(const std::string& filePath);
         bool loadDefaultPreset();

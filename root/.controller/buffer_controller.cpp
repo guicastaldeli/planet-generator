@@ -12,7 +12,7 @@ BufferController::BufferController(
     camera(camera),
     shaderLoader(shaderLoader),
     bufferGenerator(nullptr),
-    presetLoader(nullptr),
+    presetManager(nullptr),
     buffers(nullptr),
     raycaster(nullptr),
     selectedPlanetIndex(-1),
@@ -28,9 +28,8 @@ void BufferController::initBuffers() {
     buffers->init();
 }
 
-void BufferController::initPresetLoader() {
-    std::string path = "/_data/default-preset.json";
-    presetLoader = new PresetLoader(path);
+void BufferController::initPresetManager() {
+    presetManager = new PresetManager(this);
 }
 
 void BufferController::initGenerator() {
@@ -41,8 +40,14 @@ void BufferController::initPreviewController() {
     previewController = new PreviewController(this, camera);
 }
 
+void BufferController::setPresetPath() {
+    std::string path = "/_data/default-preset.json";
+    presetManager->getPresetLoader()->setPath(path);
+}
+
 void BufferController::init() {
-    initPresetLoader();
+    initPresetManager();
+    setPresetPath();
     initGenerator();
     initPreviewController();
 }
@@ -170,9 +175,9 @@ void BufferController::setCamera(Camera* cam) {
 
 void BufferController::clearBuffers() {
     if(buffers) buffers->clearBuffers();
-    if(presetLoader) {
-        presetLoader->getCurrentPreset().planets.clear();
-        currentPreset = presetLoader->getCurrentPreset();
+    if(presetManager->getPresetLoader()) {
+        presetManager->getPresetLoader()->getCurrentPreset().planets.clear();
+        currentPreset = presetManager->getPresetLoader()->getCurrentPreset();
     }
 
     selectedPlanetIndex = -1;
@@ -196,11 +201,11 @@ void BufferController::deleteSelectedPlanet() {
             );
     }
     if(
-        presetLoader && 
-        selectedPlanetIndex < presetLoader->getCurrentPreset().planets.size()
+        presetManager->getPresetLoader() && 
+        selectedPlanetIndex < presetManager->getPresetLoader()->getCurrentPreset().planets.size()
     ) {
-        presetLoader->getCurrentPreset().planets.erase(
-            presetLoader->getCurrentPreset().planets.begin() + selectedPlanetIndex
+        presetManager->getPresetLoader()->getCurrentPreset().planets.erase(
+            presetManager->getPresetLoader()->getCurrentPreset().planets.begin() + selectedPlanetIndex
         );
     }
     if(
@@ -223,8 +228,8 @@ void BufferController::deleteSelectedPlanet() {
 */
 void BufferController::render(float deltaTime) {
     if(!presetLoaded) {
-        if(presetLoader->loadDefaultPreset()) {
-            currentPreset = presetLoader->getCurrentPreset();
+        if(presetManager->getPresetLoader()->loadDefaultPreset()) {
+            currentPreset = presetManager->getPresetLoader()->getCurrentPreset();
             presetLoaded = true;
 
             std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);

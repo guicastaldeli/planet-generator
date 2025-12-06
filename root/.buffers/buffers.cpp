@@ -124,7 +124,7 @@ void Buffers::render() {
             );
         }
     }
-    if(!previewPlanet.data.name.empty()) {
+     if(!previewPlanet.data.name.empty()) {
         auto it = vaos.find(previewPlanet.data.shape);
         if(it != vaos.end()) {
             glBindVertexArray(it->second);
@@ -132,15 +132,23 @@ void Buffers::render() {
             static float previewRotation = 0.0f;
             previewRotation += 0.5f;
 
-            glm::vec3 cameraForward;
-            cameraForward.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
-            cameraForward.y = sin(glm::radians(camera->pitch));
-            cameraForward.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
-            cameraForward = glm::normalize(cameraForward);
-            glm::vec3 previewPosition = camera->position + cameraForward;
+            float screenX = 0.7f;
+            float screenY = 0.0f;
+            int screenWidth = camera->main->width;
+            int screenHeight = camera->main->height;
+            glUseProgram(shaderController->shaderProgram);
+
+            glm::mat4 view = glm::lookAt(
+                glm::vec3(0.0f, 0.0f, 5.0f),
+                glm::vec3(0.0f, 0.0f, 0.0f),
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+            unsigned int viewLoc = glGetUniformLocation(shaderController->shaderProgram, "view");
+            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, previewPosition);
+            model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
+            
             if(previewPlanet.data.rotationDir == RotationAxis::X) {
                 model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
             } else if(previewPlanet.data.rotationDir == RotationAxis::Y) {
@@ -148,8 +156,8 @@ void Buffers::render() {
             } else if(previewPlanet.data.rotationDir == RotationAxis::Z) {
                 model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
             }
+            
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
-
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
@@ -164,6 +172,10 @@ void Buffers::render() {
                 GL_UNSIGNED_INT,
                 0
             );
+            
+            if(!isPreviewMode) {
+                camera->set();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include "buffer_data.h"
 
 class Main;
 class Camera;
@@ -15,12 +16,6 @@ class Raycaster {
         bool isIntersecting;
 
         std::unordered_map<int, bool> planetIntersections;
-
-        bool aabb(
-            glm::vec3 rayWorldDir,
-            const glm::vec3& planetPosition,
-            float planetSize
-        );
 
     public:
         Raycaster(
@@ -38,7 +33,8 @@ class Raycaster {
             double y,
             const glm::vec3& planetPosition,
             float planetSize,
-            int planetIndex
+            int planetIndex,
+            BufferData::Type shapeType
         );
         bool isMouseIntersecting() const;
         bool checkIntersection(
@@ -48,7 +44,8 @@ class Raycaster {
             int viewportHeight,
             const glm::vec3& planetPosition,
             float planetSize,
-            int planetIndex
+            int planetIndex,
+            BufferData::Type shapeType
         );
 
         bool handleClick(
@@ -58,7 +55,8 @@ class Raycaster {
             int viewportHeight,
             const glm::vec3& planetPosition,
             float planetSize,
-            int planetIndex
+            int planetIndex,
+            BufferData::Type shapeType
         );
 
         void setIsIntersecting(bool intersecting) {
@@ -69,4 +67,33 @@ class Raycaster {
         }
         int getSelectedPlanetIndex() const { return selectedPlanetIndex; }
         void clearSelection() { selectedPlanetIndex = -1; }
+
+        bool sphereIntersection(
+            glm::vec3 rayWorldDir,
+            const glm::vec3& planetPosition,
+            float planetSize
+        );
+        bool cubeIntersection(
+            glm::vec3 rayWorldDir,
+            const glm::vec3& planetPosition,
+            float planetSize
+        );
+        bool triangleIntersection(
+            glm::vec3 rayWorldDir,
+            const glm::vec3& planetPosition,
+            float planetSize
+        );
+        bool meshIntersection(
+            glm::vec3 rayWorldDir,
+            const glm::vec3& planetPosition,
+            float planetSize,
+            BufferData::Type shapeType
+        );
+        bool rayTriangleIntersection(
+            const glm::vec3& rayOrigin,
+            const glm::vec3& rayDir,
+            const glm::vec3& v0,
+            const glm::vec3& v1,
+            const glm::vec3& v2
+        );
 };

@@ -234,7 +234,12 @@ export class GeneratorConfig {
 
     private setupRangeValueDisplay(container: HTMLElement, id: string) {
         const slider = container?.querySelector(`#${id}`) as HTMLInputElement;
-        const valueDisplayId = 'size-value';
+        let valueDisplayId;
+        if(id === 'planet-size') {
+            valueDisplayId = 'size-value';
+        } else {
+            valueDisplayId = `${id}-value`;
+        }
         const valueDisplay = container?.querySelector(`#${valueDisplayId}`) as HTMLElement;
         if(!slider || !valueDisplay) {
             console.warn(`Slider or value display not found for ${id}`);

@@ -101,7 +101,8 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
             main->width, main->height,
             planet.worldPos,
             planet.data.size,
-            i
+            i,
+            planet.data.shape
         )) {
             selectedPlanetIndex = i;
             break;
@@ -125,7 +126,8 @@ void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
             mouseY,
             planet.worldPos,
             planet.data.size,
-            hoveredPlanetIndex
+            hoveredPlanetIndex,
+            planet.data.shape
         );
     } else {
         raycaster->setIsIntersecting(false);
@@ -141,7 +143,8 @@ void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
             main->width, main->height,
             planet.worldPos,
             planet.data.size,
-            clickedPlanetIndex
+            clickedPlanetIndex,
+            planet.data.shape
         )) {
             camera->zoomToObj(planet.worldPos, planet.data.size);
         }

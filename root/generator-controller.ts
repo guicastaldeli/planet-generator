@@ -215,7 +215,7 @@ export class GeneratorController {
             return;
         }
         
-        const data = this.getData();
+        const data = this.getCurrentData();
         const dataObj = {
             name: data.name,
             shape: data.shape,

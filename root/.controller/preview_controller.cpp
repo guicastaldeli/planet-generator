@@ -72,7 +72,7 @@ void PreviewController::startGeneratorPreview() {
     previewData.id = -1;
     previewData.name = "Preview Planet";
     previewData.shape = BufferData::Type::SPHERE;
-    previewData.size = 1.0f;
+    previewData.size = 0.3f;
     previewData.color = "#808080";
     previewData.position = -1;
     previewData.rotationDir = RotationAxis::Y;

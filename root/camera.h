@@ -62,6 +62,7 @@ class Camera {
         glm::vec3 up;
         glm::vec3 right;
         float zoomLevel;
+        float savedZoomLevel;
 
         void handleMouseDown(double x, double y, int button);
         void handleMouseUp(double x, double y, int button);

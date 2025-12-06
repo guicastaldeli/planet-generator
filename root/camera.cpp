@@ -28,6 +28,7 @@ Camera::Camera(
     lastMouseX(0.0),
     lastMouseY(0.0),
     zoomLevel(45.0f),
+    savedZoomLevel(45.0f),
     rotationSpeed(0.1f),
     panSpeed(0.001f),
     zoomSpeed(0.1f),
@@ -85,12 +86,6 @@ void Camera::pan(float deltaX, float deltaY) {
     target += panOffset;
 }
 
-void Camera::zoom(float delta) {
-    zoomLevel += delta * zoomSpeed;
-    if(zoomLevel < 1.0f) zoomLevel = 1.0f;
-    if(zoomLevel > 90.0f) zoomLevel = 90.0f;
-}
-
 void Camera::reset() {
     position = glm::vec3(0.0f, 0.0f, 3.0f);
     target = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -122,8 +117,7 @@ void Camera::updateVectors() {
 void Camera::saveCurrentPos() {
     savedPosition = position;
     savedTarget = target;
-    emscripten_log(EM_LOG_CONSOLE, "Camera position saved: %.2f, %.2f, %.2f", 
-                   savedPosition.x, savedPosition.y, savedPosition.z);
+    savedZoomLevel = zoomLevel;
 }
 
 void Camera::saveCurrentPosBefore() {
@@ -132,8 +126,22 @@ void Camera::saveCurrentPosBefore() {
 }
 
 /*
-** Zoom to Object
+** Zoom
 */
+void Camera::zoom(float delta) {
+    float prevZoomLevel = zoomLevel;
+    zoomLevel += delta * zoomSpeed;
+    if(zoomLevel < 1.0f) zoomLevel = 1.0f;
+    if(zoomLevel > 90.0f) zoomLevel = 90.0f;
+
+    updateProjection();
+
+    if(isFollowingPlanet) {
+        float zoomRatio = zoomLevel / prevZoomLevel;
+        followingPlanetOffset *= zoomRatio;
+    }
+}
+
 void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
     if(panningLocked) saveCurrentPos();
     target = planetPosition;
@@ -143,35 +151,41 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
         followingPlanetIndex = bufferController->getSelectedPlanetIndex();
     }
 
-    float zoomDistance = planetSize * 3.0f;
+    float baseDistance = planetSize * 3.0f;
+    float distance = baseDistance * (45.0f / zoomLevel);
     glm::vec3 directionToPlanet = glm::normalize(planetPosition - position);
-    followingPlanetOffset = -directionToPlanet * zoomDistance;
+    followingPlanetOffset = -directionToPlanet * distance;
     position = planetPosition + followingPlanetOffset;
     up = glm::vec3(0.0f, 1.0f, 0.0f);
 
     isFollowingPlanet = true;
     updateVectors();
     lockPanning(true);
-    
-    emscripten_log(EM_LOG_CONSOLE, "Zoomed to planet at (%.2f, %.2f, %.2f)", 
-                   position.x, position.y, position.z);
 }
 
 /*
 ** Update Following
 */
 void Camera::updateFollowing() {
-    if(!isFollowingPlanet || !bufferController || followingPlanetIndex == -1) {
+    if(
+        !isFollowingPlanet || 
+        !bufferController || 
+        followingPlanetIndex == -1
+    ) {
         return;
     }
 
-    const PlanetBuffer* planet = bufferController->getSelectedPlanet();
-    /*
+    const PlanetBuffer* planet = nullptr;
+    if(
+        bufferController->buffers &&
+        followingPlanetIndex < bufferController->buffers->planetBuffers.size()
+    ) {
+        planet = &bufferController->buffers->planetBuffers[followingPlanetIndex];
+    }
     if(!planet) {
         resetToSavedPos();
         return;
     }
-        */
 
     target = planet->worldPos;
     position = target + followingPlanetOffset;
@@ -184,14 +198,20 @@ void Camera::updateFollowing() {
 void Camera::resetToSavedPos() {
     position = savedPosition;
     target = savedTarget;
+    zoomLevel = savedZoomLevel;
+
+    glm::vec3 direction = glm::normalize(position - target);
+    yaw = glm::degrees(atan2(direction.z, direction.x));
+    pitch = glm::degrees(asin(direction.y));
+
     updateVectors();
+    updateProjection();
 
     isFollowingPlanet = false;
     followingPlanetIndex = -1;
 
     lockPanning(false);
     lockRotation(false);
-    emscripten_log(EM_LOG_CONSOLE, "Reset to saved position, panning unlocked");
 }
 
 /*
@@ -199,12 +219,10 @@ void Camera::resetToSavedPos() {
 */
 void Camera::lockPanning(bool lock) {
     panningLocked = lock;
-    emscripten_log(EM_LOG_CONSOLE, "Panning %s", lock ? "locked" : "unlocked");
 }
 
 void Camera::lockRotation(bool lock) {
     rotationLocked = lock;
-    emscripten_log(EM_LOG_CONSOLE, "Rotation %s", lock ? "locked" : "unlocked");
 }
 
 /*
@@ -323,6 +341,7 @@ glm::mat4 Camera::getViewMatrix() {
 }
 
 glm::mat4 Camera::getProjectionMatrix() {
+    updateProjection();
     return projection;
 }
 
@@ -331,7 +350,7 @@ void Camera::updateProjection() {
 
     float aspectRatio = (float)main->width / (float)main->height;
     projection = glm::perspective(
-        glm::radians(fov),
+        glm::radians(zoomLevel),
         aspectRatio,
         zNear,
         zFar
@@ -361,7 +380,14 @@ void Camera::releaseCamera() {
 
         position = savedPosition;
         target = savedTarget;
+        zoomLevel = savedZoomLevel;
+
+        glm::vec3 direction = glm::normalize(position - target);
+        yaw = glm::degrees(atan2(direction.z, direction.x));
+        pitch = glm::degrees(asin(direction.y));
+
         updateVectors();
+        updateProjection();
     }
 }
 

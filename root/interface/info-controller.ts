@@ -35,6 +35,7 @@ export class InfoController {
     public display(name: string, info: string): void {
         const domContainer = document.querySelector('.info--container') as HTMLDivElement;
         this.container = domContainer;
+        domContainer.style.display = 'block';
         if(!domContainer) {
             console.error('Info container not found');
             return;

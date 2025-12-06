@@ -50,10 +50,23 @@ void BufferController::init() {
     setPresetPath();
     initGenerator();
     initPreviewController();
+
+    if(presetManager && presetManager->getPresetImporter()) {
+        presetManager->getPresetImporter()->setImportCallback(
+            [this](const PresetData& preset) {
+                this->onPresetImported(preset);
+            }
+        );
+    }
 }
 
 PresetData BufferController::getCurrentPreset() const {
     return currentPreset;
+}
+
+void BufferController::onPresetImported(const PresetData& preset) {
+    PresetData presetCopy = preset;
+    loadPresetData(presetCopy);
 }
 
 /*
@@ -236,9 +249,15 @@ bool BufferController::isPreviewActive() const {
 void BufferController::loadPresetData(PresetData& preset) {
     currentPreset = preset;
     presetLoaded = true;
+    if(presetManager && presetManager->getPresetLoader()) {
+        presetManager->getPresetLoader()->setCurrentPreset(preset);
+    }
+    if(buffers) {
+        buffers->planetBuffers.clear();
+        buffers->clearBuffers();
+    }
 
     std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
-    buffers->planetBuffers.clear();
     for(auto& planetBuffer : newPlanetBuffers) {
         float orbitRadius = planetBuffer.data.distanceFromCenter;
         float initialAngle = planetBuffer.data.orbitAngle.y;

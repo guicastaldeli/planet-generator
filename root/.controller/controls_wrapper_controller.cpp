@@ -82,8 +82,13 @@ extern "C" {
     /*
      * Import Preset
      */
-    void onImportPreset() {
-        std::cout << "Import button clicked from TypeScript!" << std::endl;
+    void onImportPreset(const char* data) {
+        if(g_bufferController && g_bufferController->presetManager) {
+            PresetImporter* importer = g_bufferController->presetManager->getPresetImporter();
+            if(importer) {
+                importer->upload();
+            }
+        }
     }
     
     /*

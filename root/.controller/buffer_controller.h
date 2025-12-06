@@ -54,6 +54,7 @@ class BufferController {
         int getSelectedPlanetIndex() const;
         void deleteSelectedPlanet();
         PresetData getCurrentPreset() const;
+        void onPresetImported(const PresetData& preset);
 
         bool isPreviewActive() const;
 };

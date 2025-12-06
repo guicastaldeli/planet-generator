@@ -22,7 +22,7 @@ std::string PresetExporter::getPresetData(const PresetData& preset) {
 
     return presetManager->
         getPresetSaver()->
-        presetToJson(const_cast<PresetData&>(preset));
+        presetToData(const_cast<PresetData&>(preset));
 }
 
 /*

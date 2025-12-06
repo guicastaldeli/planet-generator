@@ -25,8 +25,8 @@ class PresetSaver {
         bool hasSavedPreset();
         void clearLocalStorage();
 
-        std::string presetToJson(PresetData& preset);
-        bool jsonToPreset(const std::string& data, PresetData& preset);
+        std::string presetToData(PresetData& preset);
+        bool convertToPreset(const std::string& data, PresetData& preset);
 
         bool save();
         bool load();

@@ -152,12 +152,12 @@ bool PresetSaver::valueToPreset(const DataParser::Value& value, PresetData& pres
     }
 }
 
-std::string PresetSaver::presetToJson(PresetData& preset) {
+std::string PresetSaver::presetToData(PresetData& preset) {
     DataParser::Value presetValue = presetToVal(preset);
     return presetValue.toString(false);
 }
 
-bool PresetSaver::jsonToPreset(const std::string& data, PresetData& preset) {
+bool PresetSaver::convertToPreset(const std::string& data, PresetData& preset) {
     try {
         DataParser::Value parsedValue = DataParser::Parser::parse(data);
         return valueToPreset(parsedValue, preset);
@@ -171,7 +171,7 @@ bool PresetSaver::jsonToPreset(const std::string& data, PresetData& preset) {
 ** Save to Local Storage
 */
 bool PresetSaver::saveToLocalStorage(PresetData& preset) {
-    std::string jsonData = presetToJson(preset);
+    std::string jsonData = presetToData(preset);
     bool success = EM_ASM_INT({
         try {
             const key = UTF8ToString($0);
@@ -215,7 +215,7 @@ bool PresetSaver::loadFromLocalStorage(PresetData& preset) {
     if(str == 0) return false;
     std::string dataJson(str);
     free(str);
-    return jsonToPreset(dataJson, preset);
+    return convertToPreset(dataJson, preset);
 }
 
 bool PresetSaver::hasSavedPreset() {

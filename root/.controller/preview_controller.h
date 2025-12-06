@@ -7,9 +7,6 @@ class PreviewController {
         Camera* camera;
         BufferController* bufferController;
 
-        bool isPreviewing;
-        bool isGeneratorActive;
-
         void lockCamera();
         void unlockCamera();
 
@@ -17,11 +14,16 @@ class PreviewController {
         PreviewController(BufferController* bufferController, Camera* camera);
         ~PreviewController();
 
+        bool isPreviewing;
+        bool isGeneratorActive;
+
         void preview();
         void exitPreview();
 
         void startGeneratorPreview();
         void updatePreview(const PlanetData& data);
         void cleanupPreview();
-        bool isInGeneratorMode() const { return isGeneratorActive; }
+        bool isInGeneratorMode() const { 
+            return isGeneratorActive;
+        }
 };  

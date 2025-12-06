@@ -224,6 +224,12 @@ void BufferController::deleteSelectedPlanet() {
     }
 }
 
+bool BufferController::isPreviewActive() const {
+    return previewController &&
+        (previewController->isPreviewing ||
+        previewController->isGeneratorActive);
+}
+
 /*
 ** Load Preset Data
 */

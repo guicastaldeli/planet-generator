@@ -292,10 +292,12 @@ EM_BOOL mouseCallback(
     if (!camera || !camera->main || !camera->bufferController) {
         return EM_TRUE;
     }
+    bool previewActive = camera->bufferController->isPreviewActive();
+    
     switch(eventType) {
         case EMSCRIPTEN_EVENT_MOUSEDOWN:
             camera->handleMouseDown(e->clientX, e->clientY, e->button);
-            if(e->button == 0) {
+            if(e->button == 0 && !previewActive) {
                 if(camera->bufferController) {
                     camera->bufferController->updatePlanetPositions();
                     camera->bufferController->handleRaycasterClick(
@@ -310,8 +312,7 @@ EM_BOOL mouseCallback(
             break;
         case EMSCRIPTEN_EVENT_MOUSEMOVE:
             camera->handleMouseMove(e->clientX, e->clientY);
-
-            if(camera->bufferController) {
+            if(camera->bufferController && !previewActive) {
                 camera->bufferController->handleRaycasterRender(
                     e->clientX,
                     e->clientY
@@ -355,6 +356,10 @@ glm::mat4 Camera::getViewMatrix() {
 glm::mat4 Camera::getProjectionMatrix() {
     updateProjection();
     return projection;
+}
+
+glm::vec3 Camera::getForwardVector() const {
+    return glm::normalize(target - position);
 }
 
 void Camera::updateProjection() {

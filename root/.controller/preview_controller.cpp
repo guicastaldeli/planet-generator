@@ -1,5 +1,6 @@
 #include "preview_controller.h"
 #include "../.buffers/buffers.h"
+#include "../_utils/default_data.h"
 #include <emscripten.h>
 
 PreviewController::PreviewController(BufferController* bufferController, Camera* camera) :
@@ -69,19 +70,26 @@ void PreviewController::startGeneratorPreview() {
     }
 
     PlanetData previewData;
-    previewData.id = -1;
-    previewData.name = "Preview Planet";
-    previewData.shape = BufferData::Type::SPHERE;
-    previewData.size = 0.3f;
-    previewData.color = "#808080";
-    previewData.position = -1;
-    previewData.rotationDir = RotationAxis::Y;
-    previewData.rotationSpeedItself = 0.01f;
-    previewData.rotationSpeedCenter = 0.01f;
-    previewData.distanceFromCenter = 0.0f;
-    previewData.currentRotation = glm::vec3(0.0f);
-    previewData.orbitAngle = glm::vec3(0.0f);
-
+    if(
+        bufferController && 
+        bufferController->defaultData &&
+        !bufferController->defaultData->getAllData().empty()
+    ) {
+        const DefaultData::Data* defaultDataPtr = &bufferController->defaultData->getAllData()[0];
+        previewData.id = defaultDataPtr->id;
+        previewData.name = defaultDataPtr->name;
+        previewData.shape = defaultDataPtr->shape;
+        previewData.size = defaultDataPtr->size;
+        previewData.color = defaultDataPtr->color;
+        previewData.position = defaultDataPtr->position;
+        previewData.rotationDir = defaultDataPtr->rotationDir;
+        previewData.rotationSpeedItself = defaultDataPtr->rotationSpeedItself;
+        previewData.rotationSpeedCenter = defaultDataPtr->rotationSpeedCenter;
+        previewData.distanceFromCenter = defaultDataPtr->distanceFromCenter;
+        previewData.currentRotation = defaultDataPtr->currentRotation;
+        previewData.orbitAngle = defaultDataPtr->orbitAngle;
+    }
+    
     if(bufferController && bufferController->buffers) {
         bufferController->buffers->setupPreviewPlanet(previewData);
         bufferController->buffers->setPreviewMode(true);

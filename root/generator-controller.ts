@@ -47,6 +47,7 @@ export class GeneratorController {
     private container: HTMLElement | null = null;
     private generatorConfig: GeneratorConfig | null = null;
     private options: OptionsData | null = null;
+    private defaultData: any = {};
 
     private onGenerateClick?: (data: any) => void;
     private onCancelClick?: () => void;
@@ -59,7 +60,8 @@ export class GeneratorController {
 
     private async init(): Promise<void> {
         await this.loadOptions();
-        this.generatorConfig = new GeneratorConfig(this.options);
+        await this.getDefaultData();
+        this.generatorConfig = new GeneratorConfig(this.options, this.defaultData);
         
         await this.extractContainer();
         await this.append();
@@ -103,44 +105,41 @@ export class GeneratorController {
     }
 
     /*
-    ** Get Data
+    ** Get Default Data
     */
-    private getData(): any {
-        if(!this.container) {
-            console.log('no dom container!');
-            return;
+    private async getDefaultData(): Promise<void> {
+        try {
+            let dataStr = "";
+            if(this.emscriptenModule._getDefaultData) {
+                const ptr = this.emscriptenModule._getDefaultData();
+                dataStr = this.emscriptenModule.UTF8ToString(ptr);
+                console.log('Got default data from C++:', dataStr);
+            } else if(this.emscriptenModule.ccall) {
+                dataStr = this.emscriptenModule.ccall(
+                    'getDefaultData',
+                    'string',
+                    [],
+                    []
+                );
+                console.log('Got default data via ccall:', dataStr);
+            } else if(typeof window['getDefaultData'] === 'function') {
+                dataStr = window['getDefaultData']();
+                console.log('Got default data from window:', dataStr);
+            }
+            
+            if(dataStr && dataStr.trim() !== '{}') {
+                try {
+                    this.defaultData = JSON.parse(dataStr);
+                    console.log('Parsed default data from C++:', this.defaultData);
+                } catch(parseErr) {
+                    console.error('Failed to parse default data JSON:', parseErr);
+                }
+            } else {
+                console.warn('Default data is empty or invalid, using fallback defaults');
+            }
+        } catch(err) {
+            console.error('Failed to load default planet data from C++:', err);
         }
-
-        const data: any = {};
-        this.generatorConfig!.form.forEach(config => {
-            const el = this.container!.querySelector(`#${config.id}`) as HTMLInputElement | HTMLSelectElement;
-            if(!el) return;
-
-            let val: any;
-            switch(config.type) {
-                case 'text':
-                case 'color':
-                    val = (el as HTMLInputElement).value;
-                    break;
-                case 'select':
-                    val = (el as HTMLSelectElement).value;
-                    break;
-                case 'range':
-                    val = Number((el as HTMLInputElement).value);
-                    break;
-            }
-
-            let key = config.id;
-            if(key.startsWith('planet-')) {
-                key = key.substring(7);
-            }
-
-            const regex = /-([a-z])/g
-            key = key.replace(regex, (_, l) => l.toUpperCase());
-
-            data[key] = val;
-        });
-        return data;
     }
 
     /*
@@ -222,9 +221,9 @@ export class GeneratorController {
             size: data.size,
             color: data.color,
             position: Number(data.position),
-            rotationDir: data.rotationAxis,
-            rotationSpeedItself: data.selfRotation,
-            rotationSpeedCenter: data.orbitSpeed
+            rotationDir: data.rotationDir,
+            rotationSpeedItself: data.rotationSpeedItself,
+            rotationSpeedCenter: data.rotationSpeedCenter
         };
         const dataStr = JSON.stringify(dataObj);
 

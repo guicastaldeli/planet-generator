@@ -7,6 +7,7 @@
 #include "preview_controller.h"
 #include "../.buffers/buffers.h"
 #include <iostream>
+#include <sstream>
 
 GeneratorWrapperController* g_generatorWrapperController = nullptr;
 
@@ -158,57 +159,17 @@ extern "C" {
 
         try {
             std::string str(planetData);
-            printf("Parsing JSON string of length: %zu\n", str.length());
             auto data = DataParser::Parser::parse(str);
-
             PlanetData newPlanet;
-            newPlanet.id = 9;
-            if(data.hasKey("name")) {
-                newPlanet.name = data["name"].asString();
-            } else {
-                newPlanet.name = "planet";
-            }
-            if(data.hasKey("shape")) {
-                std::string shapeData = data["shape"].asString();
-                newPlanet.shape = g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->shapeToBufferType(shapeData);
-            } else {
-                newPlanet.shape = BufferData::Type::TRIANGLE;
-            }
-            if(data.hasKey("size")) {
-                newPlanet.size = data["size"].asFloat();
-            } else {
-                newPlanet.size = 1.0f;
-            }
-            if(data.hasKey("color")) {
-                newPlanet.color = data["color"].asString();
-            } else {
-                newPlanet.color = "#808080";
-            }
-            if(data.hasKey("position")) {
-                newPlanet.position = data["position"].asInt();
-            } else {
-                newPlanet.position = 9;
-            }
-            if(data.hasKey("rotationDir")) {
-                std::string rotationData = data["rotationDir"].asString();
-                newPlanet.rotationDir = g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->rotationToBufferType(rotationData);
-            } else {
-                newPlanet.rotationDir = RotationAxis::Y;
-            }
-            if(data.hasKey("rotationSpeedItself")) {
-                newPlanet.rotationSpeedItself = data["rotationSpeedItself"].asFloat();
-            } else {
-                newPlanet.rotationSpeedItself = 0.01f;
-            }
-            if(data.hasKey("rotationSpeedCenter")) {
-                newPlanet.rotationSpeedCenter = data["rotationSpeedCenter"].asFloat();
-            } else {
-                newPlanet.rotationSpeedCenter = 0.01f;
-            }
+
+            g_generatorWrapperController->
+                bufferController->
+                    defaultData->init();
+        
+            g_generatorWrapperController->
+                bufferController->
+                    setDataToUpdate(newPlanet, data);
+
             newPlanet.distanceFromCenter = 
                 g_generatorWrapperController->
                 bufferController->
@@ -241,7 +202,6 @@ extern "C" {
                 bufferController->
                 bufferGenerator->generateFromPreset(preset);
 
-            g_generatorWrapperController->bufferController->buffers->planetBuffers.clear();
             for(auto& planetBuffer : newPlanetBuffers) {
                 float orbitRadius = planetBuffer.data.distanceFromCenter;
                 float initialAngle = planetBuffer.data.orbitAngle.y;
@@ -264,5 +224,41 @@ extern "C" {
         } catch(const std::exception& e) {
             printf("Error generating planet: %s\n", e.what());
         }
+    }
+
+    /*
+     * Get Default Data
+     */
+    const char* getDefaultData() {
+        static std::string defaultDataStr;
+        
+        if(!g_generatorWrapperController || 
+           !g_generatorWrapperController->bufferController ||
+           !g_generatorWrapperController->bufferController->defaultData) {
+            return "{}";
+        }
+        
+        const auto& allData = g_generatorWrapperController->bufferController->defaultData->getAllData();
+        if(allData.empty()) {
+            return "{}";
+        }
+        
+        const auto& defaultData = allData[0];
+        std::stringstream ss;
+        ss << "{";
+        ss << "\"name\":\"" << defaultData.name << "\",";
+        ss << "\"shape\":\"" << (defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
+                                  defaultData.shape == BufferData::Type::CUBE ? "CUBE" : "TRIANGLE") << "\",";
+        ss << "\"size\":" << defaultData.size << ",";
+        ss << "\"color\":\"" << defaultData.color << "\",";
+        ss << "\"position\":" << defaultData.position << ",";
+        ss << "\"rotationDir\":\"" << (defaultData.rotationDir == RotationAxis::X ? "X" : 
+                                       defaultData.rotationDir == RotationAxis::Y ? "Y" : "Z") << "\",";
+        ss << "\"rotationSpeedItself\":" << defaultData.rotationSpeedItself << ",";
+        ss << "\"rotationSpeedCenter\":" << defaultData.rotationSpeedCenter;
+        ss << "}";
+        
+        defaultDataStr = ss.str();
+        return defaultDataStr.c_str();
     }
 }

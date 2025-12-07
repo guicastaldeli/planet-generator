@@ -1,42 +1,44 @@
 export class GeneratorConfig {
     private data: any;
+    private defaultData: any;
 
-    constructor(data: any) {
+    constructor(data: any, defaultData: any) {
         this.data = data;
+        this.defaultData = defaultData;
     }
 
     public fieldMap = {
         'planet-name': {
             outputKey: 'name',
-            transform: (value: string) => value || `Planet ${Date.now()}`
+            transform: (value: string) => value || this.defaultData.name
         },
         'planet-shape': {
             outputKey: 'shape',
-            transform: (value: string) => value || 'SPHERE'
+            transform: (value: string) => value || this.defaultData.shape
         },
         'planet-size': {
             outputKey: 'size',
-            transform: (value: string) => Number(value)
+            transform: (value: string) => Number(value) || this.defaultData.size
         },
         'planet-color': {
             outputKey: 'color',
-            transform: (value: string) => value || '#808080'
+            transform: (value: string) => value || this.defaultData.color
         },
         'planet-position': {
             outputKey: 'position',
-            transform: (value: string) => Number(value)
+            transform: (value: string) => Number(value) || this.defaultData.position
         },
         'rotation-axis': {
             outputKey: 'rotationDir',
-            transform: (value: string) => value || 'Y'
+            transform: (value: string) => value || this.defaultData.rotationDir
         },
         'self-rotation': {
             outputKey: 'rotationSpeedItself',
-            transform: (value: string) => Number(value)
+            transform: (value: string) => Number(value) || this.defaultData.rotationSpeedItself
         },
         'orbit-speed': {
             outputKey: 'rotationSpeedCenter',
-            transform: (value: string) => Number(value)
+            transform: (value: string) => Number(value) || this.defaultData.rotationSpeedCenter 
         }
     }
     public options = [
@@ -126,48 +128,42 @@ export class GeneratorConfig {
         { 
             id: 'planet-name', 
             type: 'text', 
-            defaultValue: '' 
+            defaultValue: () => this.defaultData.name
         },
         { 
             id: 'planet-shape', 
             type: 'select', 
-            defaultValue: 'SPHERE' 
+            defaultValue: () => this.defaultData.shape
         },
         { 
             id: 'planet-size', 
             type: 'range', 
-            defaultValue: () => 
-                this.data.generatorOptions.
-                sizeRange.default 
+            defaultValue: () => this.defaultData.size
         },
         { 
             id: 'planet-color', 
             type: 'color', 
-            defaultValue: '#808080' 
+            defaultValue: () => this.defaultData.color
         },
         { 
             id: 'planet-position', 
             type: 'select', 
-            defaultValue: '1' 
+            defaultValue: () => this.defaultData.position?.toString()
         },
         { 
             id: 'rotation-axis', 
             type: 'select', 
-            defaultValue: 'Y' 
+            defaultValue: () => this.defaultData.rotationDir
         },
         { 
             id: 'self-rotation', 
             type: 'range', 
-            defaultValue: () => 
-                this.data.generatorOptions.
-                rotationSpeedRange.default 
+            defaultValue: () => this.defaultData.rotationSpeedItself
         },
         { 
             id: 'orbit-speed', 
             type: 'range', 
-            defaultValue: () => 
-                this.data.generatorOptions.
-                orbitSpeedRange.default 
+            defaultValue: () => this.defaultData.rotationSpeedCenter
         }
     ];
 

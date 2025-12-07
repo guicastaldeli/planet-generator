@@ -53,8 +53,8 @@ class BufferController {
         void handleRaycasterRender(double mouseX, double mouseY);
         void handleRaycasterClick(double mouseX, double mouseY);
 
-        void setDataToUpdate(PlanetData uData, auto pData);
-        
+        void setDataToUpdate(PlanetData& uData, const DataParser::Value& pData);
+
         const PlanetBuffer* getSelectedPlanet() const;
         int getSelectedPlanetIndex() const;
         void deleteSelectedPlanet();

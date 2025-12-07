@@ -81,49 +81,63 @@ void BufferController::onPresetImported(const PresetData& preset) {
 /*
 ** Set Data to Update
 */
-void BufferController::setDataToUpdate(PlanetData uData, auto pData) {
-    DefaultData::Data* dData;
+void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Value& pData) {
+    if(!defaultData || defaultData->getAllData().empty()) {
+        printf("Error: no default data available\n");
+        return;
+    }
 
-    uData.id = dData->id;
+    const DefaultData::Data& dData = defaultData->getAllData()[0];
+
+    uData.id = dData.id;
     
     uData.name = 
         pData.hasKey("name") ?
         pData["name"].asString() :
-        dData->name;
+        dData.name;
 
     if(pData.hasKey("shape")) {
         std::string shape = pData["shape"].asString();
         uData.shape = bufferGenerator->shapeToBufferType(shape);
     } else {
-        uData.shape = dData->shape
+        uData.shape = dData.shape;
     }
             
     uData.size = 
         pData.hasKey("size") ? 
         pData["size"].asFloat() : 
-        dData->size;
+        dData.size;
             
     uData.color =
         pData.hasKey("color") ?
         pData["color"].asString() :
-        dData->color;
+        dData.color;
 
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();
         uData.rotationDir = bufferGenerator->rotationToBufferType(rotation);
     } else {
-        uData.rotationDir = dData->rotationDir;
+        uData.rotationDir = dData.rotationDir;
     }
 
     uData.rotationSpeedItself = 
         pData.hasKey("rotationSpeedItself") ?
         pData["rotationSpeedItself"].asFloat() :
-        dData->rotationSpeedItself;
+        dData.rotationSpeedItself;
             
     uData.rotationSpeedCenter =
         pData.hasKey("rotationSpeedCenter") ?
         pData["rotationSpeedCenter"].asFloat() :
-        dData->rotationSpeedCenter;
+        dData.rotationSpeedCenter;
+
+    uData.position =
+        pData.hasKey("position") ?
+        pData["position"].asInt() :
+        dData.position;
+
+    uData.distanceFromCenter = dData.distanceFromCenter;
+    uData.currentRotation = dData.currentRotation;
+    uData.orbitAngle = dData.orbitAngle;
 }
 
 /*

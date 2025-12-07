@@ -1,5 +1,6 @@
 #pragma once
 #include "preset_data.h"
+#include "../_data/data_parser.h"
 
 class PresetManager;
 class PresetLoader {
@@ -14,6 +15,7 @@ class PresetLoader {
 
         void setPath(std::string& path);
         bool parse(const std::string& data);
+        void parseData(const DataParser::Value& val, PlanetData& data);
         bool loadPreset(const std::string& filePath);
         bool loadDefaultPreset();
         bool loadDefaultPresetFile();

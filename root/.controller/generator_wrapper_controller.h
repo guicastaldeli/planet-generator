@@ -24,6 +24,7 @@ extern "C" {
     void EMSCRIPTEN_KEEPALIVE cleanupPreview();
     void EMSCRIPTEN_KEEPALIVE hideGenerator();
     void EMSCRIPTEN_KEEPALIVE generatePlanetParser(const char* planetData);
+    const char* EMSCRIPTEN_KEEPALIVE getDefaultData();
     void EMSCRIPTEN_KEEPALIVE showGenerator();
 #ifdef __cplusplus
 }

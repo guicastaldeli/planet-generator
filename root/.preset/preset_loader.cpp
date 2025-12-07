@@ -20,74 +20,88 @@ void PresetLoader::setPath(std::string& path) {
 }
 
 /*
-** Parse
+**
+*** Parse
+**
 */
 bool PresetLoader::parse(const std::string& data) {
     try {
         DataParser::Value root = DataParser::Parser::parse(data);
-        if(!root.hasKey("planets") || !root["planets"].isArray()) {
-            std::cerr << "Invalid preset fomat, missing planets!" << std::endl;
-            return false;
-        }
-
         currentPreset.planets.clear();
-        const auto& planetsArray = root["planets"].asArray();
-        for(const auto& planetValue : planetsArray) {
-            if(!planetValue.isObject()) continue;
-            PlanetData planet;
 
-            /* Props */
-            if(planetValue.hasKey("id")) planet.id = planetValue["id"].asInt();
-            if(planetValue.hasKey("name")) planet.name = planetValue["name"].asString();
-            if(planetValue.hasKey("size")) planet.size = planetValue["size"].asFloat();
-            if(planetValue.hasKey("color")) planet.color = planetValue["color"].asString();
-            if(planetValue.hasKey("position")) planet.position = planetValue["position"].asInt();
-            if(planetValue.hasKey("distanceFromCenter")) 
-                planet.distanceFromCenter = planetValue["distanceFromCenter"].asFloat();
-            if(planetValue.hasKey("rotationSpeedItself")) 
-                planet.rotationSpeedItself = planetValue["rotationSpeedItself"].asFloat();
-            if(planetValue.hasKey("rotationSpeedCenter")) 
-                planet.rotationSpeedCenter = planetValue["rotationSpeedCenter"].asFloat();
-
-            /* Shape */
-            if(planetValue.hasKey("shape")) {
-                std::string shapeStr = planetValue["shape"].asString();
-                if(shapeStr == "SPHERE") planet.shape = BufferData::Type::SPHERE;
-                else if(shapeStr == "CUBE") planet.shape = BufferData::Type::CUBE;
-                else if(shapeStr == "TRIANGLE") planet.shape = BufferData::Type::TRIANGLE;
-                else planet.shape = BufferData::Type::SPHERE;
+        if(
+            root.hasKey("name") || 
+            root.hasKey("size") || 
+            root.hasKey("shape")
+        ) {
+            PlanetData data;
+            parseData(root, data);
+            currentPreset.planets.push_back(data);
+        }
+        else if(root.hasKey("planets") && root["planets"].isArray()) {
+            const auto& dataArray = root["planets"].asArray();
+            for(const auto& val : dataArray) {
+                if(!val.isObject()) continue;
+                PlanetData data;
+                parseData(val, data);
+                currentPreset.planets.push_back(data);
             }
-
-            /* Rotation */
-            if(planetValue.hasKey("rotationDir")) {
-                std::string rotStr = planetValue["rotationDir"].asString();
-                if(rotStr == "X") planet.rotationDir = RotationAxis::X;
-                else if(rotStr == "Y") planet.rotationDir = RotationAxis::Y;
-                else if(rotStr == "Z") planet.rotationDir = RotationAxis::Z;
-                else planet.rotationDir = RotationAxis::Y;
-            }
-            if(planetValue.hasKey("currentRotation") && planetValue["currentRotation"].isObject()) {
-                const auto& rot = planetValue["currentRotation"];
-                if(rot.hasKey("x")) planet.currentRotation.x = rot["x"].asFloat();
-                if(rot.hasKey("y")) planet.currentRotation.y = rot["y"].asFloat();
-                if(rot.hasKey("z")) planet.currentRotation.z = rot["z"].asFloat();
-            }
-
-            /* Orbit Angle */
-            if(planetValue.hasKey("orbitAngle") && planetValue["orbitAngle"].isObject()) {
-                const auto& orbit = planetValue["orbitAngle"];
-                if(orbit.hasKey("x")) planet.orbitAngle.x = orbit["x"].asFloat();
-                if(orbit.hasKey("y")) planet.orbitAngle.y = orbit["y"].asFloat();
-                if(orbit.hasKey("z")) planet.orbitAngle.z = orbit["z"].asFloat();
-            }
-
-            currentPreset.planets.push_back(planet);
+        } else {
+            std::cerr << "Invalid format!" << std::endl;
+            return false;
         }
 
         return validatePreset();
     } catch(const std::exception& err) {
         std::cerr << "Error parsing planet: " << err.what() << std::endl;
         return false;
+    }
+}
+
+void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
+    /* Props */
+    if(val.hasKey("id")) data.id = val["id"].asInt();
+    if(val.hasKey("name")) data.name = val["name"].asString();
+    if(val.hasKey("size")) data.size = val["size"].asFloat();
+    if(val.hasKey("color")) data.color = val["color"].asString();
+    if(val.hasKey("position")) data.position = val["position"].asInt();
+    if(val.hasKey("distanceFromCenter")) 
+        data.distanceFromCenter = val["distanceFromCenter"].asFloat();
+    if(val.hasKey("rotationSpeedItself")) 
+        data.rotationSpeedItself = val["rotationSpeedItself"].asFloat();
+    if(val.hasKey("rotationSpeedCenter")) 
+        data.rotationSpeedCenter = val["rotationSpeedCenter"].asFloat();
+
+    /* Shape */
+    if(val.hasKey("shape")) {
+        std::string shapeStr = val["shape"].asString();
+        if(shapeStr == "SPHERE") data.shape = BufferData::Type::SPHERE;
+        else if(shapeStr == "CUBE") data.shape = BufferData::Type::CUBE;
+        else if(shapeStr == "TRIANGLE") data.shape = BufferData::Type::TRIANGLE;
+        else data.shape = BufferData::Type::SPHERE;
+    }
+
+    /* Rotation */
+    if(val.hasKey("rotationDir")) {
+        std::string rotStr = val["rotationDir"].asString();
+        if(rotStr == "X") data.rotationDir = RotationAxis::X;
+        else if(rotStr == "Y") data.rotationDir = RotationAxis::Y;
+        else if(rotStr == "Z") data.rotationDir = RotationAxis::Z;
+        else data.rotationDir = RotationAxis::Y;
+    }
+    if(val.hasKey("currentRotation") && val["currentRotation"].isObject()) {
+        const auto& rot = val["currentRotation"];
+        if(rot.hasKey("x")) data.currentRotation.x = rot["x"].asFloat();
+        if(rot.hasKey("y")) data.currentRotation.y = rot["y"].asFloat();
+        if(rot.hasKey("z")) data.currentRotation.z = rot["z"].asFloat();
+    }
+
+    /* Orbit Angle */
+    if(val.hasKey("orbitAngle") && val["orbitAngle"].isObject()) {
+        const auto& orbit = val["orbitAngle"];
+        if(orbit.hasKey("x")) data.orbitAngle.x = orbit["x"].asFloat();
+        if(orbit.hasKey("y")) data.orbitAngle.y = orbit["y"].asFloat();
+        if(orbit.hasKey("z")) data.orbitAngle.z = orbit["z"].asFloat();
     }
 }
 

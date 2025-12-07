@@ -25,6 +25,7 @@ class DefaultData {
         DefaultData(PresetManager* presetManager);
         ~DefaultData();
 
+        const std::vector<Data>& getAllData() const;
         void init();
 
     private:

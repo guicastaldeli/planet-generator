@@ -95,58 +95,22 @@ extern "C" {
         try {
             std::string dataStr(data);
             auto planetData = DataParser::Parser::parse(dataStr);
-
-            PlanetData previewPlanet;
-            previewPlanet.id = -1;
-            previewPlanet.name = 
-                planetData.hasKey("name") ?
-                planetData["name"].asString() :
-                "Planet";
-
-            if(planetData.hasKey("shape")) {
-                std::string shape = planetData["shape"].asString();
-                previewPlanet.shape = g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->shapeToBufferType(shape);
-            } else {
-                previewPlanet.shape = BufferData::Type::SPHERE;
-            }
-            
-            previewPlanet.size = 
-                planetData.hasKey("size") ? 
-                planetData["size"].asFloat() : 
-                1.0f;
-            
-            previewPlanet.color =
-                planetData.hasKey("color") ?
-                planetData["color"].asString() :
-                "#808080";
-
-            if(planetData.hasKey("rotationDir")) {
-                std::string rotation = planetData["rotationDir"].asString();
-                previewPlanet.rotationDir = g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->rotationToBufferType(rotation);
-            } else {
-                previewPlanet.rotationDir = RotationAxis::Y;
-            }
-
-            previewPlanet.rotationSpeedItself = 
-                planetData.hasKey("rotationSpeedItself") ?
-                planetData["rotationSpeedItself"].asFloat() :
-                0.01f;
-            
-            previewPlanet.rotationSpeedCenter =
-                planetData.hasKey("rotationSpeedCenter") ?
-                planetData["rotationSpeedCenter"].asFloat() :
-                0.01f;
-
-            printf("Calling updatePreview with planet: %s, shape: %d\n", 
-                previewPlanet.name.c_str(), previewPlanet.shape);
+            PlanetData previewPlanetData;
 
             g_generatorWrapperController->
                 bufferController->
-                previewController->updatePreview(previewPlanet);
+                    defaultData->init();
+        
+            g_generatorWrapperController->
+                bufferController->
+                    setDataToUpdate(previewPlanetData, planetData);
+            
+            printf("Calling updatePreview with planet: %s, shape: %d\n", 
+                previewPlanetData.name.c_str(), previewPlanetData.shape);
+
+            g_generatorWrapperController->
+                bufferController->
+                previewController->updatePreview(previewPlanetData);
         } catch(const std::exception& err) {
             printf("Error updating preview planet: %s\n", err.what());
         }

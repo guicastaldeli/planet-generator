@@ -23,6 +23,22 @@ BufferController::~BufferController() {};
 /*
 ** Init
 */
+void BufferController::init() {
+    initPresetManager();
+    setDefaultData();
+    setPresetPath();
+    initGenerator();
+    initPreviewController();
+
+    if(presetManager && presetManager->getPresetImporter()) {
+        presetManager->getPresetImporter()->setImportCallback(
+            [this](const PresetData& preset) {
+                this->onPresetImported(preset);
+            }
+        );
+    }
+}
+
 void BufferController::initBuffers() {
     buffers = new Buffers(camera, shaderLoader->shaderController, this);
     buffers->init();
@@ -40,24 +56,17 @@ void BufferController::initPreviewController() {
     previewController = new PreviewController(this, camera);
 }
 
-void BufferController::setPresetPath() {
-    std::string path = "/_data/default-preset.json";
-    presetManager->getPresetLoader()->setPath(path);
+void BufferController::setDefaultData() {
+    defaultData = new DefaultData(presetManager);
+    defaultData->init();
 }
 
-void BufferController::init() {
-    initPresetManager();
-    setPresetPath();
-    initGenerator();
-    initPreviewController();
-
-    if(presetManager && presetManager->getPresetImporter()) {
-        presetManager->getPresetImporter()->setImportCallback(
-            [this](const PresetData& preset) {
-                this->onPresetImported(preset);
-            }
-        );
-    }
+/*
+** Preset
+*/
+void BufferController::setPresetPath() {
+    std::string path = "/_data/default_preset.json";
+    presetManager->getPresetLoader()->setPath(path);
 }
 
 PresetData BufferController::getCurrentPreset() const {
@@ -67,6 +76,54 @@ PresetData BufferController::getCurrentPreset() const {
 void BufferController::onPresetImported(const PresetData& preset) {
     PresetData presetCopy = preset;
     loadPresetData(presetCopy);
+}
+
+/*
+** Set Data to Update
+*/
+void BufferController::setDataToUpdate(PlanetData uData, auto pData) {
+    DefaultData::Data* dData;
+
+    uData.id = dData->id;
+    
+    uData.name = 
+        pData.hasKey("name") ?
+        pData["name"].asString() :
+        dData->name;
+
+    if(pData.hasKey("shape")) {
+        std::string shape = pData["shape"].asString();
+        uData.shape = bufferGenerator->shapeToBufferType(shape);
+    } else {
+        uData.shape = dData->shape
+    }
+            
+    uData.size = 
+        pData.hasKey("size") ? 
+        pData["size"].asFloat() : 
+        dData->size;
+            
+    uData.color =
+        pData.hasKey("color") ?
+        pData["color"].asString() :
+        dData->color;
+
+    if(pData.hasKey("rotationDir")) {
+        std::string rotation = pData["rotationDir"].asString();
+        uData.rotationDir = bufferGenerator->rotationToBufferType(rotation);
+    } else {
+        uData.rotationDir = dData->rotationDir;
+    }
+
+    uData.rotationSpeedItself = 
+        pData.hasKey("rotationSpeedItself") ?
+        pData["rotationSpeedItself"].asFloat() :
+        dData->rotationSpeedItself;
+            
+    uData.rotationSpeedCenter =
+        pData.hasKey("rotationSpeedCenter") ?
+        pData["rotationSpeedCenter"].asFloat() :
+        dData->rotationSpeedCenter;
 }
 
 /*

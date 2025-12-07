@@ -1,6 +1,7 @@
 #pragma once
 #include "../.preset/preset_manager.h"
 #include "../.buffers/buffer_generator.h"
+#include "../_utils/default_data.h"
 #include "../camera.h"
 #include "../shader_loader.h"
 #include "../.buffers/raycaster.h"
@@ -26,6 +27,7 @@ class BufferController {
         );
         ~BufferController();
         
+        DefaultData* defaultData;
         Buffers* buffers;
         Camera* camera;
         Raycaster* raycaster;
@@ -36,6 +38,7 @@ class BufferController {
         void initBuffers();
         void initPresetManager();
         void setPresetPath();
+        void setDefaultData();
         void initGenerator();
         void initPreviewController();
 
@@ -50,6 +53,8 @@ class BufferController {
         void handleRaycasterRender(double mouseX, double mouseY);
         void handleRaycasterClick(double mouseX, double mouseY);
 
+        void setDataToUpdate(PlanetData uData, auto pData);
+        
         const PlanetBuffer* getSelectedPlanet() const;
         int getSelectedPlanetIndex() const;
         void deleteSelectedPlanet();

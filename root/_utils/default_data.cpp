@@ -44,6 +44,7 @@ bool DefaultData::setData() {
             data.size = planet.size;
             data.color = planet.color;
             data.colorRgb = planet.colorRgb;
+            data.texture = planet.texture;
             data.position = planet.position;
             data.rotationDir = planet.rotationDir;
             data.rotationSpeedItself = planet.rotationSpeedItself;
@@ -70,6 +71,7 @@ PlanetData DefaultData::Data::toPlanetData() const {
     data.size = this->size;
     data.color = this->color;
     data.colorRgb = this->colorRgb;
+    data.texture = this->texture;
     data.position = this->position;
     data.rotationDir = this->rotationDir;
     data.rotationSpeedItself = this->rotationSpeedItself;

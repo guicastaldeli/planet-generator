@@ -259,6 +259,7 @@ extern "C" {
         str << "\"g\":" << defaultData.colorRgb.g << ",";
         str << "\"b\":" << defaultData.colorRgb.b;
         str << "},";
+         str << "\"texture\":\"" << defaultData.texture << "\",";
         str << "\"position\":" << defaultData.position << ",";
         str << "\"rotationDir\":\"" << (defaultData.rotationDir == RotationAxis::X ? "X" : 
                                        defaultData.rotationDir == RotationAxis::Y ? "Y" : "Z") << "\",";
@@ -268,5 +269,44 @@ extern "C" {
         
         defaultDataStr = str.str();
         return defaultDataStr.c_str();
+    }
+
+    /*
+     * Upload Texture
+     */
+    void uploadTexture(
+        const char* name,
+        const char* data,
+        int width,
+        int height
+    ) {
+        if(!g_generatorWrapperController || !g_generatorWrapperController->bufferController) {
+            printf("ERROR: Generator wrapper controller or buffer controller not initialized\n");
+            return;
+        }
+        if(!name || !data) {
+            printf("ERROR: Invalid texture parameters\n");
+            return;
+        }
+        
+        TextureLoader* textureLoader = g_generatorWrapperController->bufferController->getTextureLoader();
+        if(!textureLoader) {
+            printf("ERROR: Texture loader not available\n");
+            return;
+        }
+        std::string texName(name);
+        std::string dataStr(data);
+
+        GLuint texId = textureLoader->loadTexture(
+            texName,
+            dataStr,
+            width,
+            height
+        );
+        if(texId != 0) {
+            printf("Texture uploaded successfully: %s (%dx%d)\n", name, width, height);
+        } else {
+            printf("Failed to upload texture: %s\n", name);
+        }
     }
 }

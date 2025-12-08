@@ -28,6 +28,7 @@ void BufferController::init() {
     initPresetManager();
     setDefaultData();
     setPresetPath();
+    initTextureLoader();
     initGenerator();
     initPreviewController();
 
@@ -57,14 +58,17 @@ void BufferController::initPreviewController() {
     previewController = new PreviewController(this, camera);
 }
 
-void BufferController::setDefaultData() {
-    defaultData = new DefaultData(presetManager);
-    defaultData->init();
+void BufferController::initTextureLoader() {
+    textureLoader = new TextureLoader();
 }
 
 /*
 ** Preset
 */
+void BufferController::setDefaultData() {
+    defaultData = new DefaultData(presetManager);
+    defaultData->init();
+}
 void BufferController::setPresetPath() {
     std::string path = "/_data/default_preset.json";
     presetManager->getPresetLoader()->setPath(path);
@@ -117,6 +121,11 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         uData.color = dData.color;
         uData.colorRgb = dData.colorRgb;
     }
+
+    uData.texture = 
+        pData.hasKey("texture") ? 
+        pData["texture"].asString() : 
+        dData.texture;
 
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();
@@ -348,9 +357,14 @@ void BufferController::loadPresetData(PresetData& preset) {
         );
         planetBuffer.worldPos = planetPosition;
         planetBuffer.isPreview = false;
+
         buffers->createBufferForPlanet(planetBuffer);
         buffers->planetBuffers.push_back(std::move(planetBuffer));
     }
+}
+
+TextureLoader* BufferController::getTextureLoader() {
+    return textureLoader;
 }
 
 /*

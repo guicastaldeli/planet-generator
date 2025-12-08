@@ -2,6 +2,7 @@
 #include "../.preset/preset_manager.h"
 #include "../.buffers/buffer_generator.h"
 #include "../_utils/default_data.h"
+#include "../_utils/texture_loader.h"
 #include "../camera.h"
 #include "../shader_loader.h"
 #include "../.buffers/raycaster.h"
@@ -34,6 +35,7 @@ class BufferController {
         BufferGenerator* bufferGenerator;
         PresetManager* presetManager;
         PreviewController* previewController;
+        TextureLoader* textureLoader;
 
         void initBuffers();
         void initPresetManager();
@@ -41,6 +43,7 @@ class BufferController {
         void setDefaultData();
         void initGenerator();
         void initPreviewController();
+        void initTextureLoader();
 
         void setCamera(Camera* cam);
         void init();
@@ -60,6 +63,8 @@ class BufferController {
         void deleteSelectedPlanet();
         PresetData getCurrentPreset() const;
         void onPresetImported(const PresetData& preset);
+
+        TextureLoader* getTextureLoader();
 
         bool isPreviewActive() const;
 };

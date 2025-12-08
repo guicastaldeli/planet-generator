@@ -57,9 +57,21 @@ void Buffers::set(BufferData::Type type) {
         GL_STATIC_DRAW
     );
 
+    // Position attribute (3 floats)
     GLuint posAttr = glGetAttribLocation(shaderController->shaderProgram, "aPos");
-    glVertexAttribPointer(posAttr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(posAttr);
+    if(posAttr != -1) {
+        glVertexAttribPointer(posAttr, 3, GL_FLOAT, GL_FALSE, 
+                              5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(posAttr);
+    }
+
+    // Texture coordinate attribute (2 floats, starts after 3 position floats)
+    GLuint texCoordAttr = glGetAttribLocation(shaderController->shaderProgram, "aTexCoord");
+    if(texCoordAttr != -1) {
+        glVertexAttribPointer(texCoordAttr, 2, GL_FLOAT, GL_FALSE, 
+                              5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(texCoordAttr);
+    }
 
     glBindVertexArray(0);
 
@@ -112,7 +124,24 @@ void Buffers::render() {
                 glm::vec3 color = planetBuffer.data.colorRgb;
                 glUniform3f(planetColorLoc, color.r, color.g, color.b);
             }
-            
+
+            GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+            bool hasTex = 
+                !planetBuffer.data.texture.empty() &&
+                bufferController->getTextureLoader()->texExists(planetBuffer.data.texture);
+            if(useTexLoc != -1) {
+                glUniform1i(useTexLoc, hasTex ? 1 : 0);
+            }
+            if(hasTex) {
+                GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
+                GLuint texId = bufferController->getTextureLoader()->getTex(planetBuffer.data.texture);
+                if(texLoc != -1 && texId != 0) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, texId);
+                    glUniform1i(texLoc, 0);
+                }
+            }
+
             GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 
             int isThisPlanetHovered = (
                 bufferController->raycaster->selectedPlanetIndex == &planetBuffer - &planetBuffers[0]
@@ -170,6 +199,23 @@ void Buffers::render() {
             if(planetColorLoc != -1) {
                 glm::vec3 color = previewPlanet.data.colorRgb;
                 glUniform3f(planetColorLoc, color.r, color.g, color.b);
+            }
+
+            GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+            bool hasTex = 
+                !previewPlanet.data.texture.empty() &&
+                bufferController->getTextureLoader()->texExists(previewPlanet.data.texture);
+            if(useTexLoc != -1) {
+                glUniform1i(useTexLoc, hasTex ? 1 : 0);
+            }
+            if(hasTex) {
+                GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
+                GLuint texId = bufferController->getTextureLoader()->getTex(previewPlanet.data.texture);
+                if(texLoc != -1 && texId != 0) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, texId);
+                    glUniform1i(texLoc, 0);
+                }
             }
 
             GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 

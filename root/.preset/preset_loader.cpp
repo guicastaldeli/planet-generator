@@ -68,6 +68,7 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         data.color = val["color"].asString();
         data.colorRgb = ColorConverter::parseColor(data.color);
     }
+    if(val.hasKey("texture")) data.texture = val["texture"].asString();
     if(val.hasKey("position")) data.position = val["position"].asInt();
     if(val.hasKey("distanceFromCenter")) 
         data.distanceFromCenter = val["distanceFromCenter"].asFloat();

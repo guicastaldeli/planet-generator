@@ -2,6 +2,9 @@ export class GeneratorConfig {
     private data: any;
     private defaultData: any;
 
+    private fileRegex: RegExp = /\.[^/.]+$/;
+    private camelCaseRegex: RegExp = /-([a-z])/g;
+
     constructor(data: any, defaultData: any) {
         this.data = data;
         this.defaultData = defaultData;
@@ -23,6 +26,10 @@ export class GeneratorConfig {
         'planet-color': {
             outputKey: 'color',
             transform: (value: string) => value || this.defaultData.color
+        },
+        'planet-texture': {
+            outputKey: 'texture',
+            transform: (value: string) => value || this.defaultData.texture
         },
         'planet-position': {
             outputKey: 'position',
@@ -146,6 +153,11 @@ export class GeneratorConfig {
             defaultValue: () => this.defaultData.color
         },
         { 
+            id: 'planet-texture', 
+            type: 'file', 
+            defaultValue: () => this.defaultData.texture
+        },
+        { 
             id: 'planet-position', 
             type: 'select', 
             defaultValue: () => this.defaultData.position?.toString()
@@ -200,6 +212,8 @@ export class GeneratorConfig {
                 return (el as HTMLSelectElement).value;
             case 'range':
                 return (el as HTMLInputElement).value;
+            case 'file':
+                return (el as HTMLInputElement).files?.[0]?.name.replace(this.fileRegex, "") || '';
             default:
                 return (el as HTMLInputElement).value || '';
         }
@@ -209,9 +223,37 @@ export class GeneratorConfig {
         if(id.startsWith('planet-')) {
             id = id.substring(7);
         }
+        return id.replace(this.camelCaseRegex, (_, l) => l.toUpperCase());
+    }
 
-        const regex = /-([a-z])/g;
-        return id.replace(regex, (_, l) => l.toUpperCase());
+    private setupTextureUpload(container: HTMLElement, update: () => void): void {
+        const input = container.querySelector('#planet-texture') as HTMLInputElement;
+        
+        if(input) {
+            input.addEventListener('change', (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if(file) this.handleTextureUpload(file, update);
+            });
+        }
+    }
+
+    private handleTextureUpload(file: File, update: () => void): void {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const result = e.target?.result as string;
+            const img = new Image();
+            img.onload = () => {
+                const name = file.name.replace(this.fileRegex, "");
+                (window as any).currentTextureData = {
+                    path: name,
+                    data: result,
+                    width: img.width,
+                    height: img.height
+                }
+                update();
+            }
+            img.src = result;
+        }
     }
 
     public setupFormElementListeners(container: HTMLElement, update: () => void): void {
@@ -226,11 +268,12 @@ export class GeneratorConfig {
             el.addEventListener('change', update);
             if(config.type === 'range') this.setupRangeValueDisplay(container, config.id);
         });
+        this.setupTextureUpload(container, update);
     }
 
     private setupRangeValueDisplay(container: HTMLElement, id: string) {
         const slider = container?.querySelector(`#${id}`) as HTMLInputElement;
-        let valueDisplayId;
+        let valueDisplayId: any;
         if(id === 'planet-size') {
             valueDisplayId = 'size-value';
         } else {

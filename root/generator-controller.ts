@@ -206,6 +206,31 @@ export class GeneratorController {
     }
 
     /*
+    ** Upload Texture
+    */
+    private uploadTexture(data: any): void {
+        if(this.emscriptenModule._uploadTexture) {
+            this.emscriptenModule._uploadTexture(
+                data.name,
+                data.data,
+                data.width,
+                data.height
+            );
+        } else if(this.emscriptenModule.ccall) {
+            this.emscriptenModule.ccall('uploadTexture',
+                null,
+                ['string', 'string', 'number', 'number'],
+                [
+                    data.name, 
+                    data.data, 
+                    data.width,
+                    data.height
+                ]
+            );
+        }
+    }
+
+    /*
     ** Generate
     */
     private generate(): void {
@@ -215,12 +240,19 @@ export class GeneratorController {
         }
         
         const data = this.getCurrentData();
+        if ((window as any).currentTextureData) {
+            data.textureData = (window as any).currentTextureData;
+            data.texture = (window as any).currentTextureData;
+            data.texture = data.textureData.name;
+            data.texture = data.texture.name;
+        }
         const dataObj = {
             name: data.name,
             shape: data.shape,
             size: data.size,
             color: data.color,
             colorRgb: data.color,
+            texture: this.uploadTexture(data.texture.name),
             position: Number(data.position),
             rotationDir: data.rotationDir,
             rotationSpeedItself: data.rotationSpeedItself,

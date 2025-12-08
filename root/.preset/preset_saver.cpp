@@ -1,6 +1,7 @@
 #include "preset_saver.h"
 #include "../.controller/buffer_controller.h"
 #include "preset_manager.h"
+#include "../_utils/color_converter.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <iostream>
@@ -21,12 +22,18 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     
     std::string shapeStr = bufferController->bufferGenerator->shapeToString(data.shape);
     std::string rotationStr = bufferController->bufferGenerator->rotationToString(data.rotationDir);
+    auto rgb = ColorConverter::parseColor(data.color); 
+    Value colorRgb(ValueType::Object);
+    colorRgb["r"] = Value(rgb.r);
+    colorRgb["g"] = Value(rgb.g);
+    colorRgb["b"] = Value(rgb.b);
     
     Value result(ValueType::Object);
     result["id"] = Value(static_cast<double>(data.id));
     result["name"] = Value(data.name);
     result["size"] = Value(data.size);
     result["color"] = Value(data.color);
+    result["colorRgb"] = colorRgb;
     result["position"] = Value(static_cast<double>(data.position));
     result["distanceFromCenter"] = Value(data.distanceFromCenter);
     result["rotationSpeedItself"] = Value(data.rotationSpeedItself);
@@ -57,6 +64,7 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
         data.name = value["name"].asString();
         data.size = value["size"].asFloat();
         data.color = value["color"].asString();
+        data.colorRgb = ColorConverter::parseColor(data.color);
         data.position = value["position"].asInt();
         data.distanceFromCenter = value["distanceFromCenter"].asFloat();
         data.rotationSpeedItself = value["rotationSpeedItself"].asFloat();

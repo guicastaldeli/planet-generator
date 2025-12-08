@@ -1,6 +1,7 @@
 #include "preset_loader.h"
 #include "preset_data.h"
 #include "../_data/data_parser.h"
+#include "../_utils/color_converter.h"
 #include "preset_manager.h"
 #include <fstream>
 #include <iostream>
@@ -63,7 +64,10 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
     if(val.hasKey("id")) data.id = val["id"].asInt();
     if(val.hasKey("name")) data.name = val["name"].asString();
     if(val.hasKey("size")) data.size = val["size"].asFloat();
-    if(val.hasKey("color")) data.color = val["color"].asString();
+    if(val.hasKey("color")) {
+        data.color = val["color"].asString();
+        data.colorRgb = ColorConverter::parseColor(data.color);
+    }
     if(val.hasKey("position")) data.position = val["position"].asInt();
     if(val.hasKey("distanceFromCenter")) 
         data.distanceFromCenter = val["distanceFromCenter"].asFloat();

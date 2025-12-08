@@ -18,6 +18,7 @@ struct PlanetData {
     float size;
     std::string texture;
     std::string color;
+    glm::vec3 colorRgb;
     int position;
     RotationAxis rotationDir;
     float rotationSpeedItself;

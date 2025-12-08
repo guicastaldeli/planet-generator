@@ -3,7 +3,7 @@
         {
             "id": 0,
             "name": "Sun",
-            "shape": "TRIANGLE",
+            "shape": "SPHERE",
             "size": 0.3,
             "texture": "",
             "color": "yellow",

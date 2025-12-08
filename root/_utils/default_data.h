@@ -1,5 +1,6 @@
 #pragma once
 #include "../.preset/preset_data.h"
+#include <glm/glm.hpp>
 
 class PresetManager;
 class DefaultData {
@@ -11,6 +12,7 @@ class DefaultData {
             float size;
             std::string texture;
             std::string color;
+            glm::vec3 colorRgb;
             int position;
             RotationAxis rotationDir;
             float rotationSpeedItself;

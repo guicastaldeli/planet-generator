@@ -81,6 +81,7 @@ void PreviewController::startGeneratorPreview() {
         previewData.shape = defaultDataPtr->shape;
         previewData.size = defaultDataPtr->size;
         previewData.color = defaultDataPtr->color;
+        previewData.colorRgb = defaultDataPtr->colorRgb;
         previewData.position = defaultDataPtr->position;
         previewData.rotationDir = defaultDataPtr->rotationDir;
         previewData.rotationSpeedItself = defaultDataPtr->rotationSpeedItself;

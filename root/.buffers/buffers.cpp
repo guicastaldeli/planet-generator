@@ -104,14 +104,19 @@ void Buffers::render() {
             model = glm::translate(model, planetBuffer.worldPos);
             model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(planetBuffer.data.size));
-    
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             
+            GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
+            if(planetColorLoc != -1) {
+                glm::vec3 color = planetBuffer.data.colorRgb;
+                glUniform3f(planetColorLoc, color.r, color.g, color.b);
+            }
+            
+            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 
             int isThisPlanetHovered = (
                 bufferController->raycaster->selectedPlanetIndex == &planetBuffer - &planetBuffers[0]
             ) ? 1 : 0;
-            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
             if(hoverLoc != -1) {
                 glUniform1f(hoverLoc, (float)isThisPlanetHovered);
             }
@@ -161,10 +166,14 @@ void Buffers::render() {
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered");
-            if(hoverLoc != -1) {
-                glUniform1f(hoverLoc, 0.0f);
+            GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
+            if(planetColorLoc != -1) {
+                glm::vec3 color = previewPlanet.data.colorRgb;
+                glUniform3f(planetColorLoc, color.r, color.g, color.b);
             }
+
+            GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 
+            if(hoverLoc != -1) glUniform1f(hoverLoc, 0.0f);
 
             glDrawElements(
                 GL_TRIANGLES,

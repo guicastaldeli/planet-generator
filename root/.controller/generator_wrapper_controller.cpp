@@ -6,6 +6,7 @@
 #include "../.controller/buffer_controller.h"
 #include "preview_controller.h"
 #include "../.buffers/buffers.h"
+#include "../_utils/color_converter.h"
 #include <iostream>
 #include <sstream>
 
@@ -198,27 +199,29 @@ extern "C" {
 
             preset.planets.push_back(newPlanet);
             g_generatorWrapperController->bufferController->currentPreset.planets.push_back(newPlanet);
-            auto newPlanetBuffers = g_generatorWrapperController->
-                bufferController->
-                bufferGenerator->generateFromPreset(preset);
+            
+            PlanetBuffer newPlanetBuffer;
+            newPlanetBuffer.data = newPlanet;
+            newPlanetBuffer.isPreview = false;
 
-            for(auto& planetBuffer : newPlanetBuffers) {
-                float orbitRadius = planetBuffer.data.distanceFromCenter;
-                float initialAngle = planetBuffer.data.orbitAngle.y;
-                glm::vec3 planetPosition(
-                    orbitRadius * cos(glm::radians(initialAngle)),
-                    0.0f,
-                    orbitRadius * sin(glm::radians(initialAngle))
-                );
-                planetBuffer.worldPos = planetPosition;
-                g_generatorWrapperController->
-                    bufferController->
-                    buffers->createBufferForPlanet(planetBuffer);
-                g_generatorWrapperController->
-                    bufferController->
-                    buffers->
-                    planetBuffers.push_back(std::move(planetBuffer));
-            }
+            float orbitRadius = newPlanet.distanceFromCenter;
+            float initialAngle = newPlanet.orbitAngle.y;
+            glm::vec3 planetPosition(
+                orbitRadius * cos(glm::radians(initialAngle)),
+                0.0f,
+                orbitRadius * sin(glm::radians(initialAngle))
+            );
+            newPlanetBuffer.worldPos = planetPosition;
+
+            g_generatorWrapperController->
+                bufferController->
+                buffers->createBufferForPlanet(newPlanetBuffer);
+            
+            g_generatorWrapperController->
+                bufferController->
+                buffers->
+                planetBuffers.push_back(std::move(newPlanetBuffer));
+
 
             printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);
         } catch(const std::exception& e) {
@@ -244,21 +247,26 @@ extern "C" {
         }
         
         const auto& defaultData = allData[0];
-        std::stringstream ss;
-        ss << "{";
-        ss << "\"name\":\"" << defaultData.name << "\",";
-        ss << "\"shape\":\"" << (defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
+        std::stringstream str;
+        str << "{";
+        str << "\"name\":\"" << defaultData.name << "\",";
+        str << "\"shape\":\"" << (defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
                                   defaultData.shape == BufferData::Type::CUBE ? "CUBE" : "TRIANGLE") << "\",";
-        ss << "\"size\":" << defaultData.size << ",";
-        ss << "\"color\":\"" << defaultData.color << "\",";
-        ss << "\"position\":" << defaultData.position << ",";
-        ss << "\"rotationDir\":\"" << (defaultData.rotationDir == RotationAxis::X ? "X" : 
+        str << "\"size\":" << defaultData.size << ",";
+        str << "\"color\":\"" << defaultData.color << "\",";
+        str << "\"colorRgb\":{";
+        str << "\"r\":" << defaultData.colorRgb.r << ",";
+        str << "\"g\":" << defaultData.colorRgb.g << ",";
+        str << "\"b\":" << defaultData.colorRgb.b;
+        str << "},";
+        str << "\"position\":" << defaultData.position << ",";
+        str << "\"rotationDir\":\"" << (defaultData.rotationDir == RotationAxis::X ? "X" : 
                                        defaultData.rotationDir == RotationAxis::Y ? "Y" : "Z") << "\",";
-        ss << "\"rotationSpeedItself\":" << defaultData.rotationSpeedItself << ",";
-        ss << "\"rotationSpeedCenter\":" << defaultData.rotationSpeedCenter;
-        ss << "}";
+        str << "\"rotationSpeedItself\":" << defaultData.rotationSpeedItself << ",";
+        str << "\"rotationSpeedCenter\":" << defaultData.rotationSpeedCenter;
+        str << "}";
         
-        defaultDataStr = ss.str();
+        defaultDataStr = str.str();
         return defaultDataStr.c_str();
     }
 }

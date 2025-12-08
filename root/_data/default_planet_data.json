@@ -4,7 +4,12 @@
     "shape": "SPHERE",
     "size": 0.3,
     "texture": "",
-    "color": "rgb(255, 255, 255)",
+    "color": "#808080",
+    "colorRgb": {
+        "r": 0.5,
+        "g": 0.5,
+        "b": 0.5
+    },
     "position": 0,
     "rotationDir": "Y",
     "rotationSpeedItself": 0.01,

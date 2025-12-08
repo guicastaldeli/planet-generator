@@ -220,6 +220,7 @@ export class GeneratorController {
             shape: data.shape,
             size: data.size,
             color: data.color,
+            colorRgb: data.color,
             position: Number(data.position),
             rotationDir: data.rotationDir,
             rotationSpeedItself: data.rotationSpeedItself,

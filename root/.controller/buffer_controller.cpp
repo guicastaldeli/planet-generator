@@ -1,6 +1,7 @@
 #include "buffer_controller.h"
 #include "../.buffers/buffers.h"
 #include "preview_controller.h"
+#include "../_utils/color_converter.h"
 #include <iostream>
 
 BufferController::BufferController(
@@ -108,10 +109,14 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         pData["size"].asFloat() : 
         dData.size;
             
-    uData.color =
-        pData.hasKey("color") ?
-        pData["color"].asString() :
-        dData.color;
+    if(pData.hasKey("color")) {
+        std::string colorStr = pData["color"].asString();
+        uData.color = colorStr;
+        uData.colorRgb = ColorConverter::parseColor(colorStr);
+    } else {
+        uData.color = dData.color;
+        uData.colorRgb = dData.colorRgb;
+    }
 
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();

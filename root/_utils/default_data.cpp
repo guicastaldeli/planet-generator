@@ -1,5 +1,6 @@
 #include "default_data.h"
 #include "../.preset/preset_manager.h"
+#include "../_utils/color_converter.h"
 #include <fstream>
 #include <sstream>
 #include <emscripten.h>
@@ -42,6 +43,7 @@ bool DefaultData::setData() {
             data.shape = planet.shape;
             data.size = planet.size;
             data.color = planet.color;
+            data.colorRgb = planet.colorRgb;
             data.position = planet.position;
             data.rotationDir = planet.rotationDir;
             data.rotationSpeedItself = planet.rotationSpeedItself;
@@ -67,6 +69,7 @@ PlanetData DefaultData::Data::toPlanetData() const {
     data.shape = this->shape;
     data.size = this->size;
     data.color = this->color;
+    data.colorRgb = this->colorRgb;
     data.position = this->position;
     data.rotationDir = this->rotationDir;
     data.rotationSpeedItself = this->rotationSpeedItself;

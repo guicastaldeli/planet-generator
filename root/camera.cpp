@@ -198,6 +198,7 @@ void Camera::updateFollowing() {
         resetToSavedPos();
         return;
     }
+    ///asdauisdiujhasdiuyay
 
     target = planet->worldPos;
     position = target + followingPlanetOffset;

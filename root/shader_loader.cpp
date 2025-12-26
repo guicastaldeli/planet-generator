@@ -17,65 +17,7 @@ std::vector<Request> ShaderLoader::request;
 int ShaderLoader::pendingLoads = 0;
 
 void ShaderLoader::onDataLoaded() {
-    printf("All shaders loaded!\n");
-
-    for(const auto& s : loadedData) {
-        Type type = s.first;
-        const std::string& content = s.second;
-        
-        switch(type) {
-            case VERTEX:
-                EM_ASM({ console.groupCollapsed("Vertex Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd(); });
-                break;
-            case FRAG:
-                EM_ASM({ console.groupCollapsed("Frag Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case COLOR:
-                EM_ASM({ console.groupCollapsed("Color Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case TEXTURE:
-                EM_ASM({ console.groupCollapsed("Texture Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case AMBIENT_LIGHT:
-                EM_ASM({ console.groupCollapsed("Ambient Light Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case POINT_LIGHT:
-                EM_ASM({ console.groupCollapsed("Point Light Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case SKYBOX:
-                EM_ASM({ console.groupCollapsed("Skybox Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case FRESNEL:
-                EM_ASM({ console.groupCollapsed("Fresnel Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-            case NOISE:
-                EM_ASM({ console.groupCollapsed("Noise Shader") });
-                EM_ASM_({ console.log(UTF8ToString($0)) }, content.c_str());
-                EM_ASM({ console.groupEnd() });
-                break;
-        }
-    }
-    if(dataCallback) {
-        auto callback = dataCallback;
-        dataCallback = nullptr;
-        callback();
-    }
+    printf("\n=== ALL SHADERS LOADED ===\n");
 }
 
 void ShaderLoader::setCallback(std::function<void()> callback) {
@@ -129,6 +71,40 @@ void ShaderLoader::load() {
     }
 }
 
-const std::string& ShaderLoader::getShader(Type type) {
-    return loadedData[type];
+/**
+ * Set Shader
+ */
+std::string ShaderLoader::getShader(Type type, const std::vector<Type>& funcTypes) {
+    if(loadedData.find(type) == loadedData.end()) {
+        printf("Warning: Main shader type %d not found\n", type);
+        return "";
+    }
+
+    std::string mainShader = loadedData[type];
+    size_t mainPos = mainShader.find("void main()");
+    
+    std::vector<Type> allModules = funcTypes;
+    if(mainPos == std::string::npos) return mainShader + concatModules(allModules);
+
+    std::string before = mainShader.substr(0, mainPos);
+    std::string after = mainShader.substr(mainPos);
+
+    return before + concatModules(allModules) + after + concatModules(allModules);
+}
+
+/**
+ * Concat Modules
+ */
+std::string ShaderLoader::concatModules(const std::vector<Type>& funcTypes) {
+    std::string modules;
+    for(Type t : funcTypes) {
+        auto it = loadedData.find(t);
+        if(it != loadedData.end()) {
+            modules += "\n\n// ================ " + std::to_string(t) + " MODULE ================\n";
+            modules += it->second;
+        } else {
+            printf("Warning: Module type %d not found\n", t);
+        }
+    }
+    return modules;
 }

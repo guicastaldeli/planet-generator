@@ -46,7 +46,11 @@ class ShaderLoader {
 
         static void onSuccess(emscripten_fetch_t * fetch);
         static void onError(emscripten_fetch_t *fetch);
-        
+
+        static std::string processIncudes(const std::string& content, const std::string& parentFile);
+        static std::string loadFile(const std::string& fileName);
+        static std::string getParentDir(const std::string& path);
+        static std::string stipVersionDir(const std::string& content);
     public:
         ShaderLoader();
         ~ShaderLoader();
@@ -57,5 +61,7 @@ class ShaderLoader {
         
         static void addUrl(const std::string& url, Type type);
         void load();
-        static const std::string& getShader(Type type);
+
+        static std::string getShader(Type type, const std::vector<Type>& funcType);
+        static std::string ShaderLoader::concatModules(const std::vector<Type>& funcTypes)
 };

@@ -209,24 +209,54 @@ export class GeneratorController {
     ** Upload Texture
     */
     private uploadTexture(data: any): void {
+        console.log('Uploading texture:', data);
+        if (!data.name || !data.data || !data.width || !data.height) {
+            console.error('Invalid texture data:', data);
+            return;
+        }
+        
         if(this.emscriptenModule._uploadTexture) {
-            this.emscriptenModule._uploadTexture(
-                data.name,
-                data.data,
-                data.width,
-                data.height
-            );
-        } else if(this.emscriptenModule.ccall) {
-            this.emscriptenModule.ccall('uploadTexture',
-                null,
-                ['string', 'string', 'number', 'number'],
-                [
-                    data.name, 
-                    data.data, 
+            try {
+                const nameLen = this.emscriptenModule.lengthBytesUTF8(data.name) + 1;
+                const dataLen = this.emscriptenModule.lengthBytesUTF8(data.data) + 1;
+                
+                const namePtr = this.emscriptenModule._malloc(nameLen);
+                const dataPtr = this.emscriptenModule._malloc(dataLen);
+                
+                if(namePtr === 0 || dataPtr === 0) {
+                    return;
+                }
+                
+                this.emscriptenModule.stringToUTF8(data.name, namePtr, nameLen);
+                this.emscriptenModule.stringToUTF8(data.data, dataPtr, dataLen);
+                
+                this.emscriptenModule._uploadTexture(
+                    namePtr,
+                    dataPtr,
                     data.width,
                     data.height
-                ]
-            );
+                );
+                
+                this.emscriptenModule._free(namePtr);
+                this.emscriptenModule._free(dataPtr);
+            } catch (err) {
+                console.error('uploadTexture failed:', err);
+            }
+        } else if(this.emscriptenModule.ccall) {
+            try {
+                this.emscriptenModule.ccall('uploadTexture',
+                    null,
+                    ['string', 'string', 'number', 'number'],
+                    [
+                        data.name, 
+                        data.data, 
+                        data.width,
+                        data.height
+                    ]
+                );
+            } catch (err) {
+                console.error('ccall uploadTexture failed:', err);
+            }
         }
     }
 
@@ -240,19 +270,13 @@ export class GeneratorController {
         }
         
         const data = this.getCurrentData();
-        if ((window as any).currentTextureData) {
-            data.textureData = (window as any).currentTextureData;
-            data.texture = (window as any).currentTextureData;
-            data.texture = data.textureData.name;
-            data.texture = data.texture.name;
-        }
         const dataObj = {
             name: data.name,
             shape: data.shape,
             size: data.size,
             color: data.color,
             colorRgb: data.color,
-            texture: this.uploadTexture(data.texture.name),
+            texture: data.texture || data.texture.name,
             position: Number(data.position),
             rotationDir: data.rotationDir,
             rotationSpeedItself: data.rotationSpeedItself,
@@ -326,6 +350,60 @@ export class GeneratorController {
             console.error('setupEventListeners - modal not found in DOM');
             return;
         }
+        //
+        // FIX THIS LATER for now its good
+        //
+        const textureInput = this.container.querySelector('#planet-texture') as HTMLInputElement;
+            textureInput.addEventListener('change', (e) => {
+                console.log('Texture file input changed!');
+                const file = (e.target as HTMLInputElement).files?.[0];
+                console.log('Selected file:', file?.name, file?.size, file?.type);
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const result = event.target?.result as string;
+                        console.log('FileReader loaded file');
+                        console.log('Result type:', typeof result);
+                        console.log('Result starts with:', result.substring(0, 50));
+                        
+                        // Create an image to get dimensions
+                        const img = new Image();
+                        img.onload = () => {
+                            console.log('Image loaded, dimensions:', img.width, 'x', img.height);
+                            
+                            // Extract just the base64 data (remove "data:image/..." prefix)
+                            const base64Data = result.split(',')[1];
+                            
+                            // Set currentTextureData with the correct structure
+                            (window as any).currentTextureData = {
+                                name: file.name.replace(/\.(jpg|jpeg|png|gif|bmp)$/i, ""),
+                                path: file.name.replace(/\.(jpg|jpeg|png|gif|bmp)$/i, ""),
+                                data: base64Data,  // Just the base64 part, no prefix
+                                width: img.width,
+                                height: img.height
+                            };
+                            
+                            console.log('currentTextureData set:', (window as any).currentTextureData);
+                            console.log('Data length:', base64Data.length);
+                            
+                            // Upload texture immediately for preview
+                            this.uploadTexture((window as any).currentTextureData);
+                            
+                            // Trigger preview update
+                            debouncedUpdate();
+                        };
+                        img.onerror = () => {
+                            console.error('Failed to load image for dimension detection');
+                        };
+                        img.src = result;
+                    };
+                    reader.onerror = () => {
+                        console.error('FileReader error');
+                    };
+                    reader.readAsDataURL(file);
+            }
+        });
 
         const updatePreview = () => {
             const data = this.getCurrentData();
@@ -341,6 +419,9 @@ export class GeneratorController {
                     ['string'], 
                     [dataStr]
                 );
+                const textureData = (window as any).currentTextureData;
+                console.log('Texture data available for preview:', !!textureData);
+                
                 return;
             }
             if(this.emscriptenModule && this.emscriptenModule._updatePreviewPlanet) {
@@ -447,6 +528,15 @@ export class GeneratorController {
                 data[key!] = val;
             }
         });
+
+        //
+        // FIX THIS LATER for now its good
+        //
+        const textureData = (window as any).currentTextureData;
+        if(textureData) {
+            data.texture = textureData.name || textureData.path;
+            console.log('Setting texture in data:', data.texture);
+        }
 
         return data;
     }

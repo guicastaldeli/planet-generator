@@ -34,6 +34,7 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["size"] = Value(data.size);
     result["color"] = Value(data.color);
     result["colorRgb"] = colorRgb;
+    result["texture"] = Value(data.texture);
     result["position"] = Value(static_cast<double>(data.position));
     result["distanceFromCenter"] = Value(data.distanceFromCenter);
     result["rotationSpeedItself"] = Value(data.rotationSpeedItself);
@@ -65,6 +66,11 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
         data.size = value["size"].asFloat();
         data.color = value["color"].asString();
         data.colorRgb = ColorConverter::parseColor(data.color);
+        if(value.hasKey("texture")) {
+            data.texture = value["texture"].asString();
+        } else {
+            data.texture = "";
+        }
         data.position = value["position"].asInt();
         data.distanceFromCenter = value["distanceFromCenter"].asFloat();
         data.rotationSpeedItself = value["rotationSpeedItself"].asFloat();

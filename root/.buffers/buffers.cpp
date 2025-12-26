@@ -131,11 +131,9 @@ void Buffers::render() {
             if(hasTex) {
                 GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
                 GLuint texId = bufferController->getTextureLoader()->getTex(planetBuffer.data.texture);
-                if(texLoc != -1 && texId != 0) {
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, texId);
-                    glUniform1i(texLoc, 0);
-                }
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texId);
+                glUniform1i(texLoc, 0);
             }
 
             GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 
@@ -207,11 +205,9 @@ void Buffers::render() {
             if(hasTex) {
                 GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
                 GLuint texId = bufferController->getTextureLoader()->getTex(previewPlanet.data.texture);
-                if(texLoc != -1 && texId != 0) {
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, texId);
-                    glUniform1i(texLoc, 0);
-                }
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texId);
+                glUniform1i(texLoc, 0);
             }
 
             GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 

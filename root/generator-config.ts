@@ -245,7 +245,7 @@ export class GeneratorConfig {
             img.onload = () => {
                 const name = file.name.replace(this.fileRegex, "");
                 (window as any).currentTextureData = {
-                    path: name,
+                    name: name,
                     data: result,
                     width: img.width,
                     height: img.height

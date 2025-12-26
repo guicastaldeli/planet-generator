@@ -103,5 +103,6 @@
         "*.inc": "cpp",
         "__verbose_abort": "cpp",
         "__node_handle": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

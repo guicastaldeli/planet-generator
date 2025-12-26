@@ -17,7 +17,7 @@ std::vector<Request> ShaderLoader::request;
 int ShaderLoader::pendingLoads = 0;
 
 void ShaderLoader::onDataLoaded() {
-    printf("\n=== ALL SHADERS LOADED ===\n");
+    if(dataCallback) dataCallback();
 }
 
 void ShaderLoader::setCallback(std::function<void()> callback) {
@@ -47,28 +47,95 @@ void ShaderLoader::onError(emscripten_fetch_t *fetch) {
     if(pendingLoads == 0) onDataLoaded();
 }
 
-void ShaderLoader::load() {
-    loadedData.clear();
-    request.clear();
+/**
+ * Process Includes
+ */
+std::string ShaderLoader::processIncudes(const std::string& content, const std::string& parentFile) {
+    std::string result;
+    std::stringstream ss(content);
+    std::string line;
+    std::string parentDir = getParentDir(parentFile);
+    while(std::getline(ss, line)) {
+        std::string trimmed = line;
+        trimmed.erase(0, trimmed.find_first_not_of(" \t"));
+        trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
+        if(trimmed.find("#include ") == 0) {
+            std::string file = trimmed.substr(9);
+            file.erase(file.find_first_not_of(" \t\"'"));
+            file.erase(file.find_last_not_of(" \t\"'") + 1);
+
+            std::string path;
+            if(file.find('/') != std::string::npos) {
+                path = file;
+            } else {
+                path = parentDir + file;
+            }
+
+            std::string includeContent = loadFile(path);
+            includeContent = processIncudes(includeContent, path);
+            includeContent = stripVersionDir(includeContent);
+            result += includeContent + "\n";
+        } else {
+            result += line + "\n";
+        }
+    }
+    return result;
+}
+
+std::string ShaderLoader::getParentDir(const std::string& path) {
+    size_t lastSlash = path.find_last_of('/');
+    if(lastSlash != std::string::npos) {
+        return path.substr(0, lastSlash + 1);
+    }
+    return "";
+}
+
+std::string ShaderLoader::stripVersionDir(const std::string& content) {
+    std::stringstream ss(content);
+    std::string result;
+    std::string line;
+    bool versionFound = false;
+
+    while(std::getline(ss, line)) {
+        std::string trimmed = line;
+        trimmed.erase(0, trimmed.find_first_not_of(" \t"));
+        if(trimmed.find("#version") == 0) {
+            if(!versionFound) {
+                result += line + "\n";
+                versionFound = true;
+            }
+        } else {
+            result += line + "\n";
+        }
+    }
+    return result;
+}
+
+/**
+ * Load
+ */
+std::string ShaderLoader::loadShader(const std::string& fileName) {
+    std::string content = loadFile(fileName);
+    content = processIncudes(content, fileName);
+    printf("\n=== SHADERS: %s ===\n%s\n", fileName.c_str(), content.c_str());
+    return content;
+}
+
+std::string ShaderLoader::loadFile(const std::string& fileName) {
+    printf("Loading file: %s\n", fileName.c_str());
 
     for(const auto& file : files) {
-        std::string path = "_shaders/" + file.fileName;
-        addUrl(path, file.type);
+        if(file.fileName == fileName) {
+            fileType = file.type;
+            break;
+        }
     }
-    pendingLoads = request.size();
-    printf("\nStarting to load %d shaders...\n", pendingLoads);
-
-    for(const auto& r : request) {
-        emscripten_fetch_attr_t attr;
-        emscripten_fetch_attr_init(&attr);
-        strcpy(attr.requestMethod, "GET");
-
-        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-        attr.onsuccess = ShaderLoader::onSuccess;
-        attr.onerror = ShaderLoader::onError;
-
-        emscripten_fetch(&attr, r.url.c_str());
+    auto it = loadedData.find(fileType);
+    if(it != loadedData.end()) {
+        return it->second;
     }
+
+    return "";
 }
 
 /**
@@ -89,7 +156,7 @@ std::string ShaderLoader::getShader(Type type, const std::vector<Type>& funcType
     std::string before = mainShader.substr(0, mainPos);
     std::string after = mainShader.substr(mainPos);
 
-    return before + concatModules(allModules) + after + concatModules(allModules);
+    return before + concatModules(allModules) + after;
 }
 
 /**

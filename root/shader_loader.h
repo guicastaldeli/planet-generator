@@ -28,7 +28,7 @@ struct File {
 class ShaderController;
 class ShaderLoader {
     private:
-        std::vector<File> files = {
+        static std::vector<File> files = {
             { "vertex.glsl", VERTEX },
             { "frag.glsl", FRAG },
             { "color.glsl", COLOR} ,
@@ -50,7 +50,7 @@ class ShaderLoader {
         static std::string processIncudes(const std::string& content, const std::string& parentFile);
         static std::string loadFile(const std::string& fileName);
         static std::string getParentDir(const std::string& path);
-        static std::string stipVersionDir(const std::string& content);
+        static std::string stripVersionDir(const std::string& content);
     public:
         ShaderLoader();
         ~ShaderLoader();
@@ -60,8 +60,8 @@ class ShaderLoader {
         static void setCallback(std::function<void()> callback);
         
         static void addUrl(const std::string& url, Type type);
-        void load();
+        static std::string loadShader(const std::string& fileName);
 
-        static std::string getShader(Type type, const std::vector<Type>& funcType);
-        static std::string ShaderLoader::concatModules(const std::vector<Type>& funcTypes)
+        static std::string getShader(Type type, const std::vector<Type>& funcTypes);
+        static std::string concatModules(const std::vector<Type>& funcTypes)
 };

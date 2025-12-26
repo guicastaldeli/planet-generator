@@ -4,7 +4,7 @@
 #include "../buffers/buffer_generator.h"
 #include "../preset/preset_loader.h"
 #include "../buffers/buffer_controller.h"
-#include "preview_controller.h"
+#include "../buffers/preview_controller.h"
 #include "../buffers/buffers.h"
 #include "../_utils/color_converter.h"
 #include <iostream>

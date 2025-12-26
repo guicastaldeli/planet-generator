@@ -1,5 +1,5 @@
 #include "controls_wrapper_controller.h"
-#include "buffer_controller.h"
+#include "../buffers/buffer_controller.h"
 #include <iostream>
 
 BufferController* g_bufferController = nullptr;

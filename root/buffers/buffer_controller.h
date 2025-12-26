@@ -4,7 +4,7 @@
 #include "../_utils/default_data.h"
 #include "../_utils/texture_loader.h"
 #include "../camera.h"
-#include "../shader_loader.h"
+#include "../_shaders/shader_loader.h"
 #include "../buffers/raycaster.h"
 #include "../main.h"
 

@@ -3,7 +3,7 @@
 #include <emscripten/html5.h>
 #include <iostream>
 #include "../camera.h"
-#include "buffer_controller.h"
+#include "../buffers/buffer_controller.h"
 
 InfoWrapperController* g_infoWrapperController = nullptr;
 

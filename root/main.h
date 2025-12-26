@@ -1,7 +1,7 @@
 #pragma once
 #include "camera.h"
-#include "shader_loader.h"
-#include "controller/buffer_controller.h"
+#include "_shaders/shader_loader.h"
+#include "buffers/buffer_controller.h"
 #include "controller/controls_wrapper_controller.h"
 #include "controller/info_wrapper_controller.h"
 #include "controller/generator_wrapper_controller.h"

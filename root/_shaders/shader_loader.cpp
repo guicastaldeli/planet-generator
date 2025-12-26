@@ -4,18 +4,18 @@
 #include <cstring>
 #include <emscripten/fetch.h>
 #include <emscripten/emscripten.h>
-#include "controller/shader_controller.h"
+#include "shader_controller.h"
 
 std::vector<File> ShaderLoader::files = {
-    { "vertex.glsl", VERTEX },
-    { "frag.glsl", FRAG },
-    { "color.glsl", COLOR} ,
-    { "texture.glsl", TEXTURE },
-    { "ambient_light.glsl", AMBIENT_LIGHT },
-    { "point_light.glsl", POINT_LIGHT },
-    { "skybox.glsl", SKYBOX },
-    { "fresnel.glsl", FRESNEL },
-    { "noise.glsl", NOISE }
+    { "main/vertex.glsl", VERTEX },
+    { "main/frag.glsl", FRAG },
+    { "main/color.glsl", COLOR },
+    { "main/texture.glsl", TEXTURE },
+    { "lightning/ambient_light.glsl", AMBIENT_LIGHT },
+    { "lightning/point_light.glsl", POINT_LIGHT },
+    { "skybox/skybox.glsl", SKYBOX },
+    { "effects/fresnel.glsl", FRESNEL },
+    { "effects/noise.glsl", NOISE }
 };
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();

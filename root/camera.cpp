@@ -44,9 +44,9 @@ Camera::Camera(
 {}
 Camera::~Camera() {}
 
-/*
-** Set Camera
-*/
+/**
+ * Set Camera
+ */
 void Camera::set() {
     glUseProgram(shaderController->shaderProgram);
     
@@ -113,9 +113,9 @@ void Camera::updateVectors() {
     up = glm::normalize(glm::cross(right, front));
 }
 
-/*
-** Save Current Position
-*/
+/**
+ * Save Current Position
+ */
 void Camera::saveCurrentPos() {
     savedPosition = position;
     savedTarget = target;
@@ -127,9 +127,9 @@ void Camera::saveCurrentPosBefore() {
     savedTarget = target;
 }
 
-/*
-** Zoom
-*/
+/**
+ * Zoom
+ */
 void Camera::zoom(float delta) {
     if(zoomLocked) return;
     
@@ -175,9 +175,9 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
     lockPanning(true);
 }
 
-/*
-** Update Following
-*/
+/**
+ * Update Following
+ */
 void Camera::updateFollowing() {
     if(
         !isFollowingPlanet || 
@@ -204,9 +204,9 @@ void Camera::updateFollowing() {
     updateVectors();
 }
 
-/*
-** Reset to Position
-*/
+/**
+ * Reset to Position
+ */
 void Camera::resetToSavedPos() {
     position = savedPosition;
     target = savedTarget;
@@ -226,9 +226,9 @@ void Camera::resetToSavedPos() {
     lockRotation(false);
 }
 
-/*
-** Lock
-*/
+/**
+ * Lock
+ */
 void Camera::lockPanning(bool lock) {
     panningLocked = lock;
 }
@@ -385,9 +385,9 @@ void Camera::setPosition(
     updateVectors();
 }
 
-/*
-** Release Camera
-*/
+/**
+ * Release Camera
+ */
 void Camera::releaseCamera() {
     if(panningLocked || rotationLocked) {
         panningLocked = false;

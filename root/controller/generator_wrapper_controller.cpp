@@ -1,11 +1,11 @@
 #include "generator_wrapper_controller.h"
 #include "../_data/data_parser.h"
-#include "../.preset/preset_data.h"
-#include "../.buffers/buffer_generator.h"
-#include "../.preset/preset_loader.h"
-#include "../.controller/buffer_controller.h"
+#include "../preset/preset_data.h"
+#include "../buffers/buffer_generator.h"
+#include "../preset/preset_loader.h"
+#include "../buffers/buffer_controller.h"
 #include "preview_controller.h"
-#include "../.buffers/buffers.h"
+#include "../buffers/buffers.h"
 #include "../_utils/color_converter.h"
 #include <iostream>
 #include <sstream>

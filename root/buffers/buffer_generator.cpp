@@ -1,8 +1,8 @@
 #include "buffer_generator.h"
 #include "buffers.h"
 #include "../camera.h"
-#include "../.controller/shader_controller.h"
-#include "../.preset/preset_loader.h"
+#include "../controller/shader_controller.h"
+#include "../preset/preset_loader.h"
 #include "../_data/data_parser.h"
 #include <algorithm>
 #include <queue>

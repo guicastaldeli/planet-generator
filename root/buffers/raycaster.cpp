@@ -2,8 +2,8 @@
 #include "../camera.h"
 #include "buffers.h"
 #include "../main.h"
-#include "../.controller/shader_controller.h"
-#include "../.controller/info_wrapper_controller.h"
+#include "../controller/shader_controller.h"
+#include "../controller/info_wrapper_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <glm/glm.hpp>

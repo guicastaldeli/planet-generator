@@ -1,11 +1,11 @@
 #pragma once
-#include "../.preset/preset_manager.h"
-#include "../.buffers/buffer_generator.h"
+#include "../preset/preset_manager.h"
+#include "../buffers/buffer_generator.h"
 #include "../_utils/default_data.h"
 #include "../_utils/texture_loader.h"
 #include "../camera.h"
 #include "../shader_loader.h"
-#include "../.buffers/raycaster.h"
+#include "../buffers/raycaster.h"
 #include "../main.h"
 
 class PreviewController;

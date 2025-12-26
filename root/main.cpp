@@ -1,5 +1,5 @@
 #include "main.h"
-#include ".buffers/buffer_data.h"
+#include "buffers/buffer_data.h"
 
 static Main* g_app = nullptr;
 

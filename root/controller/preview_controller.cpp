@@ -1,5 +1,5 @@
 #include "preview_controller.h"
-#include "../.buffers/buffers.h"
+#include "../buffers/buffers.h"
 #include "../_utils/default_data.h"
 #include <emscripten.h>
 

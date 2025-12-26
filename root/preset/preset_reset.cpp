@@ -1,6 +1,6 @@
 #include "preset_reset.h"
-#include "../.controller/buffer_controller.h"
-#include "../.buffers/buffers.h"
+#include "../buffers/buffer_controller.h"
+#include "../buffers/buffers.h"
 #include <iostream>
 
 PresetReset::PresetReset(BufferController* bufferController) :

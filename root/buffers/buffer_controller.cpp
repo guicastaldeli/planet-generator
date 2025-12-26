@@ -1,5 +1,5 @@
 #include "buffer_controller.h"
-#include "../.buffers/buffers.h"
+#include "../buffers/buffers.h"
 #include "preview_controller.h"
 #include "../_utils/color_converter.h"
 #include <iostream>

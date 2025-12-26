@@ -1,5 +1,5 @@
 #include "preset_saver.h"
-#include "../.controller/buffer_controller.h"
+#include "../buffers/buffer_controller.h"
 #include "preset_manager.h"
 #include "../_utils/color_converter.h"
 #include <emscripten.h>

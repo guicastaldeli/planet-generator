@@ -1,12 +1,12 @@
 #pragma once
-#include ".controller/shader_controller.h"
+#include "controller/shader_controller.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <emscripten.h>
-#include "./.buffers/raycaster.h"
+#include "./buffers/raycaster.h"
 
 class Main;
 class BufferController;

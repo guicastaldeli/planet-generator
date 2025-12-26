@@ -4,8 +4,19 @@
 #include <cstring>
 #include <emscripten/fetch.h>
 #include <emscripten/emscripten.h>
-#include ".controller/shader_controller.h"
+#include "controller/shader_controller.h"
 
+std::vector<File> ShaderLoader::files = {
+    { "vertex.glsl", VERTEX },
+    { "frag.glsl", FRAG },
+    { "color.glsl", COLOR} ,
+    { "texture.glsl", TEXTURE },
+    { "ambient_light.glsl", AMBIENT_LIGHT },
+    { "point_light.glsl", POINT_LIGHT },
+    { "skybox.glsl", SKYBOX },
+    { "fresnel.glsl", FRESNEL },
+    { "noise.glsl", NOISE }
+};
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
 }
@@ -141,7 +152,7 @@ std::string ShaderLoader::loadFile(const std::string& fileName) {
 /**
  * Set Shader
  */
-std::string ShaderLoader::getShader(Type type, const std::vector<Type>& funcTypes) {
+std::string ShaderLoader::getShader() {
     if(loadedData.find(type) == loadedData.end()) {
         printf("Warning: Main shader type %d not found\n", type);
         return "";
@@ -150,7 +161,7 @@ std::string ShaderLoader::getShader(Type type, const std::vector<Type>& funcType
     std::string mainShader = loadedData[type];
     size_t mainPos = mainShader.find("void main()");
     
-    std::vector<Type> allModules = funcTypes;
+    std::vector<Type> allModules = files;
     if(mainPos == std::string::npos) return mainShader + concatModules(allModules);
 
     std::string before = mainShader.substr(0, mainPos);

@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <sstream>
 #include <emscripten/fetch.h>
 
 enum Type {
@@ -28,17 +29,7 @@ struct File {
 class ShaderController;
 class ShaderLoader {
     private:
-        static std::vector<File> files = {
-            { "vertex.glsl", VERTEX },
-            { "frag.glsl", FRAG },
-            { "color.glsl", COLOR} ,
-            { "texture.glsl", TEXTURE },
-            { "ambient_light.glsl", AMBIENT_LIGHT },
-            { "point_light.glsl", POINT_LIGHT },
-            { "skybox.glsl", SKYBOX },
-            { "fresnel.glsl", FRESNEL },
-            { "noise.glsl", NOISE }
-        };
+        static std::vector<File> files;
         static std::unordered_map<Type, std::string> loadedData;
         static std::vector<Request> request;
         static std::function<void()> dataCallback;
@@ -62,6 +53,6 @@ class ShaderLoader {
         static void addUrl(const std::string& url, Type type);
         static std::string loadShader(const std::string& fileName);
 
-        static std::string getShader(Type type, const std::vector<Type>& funcTypes);
-        static std::string concatModules(const std::vector<Type>& funcTypes)
+        static std::string getShader(Type type);
+        static std::string concatModules(const std::vector<Type>& funcTypes);
 };

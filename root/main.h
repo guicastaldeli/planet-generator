@@ -1,10 +1,10 @@
 #pragma once
 #include "camera.h"
 #include "shader_loader.h"
-#include ".controller/buffer_controller.h"
-#include ".controller/controls_wrapper_controller.h"
-#include ".controller/info_wrapper_controller.h"
-#include ".controller/generator_wrapper_controller.h"
+#include "controller/buffer_controller.h"
+#include "controller/controls_wrapper_controller.h"
+#include "controller/info_wrapper_controller.h"
+#include "controller/generator_wrapper_controller.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>

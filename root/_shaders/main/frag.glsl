@@ -7,8 +7,6 @@ varying vec2 vTexCoord;
 uniform sampler2D uTex;
 uniform bool uUseTex;
 
-#include "skybox.glsl"
-
 void main() {
     vec3 base;
     if(uUseTex) {

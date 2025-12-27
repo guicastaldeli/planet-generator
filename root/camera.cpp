@@ -1,7 +1,7 @@
 #include "camera.h"
 #include "main.h"
 #include "buffers/buffers.h"
-#include "controller/buffer_controller.h"
+#include "buffers/buffer_controller.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
@@ -423,7 +423,7 @@ void Camera::update() {
 }
 
 void Camera::init() {
-    emscripten_log(EM_LOG_CONSOLE, "init camera!");
+    emscripten_log(EM_LOG_CONSOLE, "init CAMRAcamera!");
     setEvents();
     updateProjection();
 }

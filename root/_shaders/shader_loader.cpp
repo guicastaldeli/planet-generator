@@ -6,16 +6,17 @@
 #include <emscripten/emscripten.h>
 #include "shader_controller.h"
 
+std::string path = "/root/_shaders/";
 std::vector<File> ShaderLoader::files = {
-    { "main/vertex.glsl", VERTEX },
-    { "main/frag.glsl", FRAG },
-    { "main/color.glsl", COLOR },
-    { "main/texture.glsl", TEXTURE },
-    { "lightning/ambient_light.glsl", AMBIENT_LIGHT },
-    { "lightning/point_light.glsl", POINT_LIGHT },
-    { "skybox/skybox.glsl", SKYBOX },
-    { "effects/fresnel.glsl", FRESNEL },
-    { "effects/noise.glsl", NOISE }
+    { path + "main/vertex.glsl", VERTEX, VERTEX_SHADER_TYPE },
+    { path + "main/frag.glsl", FRAG, FRAG_SHADER_TYPE},
+    { path + "main/color.glsl", COLOR, VERTEX_SHADER_TYPE },
+    { path + "main/texture.glsl", TEXTURE, FRAG_SHADER_TYPE },
+    { path + "lightning/ambient_light.glsl", AMBIENT_LIGHT, FRAG_SHADER_TYPE },
+    { path + "lightning/point_light.glsl", POINT_LIGHT, FRAG_SHADER_TYPE },
+    { path + "skybox/skybox.glsl", SKYBOX, FRAG_SHADER_TYPE },
+    { path + "effect/fresnel.glsl", FRESNEL, FRAG_SHADER_TYPE },
+    { path + "effect/noise.glsl", NOISE, FRAG_SHADER_TYPE }
 };
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
@@ -123,51 +124,48 @@ std::string ShaderLoader::stripVersionDir(const std::string& content) {
 }
 
 /**
- * Load
- */
-std::string ShaderLoader::loadShader(const std::string& fileName) {
-    std::string content = loadFile(fileName);
-    content = processIncudes(content, fileName);
-    printf("\n=== SHADERS: %s ===\n%s\n", fileName.c_str(), content.c_str());
-    return content;
-}
-
-std::string ShaderLoader::loadFile(const std::string& fileName) {
-    printf("Loading file: %s\n", fileName.c_str());
-
-    for(const auto& file : files) {
-        if(file.fileName == fileName) {
-            fileType = file.type;
-            break;
-        }
-    }
-    auto it = loadedData.find(fileType);
-    if(it != loadedData.end()) {
-        return it->second;
-    }
-
-    return "";
-}
-
-/**
  * Set Shader
  */
-std::string ShaderLoader::getShader() {
+std::string ShaderLoader::getShader(Type type) {
     if(loadedData.find(type) == loadedData.end()) {
-        printf("Warning: Main shader type %d not found\n", type);
+        printf("Main shader type %d not found\n", type);
         return "";
     }
 
     std::string mainShader = loadedData[type];
-    size_t mainPos = mainShader.find("void main()");
     
-    std::vector<Type> allModules = files;
-    if(mainPos == std::string::npos) return mainShader + concatModules(allModules);
+    bool isVertexShader = false;
+    for(const auto& file : files) {
+        if(file.type == type) {
+            isVertexShader = (file.shaderType == VERTEX_SHADER_TYPE);
+            break;
+        }
+    }
+    
+    std::vector<Type> appropriateModules;
+    for(const auto& file : files) {
+        if(file.type == type) continue;
+        
+        if(isVertexShader) {
+            if(file.shaderType == VERTEX_SHADER_TYPE) {
+                appropriateModules.push_back(file.type);
+            }
+        } else {
+            if(file.shaderType == FRAG_SHADER_TYPE) {
+                appropriateModules.push_back(file.type);
+            }
+        }
+    }
+    
+    size_t mainPos = mainShader.find("void main()");
+    if(mainPos == std::string::npos) {
+        return mainShader + concatModules(appropriateModules);
+    }
 
     std::string before = mainShader.substr(0, mainPos);
     std::string after = mainShader.substr(mainPos);
-
-    return before + concatModules(allModules) + after;
+    std::string result = before + concatModules(appropriateModules) + after;
+    return result;
 }
 
 /**
@@ -185,4 +183,48 @@ std::string ShaderLoader::concatModules(const std::vector<Type>& funcTypes) {
         }
     }
     return modules;
+}
+
+/**
+ * Load
+ */
+std::string ShaderLoader::loadShader(const std::string& fileName) {
+    std::string content = loadFile(fileName);
+    content = processIncudes(content, fileName);
+    printf("\n=== SHADERS: %s ===\n%s\n", fileName.c_str(), content.c_str());
+    return content;
+}
+
+std::string ShaderLoader::loadFile(const std::string& fileName) {
+    Type fileType;
+    printf("Loading file: %s\n", fileName.c_str());
+
+    for(const auto& file : files) {
+        if(file.fileName == fileName) {
+            fileType = file.type;
+            break;
+        }
+    }
+    auto it = loadedData.find(fileType);
+    if(it != loadedData.end()) {
+        return it->second;
+    }
+
+    return "";
+}
+
+void ShaderLoader::load() {
+    pendingLoads = files.size();
+    for(const auto& file : files) {
+        emscripten_fetch_attr_t attr;
+        emscripten_fetch_attr_init(&attr);
+        strcpy(attr.requestMethod, "GET");
+        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+        attr.onsuccess = onSuccess;
+        attr.onerror = onError;
+
+        std::string url = file.fileName;
+        addUrl(url, file.type);
+        emscripten_fetch(&attr, url.c_str());
+    }
 }

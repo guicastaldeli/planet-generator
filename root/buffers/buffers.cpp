@@ -273,6 +273,6 @@ bool Buffers::isInPreviewMode() const {
 ** Init
 */
 void Buffers::init() {
-    shaderController->initProgram();
+    //shaderController->initProgram();
     emscripten_log(EM_LOG_CONSOLE, "init buffers!");
 }

@@ -92,6 +92,8 @@ void Main::init() {
     shaderLoader = new ShaderLoader();
     shaderLoader->load();
     ShaderLoader::setCallback([this] {
+        shaderLoader->shaderController->initProgram();
+        
         bufferController = new BufferController(this, nullptr, shaderLoader);
         bufferController->initBuffers();
 

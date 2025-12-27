@@ -21,6 +21,16 @@ void ShaderController::load() {
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSrc, NULL);
     glCompileShader(vertexShader);
+    
+    // Check vertex shader compilation
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        printf("ERROR::VERTEX_SHADER::COMPILATION_FAILED\n%s\n", infoLog);
+        printf("Vertex shader source:\n%s\n", vertexSrc);
+    }
 
     /* Frag */
     std::string fragContent = ShaderLoader::getShader(FRAG); 
@@ -29,6 +39,14 @@ void ShaderController::load() {
     fragShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragShader, 1, &fragSrc, NULL);
     glCompileShader(fragShader);
+    
+    // Check fragment shader compilation
+    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragShader, 512, NULL, infoLog);
+        printf("ERROR::FRAGMENT_SHADER::COMPILATION_FAILED\n%s\n", infoLog);
+        printf("Fragment shader source:\n%s\n", fragSrc);
+    }
 }
 
 void ShaderController::initProgram() {

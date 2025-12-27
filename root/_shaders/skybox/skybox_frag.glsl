@@ -14,7 +14,8 @@ vec3 genStars(vec3 dir, float time) {
 }
 
 vec4 getSkyboxColor(vec3 dir, float time) {
-    vec3 color = vec3(0.0, 0.0, 0.0);
+    //vec3 color = vec3(0.0, 0.0, 0.0);
+    vec3 color = vec3(0.5176, 0.2745, 0.2745);
     color += genStars(dir, time);
     return vec4(color, 1.0);
 }

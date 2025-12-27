@@ -38,21 +38,13 @@ bool Raycaster::checkIntersection(
 
     glm::vec4 rayClip = glm::vec4(x, y, -1.0f, 1.0f);
     
-    glm::mat4 projMatrix = glm::perspective(
-        glm::radians(camera->zoomLevel),
-        (float)viewportWidth / (float)viewportHeight,
-        0.1f,
-        100.0f
-    );
+    glm::mat4 projMatrix = camera->getProjectionMatrix();
     
     glm::mat4 invProj = glm::inverse(projMatrix);
     glm::vec4 rayEye = invProj * rayClip;
     rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
-    glm::mat4 view = glm::lookAt(
-        camera->position,
-        camera->target,
-        camera->up
-    );
+    
+    glm::mat4 view = camera->getViewMatrix();
     glm::mat4 invView = glm::inverse(view);
 
     glm::vec4 rayWorld4 = invView * rayEye;

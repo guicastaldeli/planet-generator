@@ -17,8 +17,14 @@ class TextureLoader {
             int width,
             int height
         );
-        GLuint loadTextureFromMemory(const unsigned char* data, int width, int height);
+        GLuint loadTextureFromMemory(
+            const unsigned char* data,
+            int width,
+            int height,
+            int channels
+        );
         void unloadTexture(GLuint texId);
+
         bool texExists(const std::string& texName) const;
         GLuint getTex(const std::string& texName) const;
         void addTex(const std::string& name, GLuint texId);

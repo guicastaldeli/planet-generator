@@ -73,7 +73,7 @@ extern "C" {
         if(g_generatorWrapperController && g_generatorWrapperController->bufferController) {
             g_generatorWrapperController->
                 bufferController->
-                previewController->startGeneratorPreview();
+                previewController->startGeneratorPreview();//
         }
     }
 

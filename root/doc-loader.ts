@@ -1,17 +1,17 @@
-export class DocumentLoader {
-    private static instances: Map<string, DocumentLoader> = new Map();
+export class DocLoader {
+    private static instances: Map<string, DocLoader> = new Map();
     private url: string;
 
     constructor(url: string) {
         this.url = url;
     }
 
-    public static getInstance(url: string): DocumentLoader {
-        if(!DocumentLoader.instances.has(url)) {
+    public static getInstance(url: string): DocLoader {
+        if(!DocLoader.instances.has(url)) {
             if(!url) throw new Error('url is required');
-            DocumentLoader.instances.set(url, new DocumentLoader(url));
+            DocLoader.instances.set(url, new DocLoader(url));
         }
-        return DocumentLoader.instances.get(url!)!;
+        return DocLoader.instances.get(url!)!;
     }
 
     /*

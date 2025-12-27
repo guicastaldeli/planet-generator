@@ -1,14 +1,14 @@
-import { DocumentLoader } from "../../out/document-loader.js";
+import { DocLoader } from "../../out/doc-loader.js";
 
 export class InfoController {
     private emscriptenModule: any;
     
-    private loader: DocumentLoader;
+    private loader: DocLoader;
     private container: HTMLElement | null = null;
         
     constructor(module: any) {
         this.emscriptenModule = module;
-        this.loader = DocumentLoader.getInstance('./interface/_info.html');
+        this.loader = DocLoader.getInstance('./interface/_info.html');
         this.init();
     }
 

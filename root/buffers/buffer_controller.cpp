@@ -178,8 +178,9 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
         selectedPlanetIndex = -1;
         return -1;
     }
+    
     selectedPlanetIndex = -1;
-
+    float closestDistance = std::numeric_limits<float>::max();
     for(int i = 0; i < buffers->planetBuffers.size(); i++) {
         auto& planet = buffers->planetBuffers[i];
         if(raycaster->checkIntersection(
@@ -190,11 +191,14 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
             i,
             planet.data.shape
         )) {
-            selectedPlanetIndex = i;
-            break;
+            float distance = glm::length(planet.worldPos - camera->position);
+            if(distance < closestDistance) {
+                closestDistance = distance;
+                selectedPlanetIndex = i;
+            }
         }
     }
-
+    
     return selectedPlanetIndex;
 }
 
@@ -270,14 +274,12 @@ void BufferController::setCamera(Camera* cam) {
             delete raycaster;
             raycaster = nullptr;
         }
-        /*
         raycaster = new Raycaster(
             main,
             camera,
             buffers,
             shaderLoader->shaderController
         );
-        */
     }
 }
 

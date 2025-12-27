@@ -1,9 +1,9 @@
-import { DocumentLoader } from "../../out/document-loader.js";
+import { DocLoader } from "../../out/doc-loader.js";
 
 export class ControlsController {
     private emscriptenModule: any;
 
-    private loader: DocumentLoader;
+    private loader: DocLoader;
     private container: HTMLElement | null = null;
     private isVisible: boolean = true;
 
@@ -17,7 +17,7 @@ export class ControlsController {
     
     constructor(module: any) {
         this.emscriptenModule = module;
-        this.loader = DocumentLoader.getInstance('./interface/_controls.html');
+        this.loader = DocLoader.getInstance('./interface/_controls.html');
         this.init();
     }
 

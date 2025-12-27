@@ -10,9 +10,11 @@ uniform mat4 projection;
 
 varying vec2 vTexCoord;
 varying vec3 vViewDir;
+varying vec3 vPos;
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
+    
     vTexCoord = aTexCoord;
     vColor = pColor;
 

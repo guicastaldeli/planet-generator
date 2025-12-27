@@ -76,8 +76,11 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     GLuint shaderTypeLoc = glGetUniformLocation(shaderProgram, "shaderType");
     if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 1.0f);
 
-    glm::mat4 model = glm::mat4(10.0f);
-    glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+    glm::mat4 model = glm::mat4(1.0f);
+    model[0][0] = 10.0f;
+    model[1][1] = 10.0f;
+    model[2][2] = 10.0f;
+    glm::mat4 viewMat = glm::mat4(glm::mat3(view));
 
     GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
@@ -85,7 +88,7 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "uTime");
 
     if(modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
-    if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &skyboxView[0][0]);
+    if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &viewMat[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
     if(timeLoc != -1) glUniform1f(timeLoc, time);
 

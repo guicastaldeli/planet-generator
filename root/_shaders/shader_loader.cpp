@@ -88,10 +88,10 @@ std::string ShaderLoader::resolveIncludePath(const std::string& parentFile, cons
  */
 std::string ShaderLoader::processIncludes(const std::string& content, const std::string& parentFile) {
     std::string result;
-    std::stringstream ss(content);
+    std::stringstream strs(content);
     std::string line;
     
-    while(std::getline(ss, line)) {
+    while(std::getline(strs, line)) {
         std::string trimmed = line;
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
@@ -124,12 +124,12 @@ std::string ShaderLoader::processIncludes(const std::string& content, const std:
 }
 
 std::string ShaderLoader::removeDuplicateUniforms(const std::string& content) {
-    std::stringstream ss(content);
+    std::stringstream strs(content);
     std::string result;
     std::string line;
     std::unordered_set<std::string> declaredUniforms;
     
-    while(std::getline(ss, line)) {
+    while(std::getline(strs, line)) {
         std::string trimmed = line;
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         
@@ -165,12 +165,12 @@ std::string ShaderLoader::getParentDir(const std::string& path) {
 }
 
 std::string ShaderLoader::stripVersionDir(const std::string& content) {
-    std::stringstream ss(content);
+    std::stringstream strs(content);
     std::string result;
     std::string line;
     bool versionFound = false;
 
-    while(std::getline(ss, line)) {
+    while(std::getline(strs, line)) {
         std::string trimmed = line;
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         if(trimmed.find("#version") == 0) {
@@ -206,13 +206,12 @@ std::string ShaderLoader::getShader(ShaderPath::Type type) {
     
     std::string processed = processIncludes(mainShader, filePath);
     
-    /*
     printf("\n\n■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
     printf("SHADER: %s (Type: %d)\n", filePath.c_str(), type);
     printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
     printf("%s\n", processed.c_str());
     printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n\n");
-    */
+    
     return processed;
 }
 

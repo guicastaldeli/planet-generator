@@ -3,19 +3,13 @@ float random(vec2 st) {
 }
 
 vec3 genStars(vec3 dir, float time) {
-    vec2 uv = vec2(
-        atan(dir.x, dir.z) / (2.0 * 3.14159265),
-        asin(dir.y) / 3.14159265
-    );
-
-    float starDensity = 0.0005;
-    float starVal = random(uv * 1000.0);
-    if(starVal > 1.0 - starDensity) {
-        float brightness = (starVal - (1.0 - starDensity)) / starDensity;
-        float twinkle = 0.7 + 0.3 * sin(time * 3.0 + uv.x * 10.0);
-        return vec3(1.0) * brightness * twinkle;
+    float starVal = random(dir.xy * 100.0 + dir.z * 50.0);
+    float starDestiny = 0.001;
+    if(starVal > 1.0 - starDestiny) {
+        float brightness = (starVal - (1.0 - starDestiny)) / starDestiny;
+        float twinkle = 0.7 + 0.3 * sin(time * 2.0 + dir.x * 10.0);
+        return vec3(1.0, 1.0, 0.9) * brightness * twinkle * 3.0;
     }
-
     return vec3(0.0);
 }
 

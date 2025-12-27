@@ -2,6 +2,7 @@ precision mediump float;
 
 varying vec2 vTexCoord;
 varying vec3 vViewDir;
+varying vec3 vPos;
 uniform float isHovered;
 uniform float uTime;
 uniform float shaderType;

@@ -155,7 +155,7 @@ void Buffers::render() {
             );
         }
     }
-     if(!previewPlanet.data.name.empty()) {
+    if(!previewPlanet.data.name.empty()) {
         auto it = vaos.find(previewPlanet.data.shape);
         if(it != vaos.end()) {
             glBindVertexArray(it->second);
@@ -163,7 +163,7 @@ void Buffers::render() {
             static float previewRotation = 0.0f;
             previewRotation += 0.5f;
 
-            float screenX = 0.7f;
+            float screenX = 0.3f;
             float screenY = 0.0f;
             int screenWidth = camera->main->width;
             int screenHeight = camera->main->height;

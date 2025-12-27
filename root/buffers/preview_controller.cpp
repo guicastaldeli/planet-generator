@@ -70,8 +70,7 @@ void PreviewController::startGeneratorPreview() {
     }
 
     PlanetData previewData;
-    if(
-        bufferController && 
+    if(bufferController && 
         bufferController->defaultData &&
         !bufferController->defaultData->getAllData().empty()
     ) {

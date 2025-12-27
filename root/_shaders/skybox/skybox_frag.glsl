@@ -3,7 +3,7 @@ float random(vec2 st) {
 }
 
 vec3 genStars(vec3 dir, float time) {
-    float starVal = random(dir.xy * 100.0 + dir.z * 50.0);
+    float starVal = random(dir.xy * 100.0 + dir.z * 10.0);
     float starDestiny = 0.001;
     if(starVal > 1.0 - starDestiny) {
         float brightness = (starVal - (1.0 - starDestiny)) / starDestiny;

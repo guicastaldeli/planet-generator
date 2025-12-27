@@ -49,6 +49,9 @@ class Camera {
 
         void lockZoom(bool lock);
         bool isZoomLocked() const;
+
+        glm::vec3 cubeMinBound;
+        glm::vec3 cubeMaxBound;
         
         Camera(
             Main* main, 
@@ -94,7 +97,9 @@ class Camera {
         void resetToSavedPos();
         void lockPanning(bool lock);
         void lockRotation(bool lock);
-        bool isPanningLocked() const { return panningLocked; }
+        bool isPanningLocked() const { 
+            return panningLocked; 
+        }
 
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();

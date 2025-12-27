@@ -270,12 +270,14 @@ void BufferController::setCamera(Camera* cam) {
             delete raycaster;
             raycaster = nullptr;
         }
+        /*
         raycaster = new Raycaster(
             main,
             camera,
             buffers,
             shaderLoader->shaderController
         );
+        */
     }
 }
 

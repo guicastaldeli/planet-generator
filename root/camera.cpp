@@ -40,7 +40,9 @@ Camera::Camera(
     savedTarget(0.0f, 0.0f, 0.0f),
     isFollowingPlanet(false),
     followingPlanetIndex(-1),
-    followingPlanetOffset(0.0f)
+    followingPlanetOffset(0.0f),
+    cubeMinBound(-1.5f, -1.5f, -1.5f),
+    cubeMaxBound(1.5f, 1.5f, 1.5f)
 {}
 Camera::~Camera() {}
 
@@ -75,7 +77,6 @@ void Camera::rotate(float deltaX, float deltaY) {
 
     updateVectors();
 }
-
 void Camera::pan(float deltaX, float deltaY) {
     if(panningLocked) return;
 
@@ -83,9 +84,49 @@ void Camera::pan(float deltaX, float deltaY) {
         -right * deltaX +
         up * deltaY
     ) * panSpeed;
-
-    position += panOffset;
-    target += panOffset;
+    glm::vec3 newPosition = position + panOffset;
+    glm::vec3 newTarget = target + panOffset;
+    bool hitBoundary = false;
+    
+    if(newPosition.x < cubeMinBound.x) {
+        hitBoundary = true;
+        newPosition.x = cubeMinBound.x;
+    }
+    if(newPosition.x > cubeMaxBound.x) {
+        hitBoundary = true;
+        newPosition.x = cubeMaxBound.x;
+    }
+    if(newPosition.y < cubeMinBound.y) {
+        hitBoundary = true;
+        newPosition.y = cubeMinBound.y;
+    }
+    if (newPosition.y > cubeMaxBound.y) {
+        hitBoundary = true;
+        newPosition.y = cubeMaxBound.y;
+    }
+    if(newPosition.z < cubeMinBound.z) {
+        hitBoundary = true;
+        newPosition.z = cubeMinBound.z;
+    }
+    if(newPosition.z > cubeMaxBound.z) {
+        hitBoundary = true;
+        newPosition.z = cubeMaxBound.z;
+    }
+    
+    newTarget.x = glm::clamp(newTarget.x, cubeMinBound.x, cubeMaxBound.x);
+    newTarget.y = glm::clamp(newTarget.y, cubeMinBound.y, cubeMaxBound.y);
+    newTarget.z = glm::clamp(newTarget.z, cubeMinBound.z, cubeMaxBound.z);
+    if(hitBoundary) {
+        glm::vec3 viewDirection = glm::normalize(target - position);
+        float viewDistance = glm::length(target - position);
+        newTarget = newPosition + viewDirection * viewDistance;
+        newTarget.x = glm::clamp(newTarget.x, cubeMinBound.x, cubeMaxBound.x);
+        newTarget.y = glm::clamp(newTarget.y, cubeMinBound.y, cubeMaxBound.y);
+        newTarget.z = glm::clamp(newTarget.z, cubeMinBound.z, cubeMaxBound.z);
+    }
+    
+    position = newPosition;
+    target = newTarget;
 }
 
 void Camera::reset() {
@@ -179,8 +220,7 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
  * Update Following
  */
 void Camera::updateFollowing() {
-    if(
-        !isFollowingPlanet || 
+    if(!isFollowingPlanet || 
         !bufferController || 
         followingPlanetIndex == -1
     ) {
@@ -188,17 +228,18 @@ void Camera::updateFollowing() {
     }
 
     const PlanetBuffer* planet = nullptr;
-    if(
-        bufferController->buffers &&
+    if(bufferController->buffers &&
         followingPlanetIndex < bufferController->buffers->planetBuffers.size()
     ) {
-        planet = &bufferController->buffers->planetBuffers[followingPlanetIndex];
+        planet = 
+            &bufferController->
+                buffers->
+                planetBuffers[followingPlanetIndex];
     }
     if(!planet) {
         resetToSavedPos();
         return;
     }
-    ///asdauisdiujhasdiuyay
 
     target = planet->worldPos;
     position = target + followingPlanetOffset;

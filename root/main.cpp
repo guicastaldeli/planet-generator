@@ -145,11 +145,9 @@ void Main::init() {
 ** Render
 */
 void Main::render() {
-    // Ensure HD rendering settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     
-    // Clear with high precision
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     

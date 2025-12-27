@@ -9,6 +9,7 @@ ShaderController* ShaderController::instance = nullptr;
 ShaderController* ShaderController::getInstance() {
     if(!instance) {
         instance = new ShaderController();
+        instance->initProgram();
     }
     return instance;
 }

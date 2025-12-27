@@ -13,6 +13,8 @@ class SkyboxRenderer {
         GLsizei indexCount;
 
         void createMesh();
+        void createMeshFromData(const BufferData::MeshData& meshData);
+        void createManualSphere();
     public:
         SkyboxRenderer();
         ~SkyboxRenderer();

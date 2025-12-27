@@ -2,6 +2,9 @@
 #include "../../_shaders/shader_controller.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <emscripten/emscripten.h>
+#include <emscripten.h>
+#include <emscripten/html5.h>
 
 SkyboxRenderer::SkyboxRenderer() :
     vao(0),
@@ -67,16 +70,14 @@ void SkyboxRenderer::createMesh() {
  * Render
  */
 void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float time) {
-    if(shaderProgram == 0) return;
-
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
 
     GLuint shaderTypeLoc = glGetUniformLocation(shaderProgram, "shaderType");
     if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 1.0f);
 
+    glm::mat4 model = glm::mat4(10.0f);
     glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
-    glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f));
 
     GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");

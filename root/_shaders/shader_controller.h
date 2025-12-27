@@ -4,6 +4,10 @@
 
 class ShaderController {
     public:
+        ShaderController();
+        ~ShaderController();
+        static ShaderController* instance;
+
         GLuint fragShader;
         GLuint vertexShader;
         GLuint shaderProgram;
@@ -11,4 +15,11 @@ class ShaderController {
         void checkStatus();
         void load();
         void initProgram();
+
+        static ShaderController* getInstance();
+        GLuint createProgram(
+            const std::string& vertexSource, 
+            const std::string& fragSource
+        );
+        GLuint getProgram() const;
 };

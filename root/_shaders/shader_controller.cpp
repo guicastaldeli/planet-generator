@@ -2,6 +2,17 @@
 #include <emscripten.h>
 #include <GLES3/gl3.h>
 
+ShaderController::ShaderController() {};
+ShaderController::~ShaderController() {};
+
+ShaderController* ShaderController::instance = nullptr;
+ShaderController* ShaderController::getInstance() {
+    if(!instance) {
+        instance = new ShaderController();
+    }
+    return instance;
+}
+
 void ShaderController::checkStatus() {
     GLint success;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -13,6 +24,9 @@ void ShaderController::checkStatus() {
     }
 }
 
+/**
+ * Load
+ */
 void ShaderController::load() {
     /* Vertex */
     std::string vertexContent = ShaderLoader::getShader(VERTEX);
@@ -47,6 +61,9 @@ void ShaderController::load() {
     }
 }
 
+/**
+ * Init Program
+ */
 void ShaderController::initProgram() {
     emscripten_log(EM_LOG_CONSOLE, "shader controller!");
     load();

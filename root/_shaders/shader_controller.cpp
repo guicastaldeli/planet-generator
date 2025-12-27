@@ -74,3 +74,7 @@ void ShaderController::initProgram() {
     glLinkProgram(shaderProgram);
     checkStatus();
 }
+
+GLuint ShaderController::getProgram() const {
+    return shaderProgram;
+}

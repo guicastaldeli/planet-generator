@@ -6,6 +6,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 #include "color.glsl"
+#include "../skybox/skybox_vertex.glsl"
 
 varying vec2 vTexCoord;
 

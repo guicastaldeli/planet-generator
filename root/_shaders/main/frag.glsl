@@ -5,7 +5,7 @@ uniform float isHovered;
 
 #include "color.glsl"
 #include "texture.glsl"
-#include "../skybox/skybox.glsl"
+#include "../skybox/skybox_frag.glsl"
 
 void main() {
     vec3 base = getBaseColor();

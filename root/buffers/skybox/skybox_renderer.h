@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/glew.h>
+#include <GLES3/gl3.h>
 #include <glm/glm.hpp>
 #include "../buffer_data.h"
 
@@ -9,6 +9,7 @@ class SkyboxRenderer {
         GLuint vbo;
         GLuint ebo;
         GLuint shaderProgram;
+        GLuint timeUniform;
 
         void createMesh();
     public:
@@ -22,4 +23,4 @@ class SkyboxRenderer {
             float time
         );
         void cleanup();
-}
+};

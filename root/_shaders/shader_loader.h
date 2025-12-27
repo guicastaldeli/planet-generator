@@ -3,34 +3,17 @@
 #include <string>
 #include <sstream>
 #include <emscripten/fetch.h>
-
-enum Type {
-    VERTEX,
-    FRAG,
-    COLOR,
-    TEXTURE,
-    AMBIENT_LIGHT,
-    POINT_LIGHT,
-    SKYBOX,
-    FRESNEL,
-    NOISE
-};
+#include "shader_path.h"
 
 struct Request {
     std::string url;
-    Type type;
-};
-
-struct File {
-    std::string fileName;
-    Type type;
+    ShaderPath::Type type;
 };
 
 class ShaderController;
 class ShaderLoader {
     private:
-        static std::vector<File> files;
-        static std::unordered_map<Type, std::string> loadedData;
+        static std::unordered_map<ShaderPath::Type, std::string> loadedData;
         static std::vector<Request> request;
         static std::function<void()> dataCallback;
         static int pendingLoads;
@@ -43,6 +26,7 @@ class ShaderLoader {
         static std::string loadFileByPath(const std::string& fileName);
         static std::string getParentDir(const std::string& path);
         static std::string stripVersionDir(const std::string& content);
+        static std::string resolveIncludePath(const std::string& parentFile, const std::string& includePath);
     public:
         ShaderLoader();
         ~ShaderLoader();
@@ -51,9 +35,9 @@ class ShaderLoader {
         static void onDataLoaded();
         static void setCallback(std::function<void()> callback);
         
-        static void addUrl(const std::string& url, Type type);
+        static void addUrl(const std::string& url, ShadePath::Type type);
         static std::string loadShader(const std::string& fileName);
 
         static void load();
-        static std::string getShader(Type type);
+        static std::string getShader(ShaderPath::Type type);
 };

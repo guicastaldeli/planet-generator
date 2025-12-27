@@ -17,4 +17,5 @@ class ShaderController {
         void initProgram();
 
         static ShaderController* getInstance();
+        GLuint getProgram() const;
 };

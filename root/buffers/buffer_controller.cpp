@@ -392,6 +392,12 @@ void BufferController::render(float deltaTime) {
                 buffers->createBufferForPlanet(planetBuffer);
                 buffers->planetBuffers.push_back(std::move(planetBuffer));
             }
+
+            if(skyboxRenderer) skyboxRenderer->render(
+                camera->getViewMatrix(),
+                camera->getProjectionMatrix(),
+                deltaTime
+            );
         } else {
             printf("ERR failed to load preset!\n");
             return;
@@ -400,4 +406,7 @@ void BufferController::render(float deltaTime) {
     bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
     updatePlanetPositions();
     buffers->render();
+
+    skyboxRenderer = new SkyboxRenderer();
+    skyboxRenderer->init();
 }

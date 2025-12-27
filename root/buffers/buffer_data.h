@@ -2,7 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <GL/glew.h>
+#include <GLES3/gl3.h>
 #include <glm/glm.hpp> 
 
 class BufferData {

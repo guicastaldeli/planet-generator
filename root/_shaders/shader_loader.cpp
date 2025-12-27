@@ -6,24 +6,12 @@
 #include <emscripten/emscripten.h>
 #include "shader_controller.h"
 
-std::string path = "/root/_shaders/";
-std::vector<File> ShaderLoader::files = {
-    { path + "main/vertex.glsl", VERTEX },
-    { path + "main/frag.glsl", FRAG },
-    { path + "main/color.glsl", COLOR },
-    { path + "main/texture.glsl", TEXTURE },
-    { path + "lightning/ambient_light.glsl", AMBIENT_LIGHT },
-    { path + "lightning/point_light.glsl", POINT_LIGHT },
-    { path + "skybox/skybox.glsl", SKYBOX },
-    { path + "effect/fresnel.glsl", FRESNEL },
-    { path + "effect/noise.glsl", NOISE }
-};
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
 }
 ShaderLoader::~ShaderLoader() {}
 
-std::unordered_map<Type, std::string> ShaderLoader::loadedData;
+std::unordered_map<ShaderPath::Type, std::string> ShaderLoader::loadedData;
 std::function<void()> ShaderLoader::dataCallback = nullptr;
 std::vector<Request> ShaderLoader::request;
 int ShaderLoader::pendingLoads = 0;
@@ -36,7 +24,7 @@ void ShaderLoader::setCallback(std::function<void()> callback) {
     dataCallback = callback;
 }
 
-void ShaderLoader::addUrl(const std::string& url, Type type) {
+void ShaderLoader::addUrl(const std::string& url, ShaderPath::Type type) {
     request.push_back({ url, type });
 }
 
@@ -59,6 +47,38 @@ void ShaderLoader::onError(emscripten_fetch_t *fetch) {
     if(pendingLoads == 0) onDataLoaded();
 }
 
+std::string ShaderLoader::resolveIncludePath(const std::string& parentFile, const std::string& includePath) {
+    size_t lastSlash = parentFile.find_last_of('/');
+    std::string parentDir;
+    if(lastSlash != std::string::npos) {
+        parentDir = parentFile.substr(0, lastSlash + 1);
+    } else {
+        parentDir = "./";
+    }
+    
+    if(includePath[0] == '/') {
+        return includePath;
+    }
+    
+    std::string result = parentDir;
+    std::string path = includePath;
+    
+    while(path.find("../") == 0) {
+        path = path.substr(3);
+        
+        size_t slashPos = result.find_last_of('/', result.length() - 2);
+        if(slashPos != std::string::npos) {
+            result = result.substr(0, slashPos + 1);
+        } else {
+            break;
+        }
+    }
+    
+    result += path;
+    return result;
+}
+
+
 /**
  * Process Includes
  */
@@ -66,31 +86,29 @@ std::string ShaderLoader::processIncudes(const std::string& content, const std::
     std::string result;
     std::stringstream ss(content);
     std::string line;
-    std::string parentDir = getParentDir(parentFile);
+    
     while(std::getline(ss, line)) {
         std::string trimmed = line;
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
-
+        
         if(trimmed.find("#include ") == 0) {
             size_t fQuote = trimmed.find('"');
             size_t sQuote = trimmed.find('"', fQuote + 1);
             if(fQuote != std::string::npos && sQuote != std::string::npos) {
-                std::string file = trimmed.substr(fQuote + 1, sQuote - fQuote - 1);
-                std::string path;
-                if(file.find('/') != std::string::npos) {
-                    path = file;
-                } else {
-                    path = parentDir + file;
-                }
-
-                printf("Found include: '%s' -> '%s'\n", file.c_str(), path.c_str());
-                std::string includeContent = loadFileByPath(path);
+                std::string includeFile = trimmed.substr(fQuote + 1, sQuote - fQuote - 1);
+                std::string resolvedPath = resolveIncludePath(parentFile, includeFile);
+        
+                printf("Resolved include: '%s' -> '%s'\n", includeFile.c_str(), resolvedPath.c_str());
+                
+                std::string includeContent = loadFileByPath(resolvedPath);
                 if(!includeContent.empty()) {
-                    includeContent = processIncudes(includeContent, path);
+                    includeContent = processIncudes(includeContent, resolvedPath);
                     includeContent = stripVersionDir(includeContent);
                     result += includeContent + "\n";
                 } else {
+                    printf("WARNING: Could not load include file: %s (resolved as: %s)\n", 
+                           includeFile.c_str(), resolvedPath.c_str());
                     result += line + "\n";
                 }
             }
@@ -133,7 +151,7 @@ std::string ShaderLoader::stripVersionDir(const std::string& content) {
 /**
  * Set Shader
  */
-std::string ShaderLoader::getShader(Type type) {
+std::string ShaderLoader::getShader(ShaderPath::Type type) {
     if(loadedData.find(type) == loadedData.end()) {
         printf("Main shader type %d not found\n", type);
         return "";
@@ -162,16 +180,16 @@ std::string ShaderLoader::loadShader(const std::string& fileName) {
 }
 
 std::string ShaderLoader::loadFile(const std::string& fileName) {
-    Type fileType;
+    ShaderPath::Type fileShaderPath::Type;
     printf("Loading file: %s\n", fileName.c_str());
 
     for(const auto& file : files) {
         if(file.fileName == fileName) {
-            fileType = file.type;
+            fileShaderPath::Type = file.type;
             break;
         }
     }
-    auto it = loadedData.find(fileType);
+    auto it = loadedData.find(fileShaderPath::Type);
     if(it != loadedData.end()) {
         return it->second;
     }

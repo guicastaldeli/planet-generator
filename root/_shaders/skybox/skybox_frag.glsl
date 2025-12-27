@@ -21,9 +21,8 @@ vec3 genStars(vec3 dir, float time) {
     return vec3(0.0);
 }
 
-void setSkybox() {
-    vec3 dir = normalize(vPosition);
+void getSkyboxColor(vec3 dir, float time) {
     vec3 color = vec3(0.0, 0.0, 0.0);
-    color += genStars(dir, uTime);
-    fragColor = vec4(color, 1.0);
+    color += genStars(dir, time);
+    return vec4(color, 1.0);
 }

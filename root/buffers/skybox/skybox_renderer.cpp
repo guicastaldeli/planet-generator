@@ -14,10 +14,11 @@ SkyboxRenderer::~SkyboxRenderer() {
     cleanup();
 }
 
-void ShaderRenderer::init() {
+void SkyboxRenderer::init() {
     createMesh();
-    shaderProgram = compileShaderProgram();
-    if(shaderProgram) timeUniform = glGenUniformLocation(shaderProgram, "uTime");
+    ShaderController* controller = ShaderController::getInstance();
+    if(controller) shaderProgram = controller->getProgram();
+    if(shaderProgram) timeUniform = glGetUniformLocation(shaderProgram, "uTime");
 }
 
 /**
@@ -39,7 +40,7 @@ void SkyboxRenderer::createMesh() {
         GL_STATIC_DRAW
     );
 
-    glBindBuffer(GL_ELEMENT_ARRAY, ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         sphereData.indices.size() * sizeof(GLuint),
@@ -48,20 +49,20 @@ void SkyboxRenderer::createMesh() {
     );
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0).
+    glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
 
 /**
  * Render
  */
-void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& projection, float time) {
+void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float time) {
     if(shaderProgram == 0) return;
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
 
-    glm::mat4 view = glm::mat4(glm::mat3(view));
+    glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
 
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
@@ -69,12 +70,12 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& projection, 
 
     if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &skyboxView[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
-    if(timeLOc != -1) glUniform1f(timeLoc, time);
+    if(timeLoc != -1) glUniform1f(timeLoc, time);
 
     glDepthMask(GL_FALSE);
     glDrawElements(
         GL_TRIANGLES,
-        sphereData.indices.size(),
+        BufferData::GetMeshData(BufferData::Type::SPHERE).indices.size(),
         GL_UNSIGNED_INT,
         0
     );
@@ -85,5 +86,5 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& projection, 
 void SkyboxRenderer::cleanup() {
     if(vao) glDeleteVertexArrays(1, &vao);
     if(vbo) glDeleteBuffers(1, &vbo);
-    if(evo) glDeleteBuffers(1, &ebo);
+    if(ebo) glDeleteBuffers(1, &ebo);
 }

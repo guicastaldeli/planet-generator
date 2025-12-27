@@ -2,6 +2,7 @@
 #include <functional>
 #include <string>
 #include <sstream>
+#include <unordered_set>
 #include <emscripten/fetch.h>
 #include "shader_path.h"
 
@@ -21,7 +22,7 @@ class ShaderLoader {
         static void onSuccess(emscripten_fetch_t * fetch);
         static void onError(emscripten_fetch_t *fetch);
 
-        static std::string processIncudes(const std::string& content, const std::string& parentFile);
+        static std::string processIncludes(const std::string& content, const std::string& parentFile);
         static std::string removeDuplicateUniforms(const std::string& content);
         static std::string loadFile(const std::string& fileName);
         static std::string loadFileByPath(const std::string& fileName);

@@ -107,6 +107,9 @@ void Buffers::render() {
                 0.0f,
                 orbitRadius * sin(glm::radians(orbitAngle))
             );
+
+            GLuint shaderTypeLoc = glGetUniformLocation(shaderController->shaderProgram, "shaderType");
+            if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 0.0f);
     
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, planetBuffer.worldPos);

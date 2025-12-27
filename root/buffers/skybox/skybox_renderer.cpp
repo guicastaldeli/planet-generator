@@ -72,6 +72,9 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
 
+    GLuint shaderTypeLoc = glGetUniformLocation(shaderProgram, "shaderType");
+    if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 1.0f);
+
     glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
     glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f));
 

@@ -86,7 +86,7 @@ std::string ShaderLoader::resolveIncludePath(const std::string& parentFile, cons
 /**
  * Process Includes
  */
-std::string ShaderLoader::processIncudes(const std::string& content, const std::string& parentFile) {
+std::string ShaderLoader::processIncludes(const std::string& content, const std::string& parentFile) {
     std::string result;
     std::stringstream ss(content);
     std::string line;
@@ -107,7 +107,7 @@ std::string ShaderLoader::processIncudes(const std::string& content, const std::
                 
                 std::string includeContent = loadFileByPath(resolvedPath);
                 if(!includeContent.empty()) {
-                    includeContent = processIncudes(includeContent, resolvedPath);
+                    includeContent = processIncludes(includeContent, resolvedPath);
                     includeContent = stripVersionDir(includeContent);
                     includeContent = removeDuplicateUniforms(includeContent);
                     result += includeContent + "\n";
@@ -196,14 +196,23 @@ std::string ShaderLoader::getShader(ShaderPath::Type type) {
 
     std::string mainShader = loadedData[type];
     std::string filePath;
+    
     for(const auto& file : ShaderPath::files) {
         if(file.type == type) {
             filePath = file.fileName;
             break;
         }
     }
-
-    return processIncudes(mainShader, filePath);
+    
+    std::string processed = processIncludes(mainShader, filePath);
+    
+    printf("\n\n■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+    printf("SHADER: %s (Type: %d)\n", filePath.c_str(), type);
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+    printf("%s\n", processed.c_str());
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n\n");
+    
+    return processed;
 }
 
 /**
@@ -211,7 +220,7 @@ std::string ShaderLoader::getShader(ShaderPath::Type type) {
  */
 std::string ShaderLoader::loadShader(const std::string& fileName) {
     std::string content = loadFile(fileName);
-    content = processIncudes(content, fileName);
+    content = processIncludes(content, fileName);
     printf("\n=== SHADERS: %s ===\n%s\n", fileName.c_str(), content.c_str());
     return content;
 }

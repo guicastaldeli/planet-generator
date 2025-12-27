@@ -3,7 +3,6 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 SkyboxRenderer::SkyboxRenderer() :
     vao(0),
     vbo(0),
@@ -11,7 +10,6 @@ SkyboxRenderer::SkyboxRenderer() :
     shaderProgram(0),
     timeUniform(0)
 {}
-
 SkyboxRenderer::~SkyboxRenderer() {
     cleanup();
 }

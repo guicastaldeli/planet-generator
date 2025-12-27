@@ -423,7 +423,7 @@ void Camera::update() {
 }
 
 void Camera::init() {
-    emscripten_log(EM_LOG_CONSOLE, "init CAMRAcamera!");
+    emscripten_log(EM_LOG_CONSOLE, "init camera!");
     setEvents();
     updateProjection();
 }

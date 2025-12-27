@@ -16,11 +16,6 @@ enum Type {
     NOISE
 };
 
-enum ShaderType {
-    VERTEX_SHADER_TYPE,
-    FRAG_SHADER_TYPE
-};
-
 struct Request {
     std::string url;
     Type type;
@@ -29,7 +24,6 @@ struct Request {
 struct File {
     std::string fileName;
     Type type;
-    ShaderType shaderType;
 };
 
 class ShaderController;
@@ -46,6 +40,7 @@ class ShaderLoader {
 
         static std::string processIncudes(const std::string& content, const std::string& parentFile);
         static std::string loadFile(const std::string& fileName);
+        static std::string loadFileByPath(const std::string& fileName);
         static std::string getParentDir(const std::string& path);
         static std::string stripVersionDir(const std::string& content);
     public:
@@ -61,5 +56,4 @@ class ShaderLoader {
 
         static void load();
         static std::string getShader(Type type);
-        static std::string concatModules(const std::vector<Type>& funcTypes);
 };

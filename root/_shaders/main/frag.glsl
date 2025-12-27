@@ -1,10 +1,11 @@
 precision mediump float;
 
-#inclue "color.glsl"
-#include "texture.glsl"
-
 varying vec2 vTexCoord;
 uniform float isHovered;
+
+#include "color.glsl"
+#include "texture.glsl"
+#include "../skybox/skybox.glsl"
 
 void main() {
     vec3 base = getBaseColor();

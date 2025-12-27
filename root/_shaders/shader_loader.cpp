@@ -8,15 +8,15 @@
 
 std::string path = "/root/_shaders/";
 std::vector<File> ShaderLoader::files = {
-    { path + "main/vertex.glsl", VERTEX, VERTEX_SHADER_TYPE },
-    { path + "main/frag.glsl", FRAG, FRAG_SHADER_TYPE},
-    { path + "main/color.glsl", COLOR, VERTEX_SHADER_TYPE },
-    { path + "main/texture.glsl", TEXTURE, FRAG_SHADER_TYPE },
-    { path + "lightning/ambient_light.glsl", AMBIENT_LIGHT, FRAG_SHADER_TYPE },
-    { path + "lightning/point_light.glsl", POINT_LIGHT, FRAG_SHADER_TYPE },
-    { path + "skybox/skybox.glsl", SKYBOX, FRAG_SHADER_TYPE },
-    { path + "effect/fresnel.glsl", FRESNEL, FRAG_SHADER_TYPE },
-    { path + "effect/noise.glsl", NOISE, FRAG_SHADER_TYPE }
+    { path + "main/vertex.glsl", VERTEX },
+    { path + "main/frag.glsl", FRAG },
+    { path + "main/color.glsl", COLOR },
+    { path + "main/texture.glsl", TEXTURE },
+    { path + "lightning/ambient_light.glsl", AMBIENT_LIGHT },
+    { path + "lightning/point_light.glsl", POINT_LIGHT },
+    { path + "skybox/skybox.glsl", SKYBOX },
+    { path + "effect/fresnel.glsl", FRESNEL },
+    { path + "effect/noise.glsl", NOISE }
 };
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
@@ -71,22 +71,29 @@ std::string ShaderLoader::processIncudes(const std::string& content, const std::
         std::string trimmed = line;
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
+
         if(trimmed.find("#include ") == 0) {
-            std::string file = trimmed.substr(9);
-            file.erase(file.find_first_not_of(" \t\"'"));
-            file.erase(file.find_last_not_of(" \t\"'") + 1);
+            size_t fQuote = trimmed.find('"');
+            size_t sQuote = trimmed.find('"', fQuote + 1);
+            if(fQuote != std::string::npos && sQuote != std::string::npos) {
+                std::string file = trimmed.substr(fQuote + 1, sQuote - fQuote - 1);
+                std::string path;
+                if(file.find('/') != std::string::npos) {
+                    path = file;
+                } else {
+                    path = parentDir + file;
+                }
 
-            std::string path;
-            if(file.find('/') != std::string::npos) {
-                path = file;
-            } else {
-                path = parentDir + file;
+                printf("Found include: '%s' -> '%s'\n", file.c_str(), path.c_str());
+                std::string includeContent = loadFileByPath(path);
+                if(!includeContent.empty()) {
+                    includeContent = processIncudes(includeContent, path);
+                    includeContent = stripVersionDir(includeContent);
+                    result += includeContent + "\n";
+                } else {
+                    result += line + "\n";
+                }
             }
-
-            std::string includeContent = loadFile(path);
-            includeContent = processIncudes(includeContent, path);
-            includeContent = stripVersionDir(includeContent);
-            result += includeContent + "\n";
         } else {
             result += line + "\n";
         }
@@ -133,56 +140,15 @@ std::string ShaderLoader::getShader(Type type) {
     }
 
     std::string mainShader = loadedData[type];
-    
-    bool isVertexShader = false;
+    std::string filePath;
     for(const auto& file : files) {
         if(file.type == type) {
-            isVertexShader = (file.shaderType == VERTEX_SHADER_TYPE);
+            filePath = file.fileName;
             break;
         }
     }
-    
-    std::vector<Type> appropriateModules;
-    for(const auto& file : files) {
-        if(file.type == type) continue;
-        
-        if(isVertexShader) {
-            if(file.shaderType == VERTEX_SHADER_TYPE) {
-                appropriateModules.push_back(file.type);
-            }
-        } else {
-            if(file.shaderType == FRAG_SHADER_TYPE) {
-                appropriateModules.push_back(file.type);
-            }
-        }
-    }
-    
-    size_t mainPos = mainShader.find("void main()");
-    if(mainPos == std::string::npos) {
-        return mainShader + concatModules(appropriateModules);
-    }
 
-    std::string before = mainShader.substr(0, mainPos);
-    std::string after = mainShader.substr(mainPos);
-    std::string result = before + concatModules(appropriateModules) + after;
-    return result;
-}
-
-/**
- * Concat Modules
- */
-std::string ShaderLoader::concatModules(const std::vector<Type>& funcTypes) {
-    std::string modules;
-    for(Type t : funcTypes) {
-        auto it = loadedData.find(t);
-        if(it != loadedData.end()) {
-            modules += "\n\n// ================ " + std::to_string(t) + " MODULE ================\n";
-            modules += it->second;
-        } else {
-            printf("Warning: Module type %d not found\n", t);
-        }
-    }
-    return modules;
+    return processIncudes(mainShader, filePath);
 }
 
 /**
@@ -210,6 +176,18 @@ std::string ShaderLoader::loadFile(const std::string& fileName) {
         return it->second;
     }
 
+    return "";
+}
+
+std::string ShaderLoader::loadFileByPath(const std::string& fileName) {
+    for(const auto& file : files) {
+        if(file.fileName == fileName) {
+            auto it = loadedData.find(file.type);
+            if(it != loadedData.end()) {
+                return it->second;
+            }
+        }
+    }
     return "";
 }
 

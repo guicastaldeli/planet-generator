@@ -22,7 +22,6 @@ void ShaderController::load() {
     glShaderSource(vertexShader, 1, &vertexSrc, NULL);
     glCompileShader(vertexShader);
     
-    // Check vertex shader compilation
     GLint success;
     GLchar infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -40,7 +39,6 @@ void ShaderController::load() {
     glShaderSource(fragShader, 1, &fragSrc, NULL);
     glCompileShader(fragShader);
     
-    // Check fragment shader compilation
     glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragShader, 512, NULL, infoLog);

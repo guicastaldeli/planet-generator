@@ -3,28 +3,40 @@
 
 static Main* g_app = nullptr;
 
-EM_JS(void, setupCanvas, (int* width, int* height), {
-    const canvas = document.getElementById("ctx");
-    Module.canvas = canvas;
-    HEAP32[width >> 2] = canvas.width;
-    HEAP32[height >> 2] = canvas.height;
-    //console.log("original size %d x %d", canvas.width, canvas.height);
+EM_JS(float, getDevicePixelRatio, (), {
+    return window.devicePixelRatio || 1;
 });
 
-EM_JS(void, handleResize, (int* width, int* height), {
+EM_JS(void, setupCanvas, (int* width, int* height, float* dpr), {
     const canvas = document.getElementById("ctx");
-    HEAP32[width >> 2] = canvas.width;
-    HEAP32[height >> 2] = canvas.height;
-    //console.log("original size %d x %d", canvas.width, canvas.height);
+    Module.canvas = canvas;
+    
+    const pixelRatio = window.devicePixelRatio || 1;
+    const displayWidth = Math.floor(canvas.clientWidth * pixelRatio);
+    const displayHeight = Math.floor(canvas.clientHeight * pixelRatio);
+
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+
+    HEAP32[width >> 2] = displayWidth;
+    HEAP32[height >> 2] = displayHeight;
+    HEAPF32[dpr >> 2] = pixelRatio;
 });
 
 int Main::initGlWindow() {
-    setupCanvas(&width, &height);
-    printf("Canvas size: %d x %d\n", width, height);
+    float dpr = 1.0f;
+    setupCanvas(&width, &height, &dpr);
     if(glfwInit() != GL_TRUE) {
-        printf("gl failed!");
+        printf("glfw failed!");
         return GL_FALSE;
     }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_SAMPLES, 16);
+    glfwWindowHint(GLFW_ALPHA_BITS, 16);
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);//
 
     GLFWwindow* window = glfwCreateWindow(
         width,
@@ -34,11 +46,22 @@ int Main::initGlWindow() {
         NULL
     );
     if(!window) {
-        printf("Window creation failed");
-        glfwTerminate();
-        return 0;
+        glfwWindowHint(GLFW_SAMPLES, 4);
+        window = glfwCreateWindow(width, height, "app", NULL, NULL);
+        if(!window) {
+            printf("Window creation failed");
+            glfwTerminate();
+            return GL_FALSE;
+        }
     }
     glfwMakeContextCurrent(window);
+    
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glViewport(0, 0, width, height);
     printf("GL context created!");
     return GL_TRUE;
 }
@@ -50,22 +73,24 @@ void Main::resize() {
     EM_ASM({
         const canvas = document.getElementById("ctx");
         if(canvas) {
-            const rect = canvas.getBoundingClientRect();
-            const width = Math.floor(rect.width * window.devicePixelRatio);
-            const height = Math.floor(rect.height * window.devicePixelRatio);
-            if(canvas.width !== width || canvas.height !== height) {
-                canvas.width = width;
-                canvas.height = height;
-            }
+            const dpr = window.devicePixelRatio || 1;
+            const displayWidth = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+            const displayHeight = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+            
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
 
-            setValue($0, width, 'i32');
-            setValue($1, height, 'i32');
+            setValue($0, displayWidth, 'i32');
+            setValue($1, displayHeight, 'i32');
+            console.log("HD Resize: " + displayWidth + " x " + displayHeight);
         }
     }, &width, &height);
 
     glViewport(0, 0, width, height);
-    if(camera) camera->updateProjection();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(camera) camera->updateProjection();
 }
 
 void Main::resizeCanvas() {
@@ -120,15 +145,18 @@ void Main::init() {
 ** Render
 */
 void Main::render() {
+    // Ensure HD rendering settings
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    
+    // Clear with high precision
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     static float lastTime = 0;
     float currentTime = emscripten_get_now() / 1000.0f;
     float deltaTime = currentTime - lastTime;
     lastTime = currentTime;
-    /*
-    emscripten_console_log(std::to_string(deltaTime).c_str());
-    emscripten_console_log(std::to_string(lastTime).c_str());
-    emscripten_console_log(std::to_string(currentTime).c_str());
-    */
 
     if(camera) camera->update();
     if(bufferController) bufferController->render(deltaTime);

@@ -4,7 +4,7 @@
             "id": 0,
             "name": "Sun",
             "shape": "SPHERE",
-            "size": 0.3,
+            "size": 0.1,
             "texture": "",
             "color": "yellow",
             "position": 0,

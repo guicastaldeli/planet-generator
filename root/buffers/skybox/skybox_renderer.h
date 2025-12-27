@@ -25,5 +25,10 @@ class SkyboxRenderer {
             const glm::mat4& proj, 
             float time
         );
+        void renderStars(  // New method for stars
+            const glm::mat4& view, 
+            const glm::mat4& proj, 
+            float time
+        );
         void cleanup();
 };

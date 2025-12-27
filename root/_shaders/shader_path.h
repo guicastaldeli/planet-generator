@@ -1,3 +1,7 @@
+#include <fstream>
+#include <string>
+#include <cstring>
+
 class ShaderPath {
     public:
         enum Type {
@@ -19,4 +23,4 @@ class ShaderPath {
         };
 
         static std::vector<File> files;
-}
+};

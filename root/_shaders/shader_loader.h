@@ -22,6 +22,7 @@ class ShaderLoader {
         static void onError(emscripten_fetch_t *fetch);
 
         static std::string processIncudes(const std::string& content, const std::string& parentFile);
+        static std::string removeDuplicateUniforms(const std::string& content);
         static std::string loadFile(const std::string& fileName);
         static std::string loadFileByPath(const std::string& fileName);
         static std::string getParentDir(const std::string& path);
@@ -30,14 +31,18 @@ class ShaderLoader {
     public:
         ShaderLoader();
         ~ShaderLoader();
+        static ShaderLoader* instance;
         ShaderController* shaderController;
+        ShaderPath* shaderPath;
 
         static void onDataLoaded();
         static void setCallback(std::function<void()> callback);
         
-        static void addUrl(const std::string& url, ShadePath::Type type);
+        static void addUrl(const std::string& url, ShaderPath::Type type);
         static std::string loadShader(const std::string& fileName);
 
         static void load();
         static std::string getShader(ShaderPath::Type type);
+        static ShaderLoader* getInstance();
+        static ShaderPath* getShaderPath();
 };

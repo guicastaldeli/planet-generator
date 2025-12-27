@@ -6,12 +6,16 @@ uniform mat4 view;
 uniform mat4 projection;
 
 #include "color.glsl"
-#include "../skybox/skybox_vertex.glsl"
+#include "../skybox/skybox_vert.glsl"
 
 varying vec2 vTexCoord;
+varying vec3 vViewDir;
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     vTexCoord = aTexCoord;
     vColor = pColor;
+
+    vec4 worldPos = model * vec4(aPos, 1.0);
+    vViewDir = getSkyboxDir(worldPos.xyz);
 }

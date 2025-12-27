@@ -29,7 +29,7 @@ void ShaderController::checkStatus() {
  */
 void ShaderController::load() {
     /* Vertex */
-    std::string vertexContent = ShaderLoader::getShader(VERTEX);
+    std::string vertexContent = ShaderLoader::getShader(ShaderLoader::getShaderPath()->VERTEX);
     const char* vertexSrc = vertexContent.c_str();
     
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -46,7 +46,7 @@ void ShaderController::load() {
     }
 
     /* Frag */
-    std::string fragContent = ShaderLoader::getShader(FRAG); 
+    std::string fragContent = ShaderLoader::getShader(ShaderLoader::getShaderPath()->FRAG); 
     const char* fragSrc = fragContent.c_str();
 
     fragShader = glCreateShader(GL_FRAGMENT_SHADER);

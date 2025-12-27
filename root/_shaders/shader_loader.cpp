@@ -2,12 +2,16 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <unordered_set>
 #include <emscripten/fetch.h>
 #include <emscripten/emscripten.h>
 #include "shader_controller.h"
 
+ShaderLoader* ShaderLoader::instance = nullptr;
 ShaderLoader::ShaderLoader() {
     shaderController = new ShaderController();
+    if(!shaderPath) shaderPath = new ShaderPath();
+    instance = this;
 }
 ShaderLoader::~ShaderLoader() {}
 
@@ -105,16 +109,49 @@ std::string ShaderLoader::processIncudes(const std::string& content, const std::
                 if(!includeContent.empty()) {
                     includeContent = processIncudes(includeContent, resolvedPath);
                     includeContent = stripVersionDir(includeContent);
+                    includeContent = removeDuplicateUniforms(includeContent);
                     result += includeContent + "\n";
                 } else {
                     printf("WARNING: Could not load include file: %s (resolved as: %s)\n", 
                            includeFile.c_str(), resolvedPath.c_str());
-                    result += line + "\n";
                 }
             }
         } else {
             result += line + "\n";
         }
+    }
+    return result;
+}
+
+std::string ShaderLoader::removeDuplicateUniforms(const std::string& content) {
+    std::stringstream ss(content);
+    std::string result;
+    std::string line;
+    std::unordered_set<std::string> declaredUniforms;
+    
+    while(std::getline(ss, line)) {
+        std::string trimmed = line;
+        trimmed.erase(0, trimmed.find_first_not_of(" \t"));
+        
+        if(trimmed.find("uniform ") == 0) {
+            size_t typeStart = trimmed.find(' ', 7);
+            if(typeStart != std::string::npos) {
+                size_t nameStart = trimmed.find_first_not_of(" \t", typeStart);
+                if(nameStart != std::string::npos) {
+                    size_t nameEnd = trimmed.find_first_of(" ;[", nameStart);
+                    if(nameEnd != std::string::npos) {
+                        std::string uniformName = trimmed.substr(nameStart, nameEnd - nameStart);
+                        
+                        if(declaredUniforms.find(uniformName) == declaredUniforms.end()) {
+                            declaredUniforms.insert(uniformName);
+                            result += line + "\n";
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
+        result += line + "\n";
     }
     return result;
 }
@@ -159,7 +196,7 @@ std::string ShaderLoader::getShader(ShaderPath::Type type) {
 
     std::string mainShader = loadedData[type];
     std::string filePath;
-    for(const auto& file : files) {
+    for(const auto& file : ShaderPath::files) {
         if(file.type == type) {
             filePath = file.fileName;
             break;
@@ -180,16 +217,16 @@ std::string ShaderLoader::loadShader(const std::string& fileName) {
 }
 
 std::string ShaderLoader::loadFile(const std::string& fileName) {
-    ShaderPath::Type fileShaderPath::Type;
+    ShaderPath::Type fileShaderPath;
     printf("Loading file: %s\n", fileName.c_str());
 
-    for(const auto& file : files) {
+    for(const auto& file : ShaderPath::files) {
         if(file.fileName == fileName) {
-            fileShaderPath::Type = file.type;
+            fileShaderPath = file.type;
             break;
         }
     }
-    auto it = loadedData.find(fileShaderPath::Type);
+    auto it = loadedData.find(fileShaderPath);
     if(it != loadedData.end()) {
         return it->second;
     }
@@ -198,7 +235,7 @@ std::string ShaderLoader::loadFile(const std::string& fileName) {
 }
 
 std::string ShaderLoader::loadFileByPath(const std::string& fileName) {
-    for(const auto& file : files) {
+    for(const auto& file : ShaderPath::files) {
         if(file.fileName == fileName) {
             auto it = loadedData.find(file.type);
             if(it != loadedData.end()) {
@@ -210,8 +247,8 @@ std::string ShaderLoader::loadFileByPath(const std::string& fileName) {
 }
 
 void ShaderLoader::load() {
-    pendingLoads = files.size();
-    for(const auto& file : files) {
+    pendingLoads = ShaderPath::files.size();
+    for(const auto& file : ShaderPath::files) {
         emscripten_fetch_attr_t attr;
         emscripten_fetch_attr_init(&attr);
         strcpy(attr.requestMethod, "GET");
@@ -223,4 +260,16 @@ void ShaderLoader::load() {
         addUrl(url, file.type);
         emscripten_fetch(&attr, url.c_str());
     }
+}
+
+ShaderLoader* ShaderLoader::getInstance() {
+    return instance;
+}
+
+/**
+ * Get ShaderPath
+ */
+ShaderPath* ShaderLoader::getShaderPath() {
+    if(instance) return instance->shaderPath;
+    return nullptr;
 }

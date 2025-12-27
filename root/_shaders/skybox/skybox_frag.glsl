@@ -1,5 +1,3 @@
-uniform float uTime;
-
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
@@ -21,7 +19,7 @@ vec3 genStars(vec3 dir, float time) {
     return vec3(0.0);
 }
 
-void getSkyboxColor(vec3 dir, float time) {
+vec4 getSkyboxColor(vec3 dir, float time) {
     vec3 color = vec3(0.0, 0.0, 0.0);
     color += genStars(dir, time);
     return vec4(color, 1.0);

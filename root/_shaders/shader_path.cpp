@@ -1,7 +1,12 @@
+#include "shader_path.h"
+#include <fstream>
+#include <string>
+#include <cstring>
+
 std::string path = "/root/_shaders/";
 
 std::vector<ShaderPath::File> ShaderPath::files = {
-    { path + "main/vertex.glsl", VERTEX },
+    { path + "main/vert.glsl", VERTEX },
     { path + "main/frag.glsl", FRAG },
     { path + "main/color.glsl", COLOR },
     { path + "main/texture.glsl", TEXTURE },

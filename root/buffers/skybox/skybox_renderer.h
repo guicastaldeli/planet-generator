@@ -10,6 +10,7 @@ class SkyboxRenderer {
         GLuint ebo;
         GLuint shaderProgram;
         GLuint timeUniform;
+        GLsizei indexCount;
 
         void createMesh();
     public:

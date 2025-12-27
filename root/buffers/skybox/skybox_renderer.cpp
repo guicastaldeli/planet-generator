@@ -1,6 +1,8 @@
 #include "skybox_renderer.h"
 #include "../../_shaders/shader_controller.h"
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 SkyboxRenderer::SkyboxRenderer() :
     vao(0),
@@ -26,6 +28,10 @@ void SkyboxRenderer::init() {
  */
 void SkyboxRenderer::createMesh() {
     const auto& sphereData = BufferData::GetMeshData(BufferData::Type::SPHERE);
+    if(sphereData.vertices.empty() || sphereData.indices.empty()) {
+        printf("ERROR: Invalid sphere data for skybox\n");
+        return;
+    }
 
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -50,6 +56,12 @@ void SkyboxRenderer::createMesh() {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    indexCount = sphereData.indices.size();
+
     glBindVertexArray(0);
 }
 
@@ -63,11 +75,14 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     glBindVertexArray(vao);
 
     glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+    glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f));
 
+    GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "uTime");
 
+    if(modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
     if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &skyboxView[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
     if(timeLoc != -1) glUniform1f(timeLoc, time);
@@ -75,7 +90,7 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     glDepthMask(GL_FALSE);
     glDrawElements(
         GL_TRIANGLES,
-        BufferData::GetMeshData(BufferData::Type::SPHERE).indices.size(),
+        indexCount,
         GL_UNSIGNED_INT,
         0
     );

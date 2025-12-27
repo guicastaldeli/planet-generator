@@ -1,7 +1,7 @@
 precision mediump float;
 
 varying vec2 vTexCoord;
-uniform vec3 vViewDir;
+varying vec3 vViewDir;
 uniform float isHovered;
 uniform float uTime;
 

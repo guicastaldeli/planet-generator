@@ -232,7 +232,7 @@ bool BufferGenerator::replaceLastPlanet(
 /*
 ** Generate
 */
-void generate(const char* data) {
+void BufferGenerator::generate(const char* data) {
     try {
         std::string str(data);
 

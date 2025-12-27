@@ -17,9 +17,4 @@ class ShaderController {
         void initProgram();
 
         static ShaderController* getInstance();
-        GLuint createProgram(
-            const std::string& vertexSource, 
-            const std::string& fragSource
-        );
-        GLuint getProgram() const;
 };

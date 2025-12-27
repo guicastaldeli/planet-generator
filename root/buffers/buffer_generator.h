@@ -37,6 +37,7 @@ class BufferGenerator {
         BufferGenerator(Camera* camera);
         ~BufferGenerator();
 
+        void generate(const char* data);
         std::vector<PlanetBuffer> generateFromPreset(const PresetData& preset);
         PlanetBuffer generatePlanet(const PlanetData& data);
         void updatePlanetRotation(std::vector<PlanetBuffer>& planets, float deltaTime);

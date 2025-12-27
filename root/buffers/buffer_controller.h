@@ -7,6 +7,7 @@
 #include "../_shaders/shader_loader.h"
 #include "../buffers/raycaster.h"
 #include "../main.h"
+#include "skybox/skybox_renderer.h"
 
 class PreviewController;
 class BufferController {
@@ -15,6 +16,8 @@ class BufferController {
         ShaderLoader* shaderLoader;
         std::vector<PlanetBuffer> planetBuffers;
         PresetData currentPreset;
+        
+        SkyboxRenderer* skyboxRenderer;
 
         int MIN_PLANETS = 0;
         int MAX_PLANETS = 15;

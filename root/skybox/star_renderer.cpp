@@ -1,5 +1,5 @@
 #include "star_renderer.h"
-#include "../../_shaders/shader_controller.h"
+#include "../_shaders/shader_controller.h"
 #include <random>
 #include <iostream>
 #include <glm/gtc/constants.hpp>
@@ -53,7 +53,7 @@ void StarRenderer::generateStars() {
         star.position.y = radius * sin(theta) * sin(phi);
         star.position.z = radius * cos(theta);
         
-        float colorVar = distBright(gen) * 0.2f;
+        float colorVar = distBright(gen) * 0.0f;
         star.color = glm::vec3(1.0f, 1.0f - colorVar, 1.0f - colorVar * 0.5f);
 
         star.size = distSize(gen);

@@ -23,6 +23,7 @@ class BufferController {
         int MAX_PLANETS = 16;
         int selectedPlanetIndex;
         bool presetLoaded;
+        float totalTime = 0.0f;
         
         BufferController(
             Main* main, 

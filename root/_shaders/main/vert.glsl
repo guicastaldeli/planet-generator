@@ -24,7 +24,7 @@ void main() {
 
     if(shaderType > 1.9 && shaderType < 2.1) {
         vColor = aColor;
-        gl_PointSize = starAttr.x * 200.0;
+        gl_PointSize = starAttr.x * 100.0;
         vStarAttr = starAttr;
     } else {
         vColor = pColor;

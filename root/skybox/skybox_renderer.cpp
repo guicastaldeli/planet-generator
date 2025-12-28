@@ -1,5 +1,5 @@
 #include "skybox_renderer.h"
-#include "../../_shaders/shader_controller.h"
+#include "../_shaders/shader_controller.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <emscripten/emscripten.h>
@@ -29,7 +29,7 @@ void SkyboxRenderer::init() {
 }
 
 /**
- * Create Mesh
+ * Create Mesh//
  */
 void SkyboxRenderer::createMesh() {
     const auto& sphereData = BufferData::GetMeshData(BufferData::Type::SPHERE);

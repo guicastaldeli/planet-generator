@@ -19,8 +19,8 @@ SkyboxRenderer::~SkyboxRenderer() {
 
 void SkyboxRenderer::init() {
     createMesh();
-    ShaderController* controller = ShaderController::getInstance();
-    if(controller) shaderProgram = controller->getProgram();
+    ShaderController* shaderController = ShaderController::getInstance();
+    if(shaderController) shaderProgram = shaderController->getProgram();
     if(shaderProgram) timeUniform = glGetUniformLocation(shaderProgram, "uTime");
 }
 
@@ -106,5 +106,4 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
 void SkyboxRenderer::cleanup() {
     if(vao) glDeleteVertexArrays(1, &vao);
     if(vbo) glDeleteBuffers(1, &vbo);
-    if(ebo) glDeleteBuffers(1, &ebo);
 }

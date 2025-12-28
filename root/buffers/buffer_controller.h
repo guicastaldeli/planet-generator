@@ -20,7 +20,7 @@ class BufferController {
         SkyboxRenderer* skyboxRenderer;
 
         int MIN_PLANETS = 0;
-        int MAX_PLANETS = 15;
+        int MAX_PLANETS = 16;
         int selectedPlanetIndex;
         bool presetLoaded;
         

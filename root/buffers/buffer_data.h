@@ -7,12 +7,6 @@
 
 class BufferData {
     public:
-        enum class Type {
-            TRIANGLE,
-            CUBE,
-            SPHERE
-        };
-
         struct MeshData {
             std::vector<float> vertices;
             std::vector<GLuint> indices;
@@ -31,22 +25,19 @@ class BufferData {
             maxBounds(max) {}
         };
 
-        static const MeshData& GetMeshData(Type t) {
-            static const std::unordered_map<Type, MeshData> map = Data();
-            return map.at(t);
-        }
-
     private:
         static std::unordered_map<Type, MeshData> Data() {
             std::unordered_map<Type, MeshData> map;
+            
             /* Triangle */
             map.emplace(Type::TRIANGLE, MeshData{
                 {
-                    -0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,      1.0f, 1.0f,
-                    -0.5f, -0.5f,  0.5f,     0.0f, 1.0f,
-                    0.0f,  0.5f,  0.0f,      0.5f, 0.5f
+                    -0.5f, -0.5f, -0.5f,     0.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f,      0.0f, -1.0f, 0.0f,     1.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f,      0.0f, -1.0f, 0.0f,     1.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f,     0.0f, -1.0f, 0.0f,     0.0f, 1.0f,
+                    
+                    0.0f,  0.5f,  0.0f,      0.0f, 0.0f, 0.0f,      0.5f, 0.5f,
                 },
                 {
                     4, 0, 1,
@@ -59,38 +50,39 @@ class BufferData {
                 glm::vec3(-0.5f, -0.5f, -0.5f),
                 glm::vec3(0.5f, 0.5f, 0.5f)
             });
+            
             /* Cube */
             map.emplace(Type::CUBE, MeshData{
                 {
-                    -0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,      1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
-                    -0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f,     0.0f, 0.0f, 1.0f,     0.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f,      0.0f, 0.0f, 1.0f,     1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f,      0.0f, 0.0f, 1.0f,     1.0f, 1.0f,
+                    -0.5f,  0.5f,  0.5f,     0.0f, 0.0f, 1.0f,     0.0f, 1.0f,
                     
-                    0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
-                    -0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,      0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f,      0.0f, 0.0f, -1.0f,    0.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f,     0.0f, 0.0f, -1.0f,    1.0f, 0.0f,
+                    -0.5f,  0.5f, -0.5f,     0.0f, 0.0f, -1.0f,    1.0f, 1.0f,
+                    0.5f,  0.5f, -0.5f,      0.0f, 0.0f, -1.0f,    0.0f, 1.0f,
                     
-                    -0.5f,  0.5f,  0.5f,     0.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,      1.0f, 0.0f,
-                    0.5f,  0.5f, -0.5f,      1.0f, 1.0f,
-                    -0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
+                    -0.5f,  0.5f,  0.5f,     0.0f, 1.0f, 0.0f,     0.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f,      0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f,      0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                    -0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 0.0f,     0.0f, 1.0f,
                     
-                    -0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,      1.0f, 1.0f,
-                    -0.5f, -0.5f,  0.5f,     0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f,     0.0f, -1.0f, 0.0f,    0.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f,      0.0f, -1.0f, 0.0f,    1.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f,      0.0f, -1.0f, 0.0f,    1.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f,     0.0f, -1.0f, 0.0f,    0.0f, 1.0f,
                     
-                    0.5f, -0.5f,  0.5f,      0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
-                    0.5f,  0.5f, -0.5f,      1.0f, 1.0f,
-                    0.5f,  0.5f,  0.5f,      0.0f, 1.0f,
+                    0.5f, -0.5f,  0.5f,      1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f,      1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f,      1.0f, 0.0f, 0.0f,     1.0f, 1.0f,
+                    0.5f,  0.5f,  0.5f,      1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
                     
-                    -0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-                    -0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-                    -0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-                    -0.5f,  0.5f, -0.5f,     0.0f, 1.0f
+                    -0.5f, -0.5f, -0.5f,    -1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                    -0.5f, -0.5f,  0.5f,    -1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f,    -1.0f, 0.0f, 0.0f,     1.0f, 1.0f,
+                    -0.5f,  0.5f, -0.5f,    -1.0f, 0.0f, 0.0f,     0.0f, 1.0f
                 },
                 {
                     0, 1, 2, 0, 2, 3,
@@ -103,6 +95,7 @@ class BufferData {
                 glm::vec3(-0.5f, -0.5f, -0.5f),
                 glm::vec3(0.5f, 0.5f, 0.5f)
             });
+            
             /* Sphere */
             auto sphereData = generateSphere(12);
             map.emplace(Type::SPHERE, std::move(sphereData));
@@ -124,6 +117,7 @@ class BufferData {
                 { 0.5f, 0.5f, 0.5f },
                 { -0.5f, 0.5f, 0.5f }
             };
+            
             std::vector<std::vector<GLuint>> cubeFaces = {
                 { 0, 1, 2, 3 },
                 { 5, 4, 7, 6 },
@@ -140,6 +134,14 @@ class BufferData {
                 glm::vec3 v2 = cubeVertices[faceIndices[2]];
                 glm::vec3 v3 = cubeVertices[faceIndices[3]];
                 
+                glm::vec3 normal;
+                if(face == 0) normal = glm::vec3(0.0f, 0.0f, -1.0f);
+                else if(face == 1) normal = glm::vec3(0.0f, 0.0f, 1.0f);
+                else if(face == 2) normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+                else if(face == 3) normal = glm::vec3(1.0f, 0.0f, 0.0f);
+                else if(face == 4) normal = glm::vec3(0.0f, 1.0f, 0.0f);
+                else normal = glm::vec3(0.0f, -1.0f, 0.0f);
+                
                 for(int y = 0; y <= subdivisions; ++y) {
                     float fy = static_cast<float>(y) / subdivisions;
                     glm::vec3 a = glm::mix(v0, v3, fy);
@@ -148,10 +150,15 @@ class BufferData {
                     for(int x = 0; x <= subdivisions; ++x) {
                         float fx = static_cast<float>(x) / subdivisions;
                         glm::vec3 point = glm::mix(a, b, fx);
-                        point = glm::normalize(point) * 0.5f;
-                        vertices.push_back(point.x);
-                        vertices.push_back(point.y);
-                        vertices.push_back(point.z);
+                        glm::vec3 spherePoint = glm::normalize(point);
+                        
+                        vertices.push_back(spherePoint.x * 0.5f);
+                        vertices.push_back(spherePoint.y * 0.5f);
+                        vertices.push_back(spherePoint.z * 0.5f);
+                        
+                        vertices.push_back(spherePoint.x);
+                        vertices.push_back(spherePoint.y);
+                        vertices.push_back(spherePoint.z);
                         
                         float u;
                         float v;

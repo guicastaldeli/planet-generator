@@ -2,6 +2,7 @@
 #include "../_shaders/shader_controller.h"
 #include <random>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <emscripten/html5.h>
 
@@ -41,6 +42,7 @@ void StarRenderer::generateStars() {
     std::uniform_real_distribution<float> distPos(-1.0f, 1.0f);
     std::uniform_real_distribution<float> distBright(0.5f, 1.0f);
     std::uniform_real_distribution<float> distSize(0.1f, 0.4f);
+    std::uniform_real_distribution<float> distRadius(2.0f, 200.0f);
 
     for(int i = 0; i < starCount; i++) {
         Star star;
@@ -48,13 +50,13 @@ void StarRenderer::generateStars() {
         float theta = distPos(gen) * glm::pi<float>();
         float phi = distPos(gen) * 2.0f * glm::pi<float>();
 
-        float radius = 50.0f;
+        float radius = distRadius(gen);
         star.position.x = radius * sin(theta) * cos(phi);
         star.position.y = radius * sin(theta) * sin(phi);
         star.position.z = radius * cos(theta);
         
         float colorVar = distBright(gen);
-        star.color = glm::vec3(1.0f, 1.0f - colorVar, 1.0f - colorVar * 0.5f);
+        star.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
         star.size = distSize(gen);
         star.brightness = distBright(gen);
@@ -133,6 +135,9 @@ void StarRenderer::render(
 ) {
     if(!shaderProgram || starCount == 0) return;
 
+    float currentTime = time / 3;
+    float rotationSpeed = 0.01f;
+
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
 
@@ -140,6 +145,8 @@ void StarRenderer::render(
     if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 2.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
+    glm::vec3 diagonalAxis = glm::normalize(glm::vec3(-1.0f, 0.0f, -1.0f));
+    model = glm::rotate(model, currentTime * rotationSpeed, diagonalAxis);
     GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
     if(modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 
@@ -148,7 +155,7 @@ void StarRenderer::render(
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "uTime");
     if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
-    if(timeLoc != -1) glUniform1f(timeLoc, time);
+    if(timeLoc != -1) glUniform1f(timeLoc, currentTime);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);

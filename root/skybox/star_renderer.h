@@ -15,6 +15,7 @@ private:
         glm::vec3 color;
         float size;
         float brightness;
+        float phase;
     };
     
     std::vector<Star> stars;

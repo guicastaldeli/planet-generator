@@ -53,11 +53,14 @@ void StarRenderer::generateStars() {
         star.position.y = radius * sin(theta) * sin(phi);
         star.position.z = radius * cos(theta);
         
-        float colorVar = distBright(gen) * 0.0f;
+        float colorVar = distBright(gen);
         star.color = glm::vec3(1.0f, 1.0f - colorVar, 1.0f - colorVar * 0.5f);
 
         star.size = distSize(gen);
         star.brightness = distBright(gen);
+
+        std::uniform_real_distribution<float> distPhase(0.0f, 2.0f * glm::pi<float>());
+        star.phase = distPhase(gen);
 
         stars.push_back(star);
     }
@@ -79,6 +82,8 @@ void StarRenderer::createBuffers() {
 
         vertexData.push_back(star.size);
         vertexData.push_back(star.brightness);
+
+        vertexData.push_back(star.phase);
     }
 
     glGenVertexArrays(1, &vao);
@@ -96,25 +101,23 @@ void StarRenderer::createBuffers() {
     GLint posLoc = glGetAttribLocation(shaderProgram, "aPos");
     GLint colorLoc = glGetAttribLocation(shaderProgram, "aColor");
     GLint attrLoc = glGetAttribLocation(shaderProgram, "starAttr");
-    
-    printf("StarRenderer attribute locations: aPos=%d, aColor=%d, starAttr=%d\n", 
-           posLoc, colorLoc, attrLoc);
-    printf("First star: pos=(%.2f, %.2f, %.2f), color=(%.2f, %.2f, %.2f), size=%.2f, brightness=%.2f\n",
-           stars[0].position.x, stars[0].position.y, stars[0].position.z,
-           stars[0].color.r, stars[0].color.g, stars[0].color.b,
-           stars[0].size, stars[0].brightness);
-    
+    GLint phaseLoc = glGetAttribLocation(shaderProgram, "aPhase");
+    const int STRIDE = 9 * sizeof(float);
     if(posLoc != -1) {
-        glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)0);
         glEnableVertexAttribArray(posLoc);
     }
     if(colorLoc != -1) {
-        glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(colorLoc);
     }
     if(attrLoc != -1) {
-        glVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, STRIDE, (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(attrLoc);
+    }
+    if(phaseLoc != -1) {
+        glVertexAttribPointer(phaseLoc, 1, GL_FLOAT, GL_FALSE, STRIDE, (void*)(8 * sizeof(float)));
+        glEnableVertexAttribArray(phaseLoc);
     }
 
     glBindVertexArray(0);

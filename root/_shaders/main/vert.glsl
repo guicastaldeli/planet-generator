@@ -3,6 +3,7 @@ precision mediump float;
 attribute vec3 aPos;
 attribute vec2 aTexCoord;
 attribute vec3 aColor;
+attribute float aPhase;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -26,10 +27,13 @@ void main() {
         vColor = aColor;
         gl_PointSize = starAttr.x * 100.0;
         vStarAttr = starAttr;
+        vPhase = aPhase;
     } else {
         vColor = pColor;
+        vPhase = 0.0;
     }
 
     vec4 worldPos = model * vec4(aPos, 1.0);
     vViewDir = getSkyboxDir(worldPos.xyz);
+
 }

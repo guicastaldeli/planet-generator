@@ -66,19 +66,26 @@ GLuint TextureLoader::loadTextureFromMemory(
     int height,
     int channels
 ) {
+    if(width <= 0 || height <= 0 || channels <= 0 || channels > 4) {
+        std::cerr << "Invalid texture dimensions or channels: " 
+                  << width << "x" << height << " channels: " << channels << std::endl;
+        return 0;
+    }
+    
     GLuint texId;
     glGenTextures(1, &texId);
     glBindTexture(GL_TEXTURE_2D, texId);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     
     GLenum format;
     switch(channels) {
         case 1:
-            format = GL_RED;
-            std::cout << "  Format: GL_RED" << std::endl;
+            format = GL_LUMINANCE;
+            std::cout << "  Format: GL_LUMINANCE" << std::endl;
             break;
         case 2:
-            format = GL_RG;
-            std::cout << "  Format: GL_RG" << std::endl;
+            format = GL_LUMINANCE_ALPHA;
+            std::cout << "  Format: GL_LUMINANCE_ALPHA" << std::endl;
             break;
         case 3:
             format = GL_RGB;
@@ -89,16 +96,16 @@ GLuint TextureLoader::loadTextureFromMemory(
             std::cout << "  Format: GL_RGBA" << std::endl;
             break;
         default:
-            std::cerr << "Unsupported number of channels!: " << channels << std::endl;
+            std::cerr << "Unsupported number of channels: " << channels << std::endl;
             glDeleteTextures(1, &texId);
             return 0;
     }
-    
     glTexImage2D(
         GL_TEXTURE_2D, 
         0, 
-        format, 
-        width, height, 
+        format,
+        width, 
+        height, 
         0, 
         format, 
         GL_UNSIGNED_BYTE, 
@@ -107,12 +114,12 @@ GLuint TextureLoader::loadTextureFromMemory(
     
     GLenum error = glGetError();
     if(error != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after glTexImage2D" << std::hex << error << std::dec << std::endl;
+        std::cerr << "OpenGL error after glTexImage2D: 0x" << std::hex << error << std::dec << std::endl;
         glDeleteTextures(1, &texId);
         return 0;
     }
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
     bool isPowerOfTwo = (width & (width - 1)) == 0 && (height & (height - 1)) == 0;
@@ -126,13 +133,10 @@ GLuint TextureLoader::loadTextureFromMemory(
     }
     
     glBindTexture(GL_TEXTURE_2D, 0);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     
-    error = glGetError();
-    if(error != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after texture creation" << std::hex << error << std::dec << std::endl;
-    } else {
-        std::cout << "Texture created successfully. ID: " << texId << std::endl;
-    }
+    std::cout << "  Texture created successfully. ID: " << texId 
+              << " Size: " << width << "x" << height << std::endl;
     
     return texId;
 }

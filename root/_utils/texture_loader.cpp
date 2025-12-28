@@ -81,19 +81,15 @@ GLuint TextureLoader::loadTextureFromMemory(
     switch(channels) {
         case 1:
             format = GL_LUMINANCE;
-            std::cout << "  Format: GL_LUMINANCE" << std::endl;
             break;
         case 2:
             format = GL_LUMINANCE_ALPHA;
-            std::cout << "  Format: GL_LUMINANCE_ALPHA" << std::endl;
             break;
         case 3:
             format = GL_RGB;
-            std::cout << "  Format: GL_RGB" << std::endl;
             break;
         case 4:
             format = GL_RGBA;
-            std::cout << "  Format: GL_RGBA" << std::endl;
             break;
         default:
             std::cerr << "Unsupported number of channels: " << channels << std::endl;

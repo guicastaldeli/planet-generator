@@ -7,7 +7,7 @@
 #include "../_shaders/shader_loader.h"
 #include "../buffers/raycaster.h"
 #include "../main.h"
-#include "skybox/skybox_renderer.h"
+#include "../skybox/skybox_renderer.h"
 
 class PreviewController;
 class BufferController {

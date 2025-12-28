@@ -13,6 +13,8 @@ class ShaderPath {
             POINT_LIGHT,
             SKYBOX_VERT,
             SKYBOX_FRAG,
+            STAR_COLOR,
+            STAR_ATTR,
             FRESNEL,
             NOISE
         };

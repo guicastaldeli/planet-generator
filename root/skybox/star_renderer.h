@@ -18,7 +18,7 @@ class StarRenderer {
         };
 
         std::vector<Star> stars;
-        void generateStars(int count);
+        void generateStars();
         void createBuffers();
     public:
         StarRenderer();

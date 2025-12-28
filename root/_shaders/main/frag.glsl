@@ -10,12 +10,20 @@ uniform float shaderType;
 #include "color.glsl"
 #include "texture.glsl"
 #include "../skybox/skybox_frag.glsl"
+#include "../skybox/star_attr.glsl"
+#include "../skybox/star_color.glsl"
 
 void main() {
-    if(shaderType > 0.5) {
-        vec4 skyboxColor = getSkyboxColor(vViewDir, uTime);
+    //Stars
+    if(shaderType > 1.9 && shaderType < 2.1) {
+        gl_FragColor = getStarColor(vColor, starAttr.y, uTime);
+    }
+    //Skybox
+    else if(shaderType > 0.5) {
+        vec4 skyboxColor = getSkyboxColor(vViewDir);
         gl_FragColor = skyboxColor;
-    } else {
+    } 
+    else {
         vec3 base = getBaseColor();
         vec3 hoverColor = vec3(1.0, 1.0, 1.0);
         vec3 finalColor = mix(base, hoverColor, isHovered);

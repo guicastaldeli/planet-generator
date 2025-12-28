@@ -11,7 +11,8 @@ SkyboxRenderer::SkyboxRenderer() :
     vbo(0),
     ebo(0),
     shaderProgram(0),
-    timeUniform(0)
+    timeUniform(0),
+    starRenderer(nullptr)
 {}
 SkyboxRenderer::~SkyboxRenderer() {
     cleanup();
@@ -22,6 +23,9 @@ void SkyboxRenderer::init() {
     ShaderController* shaderController = ShaderController::getInstance();
     if(shaderController) shaderProgram = shaderController->getProgram();
     if(shaderProgram) timeUniform = glGetUniformLocation(shaderProgram, "uTime");
+
+    starRenderer = new StarRenderer();
+    starRenderer->init();
 }
 
 /**

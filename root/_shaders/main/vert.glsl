@@ -7,6 +7,7 @@ uniform mat4 projection;
 
 #include "color.glsl"
 #include "../skybox/skybox_vert.glsl"
+#include "../skybox/star_attr.glsl"
 
 varying vec2 vTexCoord;
 varying vec3 vViewDir;

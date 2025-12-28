@@ -2,6 +2,7 @@
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
 #include "../buffers/buffer_data.h"
+#include "star_renderer.h"
 
 class SkyboxRenderer {
     private:
@@ -16,6 +17,8 @@ class SkyboxRenderer {
     public:
         SkyboxRenderer();
         ~SkyboxRenderer();
+
+        StarRenderer* starRenderer;
 
         void init();
         void render(

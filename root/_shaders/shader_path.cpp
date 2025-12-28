@@ -14,6 +14,8 @@ std::vector<ShaderPath::File> ShaderPath::files = {
     { path + "lightning/point_light.glsl", POINT_LIGHT },
     { path + "skybox/skybox_vert.glsl", SKYBOX_VERT },
     { path + "skybox/skybox_frag.glsl", SKYBOX_FRAG },
+    { path + "skybox/star_color.glsl", STAR_COLOR },
+    { path + "skybox/star_attr.glsl", STAR_ATTR },
     { path + "effect/fresnel.glsl", FRESNEL },
     { path + "effect/noise.glsl", NOISE }
 };

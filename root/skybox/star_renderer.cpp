@@ -2,6 +2,7 @@
 #include <random>
 #include <iostream>
 #include "../_shaders/shader_controller.h"
+#include <glm/gtc/constants.hpp>
 
 StarRenderer::StarRenderer() :
     vao(0),
@@ -33,7 +34,7 @@ void StarRenderer::generateStars() {
     std::uniform_real_distribution<float> distBright(0.5f, 1.0f);
     std::uniform_real_distribution<float> distSize(0.1f, 0.4f);
 
-    for(int i = 0; i < count; i++) {
+    for(int i = 0; i < starCount; i++) {
         Star star;
 
         float theta = distPos(gen) * glm::pi<float>();
@@ -131,7 +132,7 @@ void StarRenderer::render(
     glBindVertexArray(vao);
 
     GLuint shaderTypeLoc = glGetUniformLocation(shaderProgram, "shaderType");
-    if(shaderTypeLoc != 1) glUniform1f(shaderTypeLoc, 2.0f);
+    if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 2.0f);
 
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
@@ -143,7 +144,6 @@ void StarRenderer::render(
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glPointSize(8.0f);
     glDrawArrays(GL_POINTS, 0, starCount);
 
     glDisable(GL_BLEND);

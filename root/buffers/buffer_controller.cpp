@@ -410,6 +410,14 @@ void BufferController::render(float deltaTime) {
     bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
     updatePlanetPositions();
     if(skyboxRenderer) {
+        skyboxRenderer->
+            starRenderer->render(
+                camera->getViewMatrix(),
+                camera->getProjectionMatrix(),
+                deltaTime
+            );
+    }
+    if(skyboxRenderer) {
         skyboxRenderer->render(
             camera->getViewMatrix(),
             camera->getProjectionMatrix(),

@@ -1,8 +1,9 @@
 #include "star_renderer.h"
+#include "../../_shaders/shader_controller.h"
 #include <random>
 #include <iostream>
-#include "../_shaders/shader_controller.h"
 #include <glm/gtc/constants.hpp>
+#include <emscripten/html5.h>
 
 StarRenderer::StarRenderer() :
     vao(0),
@@ -15,11 +16,18 @@ StarRenderer::~StarRenderer() {
 }
 
 void StarRenderer::init() {
+    ShaderController* shaderController = ShaderController::getInstance();
+    if(shaderController) {
+        shaderProgram = shaderController->getProgram();
+        printf("StarRenderer: shaderProgram = %u\n", shaderProgram);
+    } else {
+        printf("StarRenderer: ShaderController is NULL!\n");
+    }
+    
     generateStars();
     createBuffers();
-
-    ShaderController* shaderController = ShaderController::getInstance();
-    if(shaderController) shaderProgram = shaderController->getProgram();
+    
+    printf("StarRenderer: Generated %d stars\n", starCount);
 }
 
 /**
@@ -85,35 +93,29 @@ void StarRenderer::createBuffers() {
         GL_STATIC_DRAW
     );
 
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        8 * sizeof(float),
-        (void*)0
-    );
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        8 * sizeof(float),
-        (void*)(3 * sizeof(float))
-    );
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(
-        2,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        8 * sizeof(float),
-        (void*)(6 * sizeof(float))
-    );
-    glEnableVertexAttribArray(2);
+    GLint posLoc = glGetAttribLocation(shaderProgram, "aPos");
+    GLint colorLoc = glGetAttribLocation(shaderProgram, "aColor");
+    GLint attrLoc = glGetAttribLocation(shaderProgram, "starAttr");
+    
+    printf("StarRenderer attribute locations: aPos=%d, aColor=%d, starAttr=%d\n", 
+           posLoc, colorLoc, attrLoc);
+    printf("First star: pos=(%.2f, %.2f, %.2f), color=(%.2f, %.2f, %.2f), size=%.2f, brightness=%.2f\n",
+           stars[0].position.x, stars[0].position.y, stars[0].position.z,
+           stars[0].color.r, stars[0].color.g, stars[0].color.b,
+           stars[0].size, stars[0].brightness);
+    
+    if(posLoc != -1) {
+        glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(posLoc);
+    }
+    if(colorLoc != -1) {
+        glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(colorLoc);
+    }
+    if(attrLoc != -1) {
+        glVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(attrLoc);
+    }
 
     glBindVertexArray(0);
 }
@@ -134,6 +136,10 @@ void StarRenderer::render(
     GLuint shaderTypeLoc = glGetUniformLocation(shaderProgram, "shaderType");
     if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 2.0f);
 
+    glm::mat4 model = glm::mat4(1.0f);
+    GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
+    if(modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
+
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "uTime");
@@ -141,11 +147,13 @@ void StarRenderer::render(
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);
     if(timeLoc != -1) glUniform1f(timeLoc, time);
 
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDrawArrays(GL_POINTS, 0, starCount);
 
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
     glBindVertexArray(0);
 }

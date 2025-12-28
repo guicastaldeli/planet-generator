@@ -245,8 +245,7 @@ void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
 ** Get Selected Planet
 */
 const PlanetBuffer* BufferController::getSelectedPlanet() const {
-    if(
-        camera && 
+    if(camera && 
         camera->isFollowingPlanet &&
         camera->followingPlanetIndex != -1
     ) {
@@ -410,19 +409,20 @@ void BufferController::render(float deltaTime) {
     bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
     updatePlanetPositions();
     if(skyboxRenderer) {
-        skyboxRenderer->
-            starRenderer->render(
-                camera->getViewMatrix(),
-                camera->getProjectionMatrix(),
-                deltaTime
-            );
-    }
-    if(skyboxRenderer) {
         skyboxRenderer->render(
             camera->getViewMatrix(),
             camera->getProjectionMatrix(),
             deltaTime
         );
+    }
+    if(skyboxRenderer) {
+        skyboxRenderer->
+            starRenderer->
+                render(
+                    camera->getViewMatrix(),
+                    camera->getProjectionMatrix(),
+                    deltaTime
+                );
     }
     buffers->render();
 }

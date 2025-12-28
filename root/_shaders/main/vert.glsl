@@ -1,9 +1,13 @@
+precision mediump float;
+
 attribute vec3 aPos;
 attribute vec2 aTexCoord;
+attribute vec3 aColor;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float shaderType;
 
 #include "color.glsl"
 #include "../skybox/skybox_vert.glsl"
@@ -17,7 +21,14 @@ void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     
     vTexCoord = aTexCoord;
-    vColor = pColor;
+
+    if(shaderType > 1.9 && shaderType < 2.1) {
+        vColor = aColor;
+        gl_PointSize = starAttr.x * 200.0;
+        vStarAttr = starAttr;
+    } else {
+        vColor = pColor;
+    }
 
     vec4 worldPos = model * vec4(aPos, 1.0);
     vViewDir = getSkyboxDir(worldPos.xyz);

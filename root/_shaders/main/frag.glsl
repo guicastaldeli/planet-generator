@@ -6,17 +6,17 @@ varying vec3 vPos;
 uniform float isHovered;
 uniform float uTime;
 uniform float shaderType;
+varying vec2 vStarAttr;
 
 #include "color.glsl"
 #include "texture.glsl"
 #include "../skybox/skybox_frag.glsl"
-#include "../skybox/star_attr.glsl"
 #include "../skybox/star_color.glsl"
 
 void main() {
     //Stars
     if(shaderType > 1.9 && shaderType < 2.1) {
-        gl_FragColor = getStarColor(vColor, starAttr.y, uTime);
+        gl_FragColor = getStarColor(vColor, vStarAttr.y, uTime);
     }
     //Skybox
     else if(shaderType > 0.5) {

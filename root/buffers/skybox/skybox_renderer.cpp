@@ -1,5 +1,5 @@
 #include "skybox_renderer.h"
-#include "../_shaders/shader_controller.h"
+#include "../../_shaders/shader_controller.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <emscripten/emscripten.h>
@@ -90,7 +90,6 @@ void SkyboxRenderer::render(const glm::mat4& view, const glm::mat4& proj, float 
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLuint projLoc = glGetUniformLocation(shaderProgram, "projection");
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "uTime");
-
     if(modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
     if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &viewMat[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &proj[0][0]);

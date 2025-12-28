@@ -1,7 +1,7 @@
 #pragma once
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
-#include "../buffers/buffer_data.h"
+#include "../../buffers/buffer_data.h"
 #include "star_renderer.h"
 
 class SkyboxRenderer {

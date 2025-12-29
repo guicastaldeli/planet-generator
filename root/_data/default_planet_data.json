@@ -12,6 +12,8 @@
     },
     "position": 0,
     "rotationDir": "Y",
+    "lightning": "None",
+    "effects": "None",
     "rotationSpeedItself": 0.01,
     "rotationSpeedCenter": 0.05,
     "distanceFromCenter": 0.0,

@@ -46,6 +46,11 @@ bool DefaultData::setData() {
             data.colorRgb = planet.colorRgb;
             data.texture = planet.texture;
             data.position = planet.position;
+            data.lightning = planet.lightning;
+            data.hasSunLight = planet.hasSunLight;
+            data.effects = planet.effects;
+            data.effectType = planet.effectType;
+            data.sunLight = planet.sunLight;
             data.rotationDir = planet.rotationDir;
             data.rotationSpeedItself = planet.rotationSpeedItself;
             data.rotationSpeedCenter = planet.rotationSpeedCenter;
@@ -73,6 +78,11 @@ PlanetData DefaultData::Data::toPlanetData() const {
     data.colorRgb = this->colorRgb;
     data.texture = this->texture;
     data.position = this->position;
+    data.lightning = this->lightning;
+    data.hasSunLight = this->hasSunLight;
+    data.effects = this->effects;
+    data.effectType = this->effectType;
+    data.sunLight = this->sunLight;
     data.rotationDir = this->rotationDir;
     data.rotationSpeedItself = this->rotationSpeedItself;
     data.rotationSpeedCenter = this->rotationSpeedCenter;

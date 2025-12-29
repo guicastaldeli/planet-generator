@@ -1,5 +1,6 @@
 #pragma once
 #include "../preset/preset_data.h"
+#include "../lightning/point_light.h"
 #include <glm/glm.hpp>
 
 class PresetManager;
@@ -23,6 +24,8 @@ class DefaultData {
 
             std::string lightning = "None";
             bool hasSunLight = false;
+            PointLight sunLight;
+
             std::string effects = "None";
             int effectType = 0;
 

@@ -36,6 +36,10 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["colorRgb"] = colorRgb;
     result["texture"] = Value(data.texture);
     result["position"] = Value(static_cast<double>(data.position));
+    result["lightning"] = Value(data.lightning);
+    result["hasSunLight"] = Value(data.hasSunLight);
+    result["effects"] = Value(data.effects);
+    result["effectType"] = Value(static_cast<double>(data.effectType));
     result["distanceFromCenter"] = Value(data.distanceFromCenter);
     result["rotationSpeedItself"] = Value(data.rotationSpeedItself);
     result["rotationSpeedCenter"] = Value(data.rotationSpeedCenter);
@@ -85,6 +89,28 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
             data.shape = BufferData::Type::TRIANGLE;
         } else {
             data.shape = BufferData::Type::SPHERE;
+        }
+
+        if(value.hasKey("lightning")) {
+            data.lightning = value["lightning"].asString();
+        } else {
+            data.lightning = "None";
+        }
+        if(value.hasKey("hasSunLight")) {
+            data.hasSunLight = value["hasSunLight"].asBoolean();
+        } else {
+            data.hasSunLight = (data.lightning == "Sun Light");
+        }
+        
+        if(value.hasKey("effects")) {
+            data.effects = value["effects"].asString();
+        } else {
+            data.effects = "None";
+        }
+        if(value.hasKey("effectType")) {
+            data.effectType = value["effectType"].asInt();
+        } else {
+            data.effectType = 0;
         }
 
         std::string rotationStr = value["rotationDir"].asString();

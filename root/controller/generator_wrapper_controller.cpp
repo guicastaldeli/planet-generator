@@ -45,7 +45,7 @@ extern "C" {
         }, html);
     }
 
-    /*
+    /**
      * Show Generator
      */
     void showGenerator() {
@@ -67,7 +67,7 @@ extern "C" {
             previewController->startGeneratorPreview();
     }
 
-    /*
+    /**
      * Start Generator Preview
      */
     void startGeneratorPreview() {
@@ -78,7 +78,7 @@ extern "C" {
         }
     }
 
-    /*
+    /**
      * Update Preview
      */
     void updatePreviewPlanet(const char* data) {
@@ -119,7 +119,7 @@ extern "C" {
         }
     }
 
-    /*
+    /**
      * Cleanup Preview
      */
     void cleanupPreview() {
@@ -130,7 +130,7 @@ extern "C" {
         }
     }
 
-    /*
+    /**
      * Hide Generator
      */
     void hideGenerator() {
@@ -143,7 +143,7 @@ extern "C" {
         cleanupPreview();
     }
 
-    /*
+    /**
      * Generate Planet
      */
     void generatePlanetParser(const char* planetData) {
@@ -229,15 +229,15 @@ extern "C" {
         }
     }
 
-    /*
+    /**
      * Get Default Data
      */
     const char* getDefaultData() {
         static std::string defaultDataStr;
         
         if(!g_generatorWrapperController || 
-           !g_generatorWrapperController->bufferController ||
-           !g_generatorWrapperController->bufferController->defaultData) {
+        !g_generatorWrapperController->bufferController ||
+        !g_generatorWrapperController->bufferController->defaultData) {
             return "{}";
         }
         
@@ -250,8 +250,11 @@ extern "C" {
         std::stringstream str;
         str << "{";
         str << "\"name\":\"" << defaultData.name << "\",";
-        str << "\"shape\":\"" << (defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
-                                  defaultData.shape == BufferData::Type::CUBE ? "CUBE" : "TRIANGLE") << "\",";
+        str << "\"shape\":\"" << (
+            defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
+            defaultData.shape == BufferData::Type::CUBE ? "CUBE" : 
+            "TRIANGLE"
+        ) << "\",";
         str << "\"size\":" << defaultData.size << ",";
         str << "\"color\":\"" << defaultData.color << "\",";
         str << "\"colorRgb\":{";
@@ -259,10 +262,22 @@ extern "C" {
         str << "\"g\":" << defaultData.colorRgb.g << ",";
         str << "\"b\":" << defaultData.colorRgb.b;
         str << "},";
-         str << "\"texture\":\"" << defaultData.texture << "\",";
+        str << "\"texture\":\"" << defaultData.texture << "\",";
         str << "\"position\":" << defaultData.position << ",";
-        str << "\"rotationDir\":\"" << (defaultData.rotationDir == RotationAxis::X ? "X" : 
-                                       defaultData.rotationDir == RotationAxis::Y ? "Y" : "Z") << "\",";
+        if(defaultData.position == 0) {
+            str << "\"lightning\":\"Sun Light\",";
+            str << "\"lightColor\":[1.0, 0.95, 0.85],";
+            str << "\"lightIntensity\":1.0,";
+            str << "\"lightRadius\":150.0,";
+        } else {
+            str << "\"lightning\":\"None\",";
+        }
+        str << "\"effects\":\"" << defaultData.effects << "\",";
+        str << "\"rotationDir\":\"" << (
+            defaultData.rotationDir == RotationAxis::X ? "X" : 
+            defaultData.rotationDir == RotationAxis::Y ? "Y" : 
+            "Z"
+        ) << "\",";
         str << "\"rotationSpeedItself\":" << defaultData.rotationSpeedItself << ",";
         str << "\"rotationSpeedCenter\":" << defaultData.rotationSpeedCenter;
         str << "}";
@@ -271,7 +286,7 @@ extern "C" {
         return defaultDataStr.c_str();
     }
 
-    /*
+    /**
      * Upload Texture
      */
     void uploadTexture(

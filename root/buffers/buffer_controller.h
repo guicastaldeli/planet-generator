@@ -71,4 +71,7 @@ class BufferController {
         TextureLoader* getTextureLoader();
 
         bool isPreviewActive() const;
+
+        void createPointLight();
+        void updatePointLightPosition();
 };

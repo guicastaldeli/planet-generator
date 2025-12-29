@@ -262,8 +262,8 @@ export class GeneratorController {
             colorRgb: data.color,
             texture: data.texture || data.texture.name,
             position: Number(data.position),
-            lightning: data.lightning,
-            effects: data.effects,
+            lightning: data.lightning || "None",
+            effects: data.effects || "None",
             rotationDir: data.rotationDir,
             rotationSpeedItself: data.rotationSpeedItself,
             rotationSpeedCenter: data.rotationSpeedCenter

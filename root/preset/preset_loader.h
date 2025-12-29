@@ -27,4 +27,6 @@ class PresetLoader {
         void setCurrentPreset(const PresetData& preset);
 
         void initLightsFromPreset(LightManager* lightManager);
+
+        std::string getDefaultPresetPath() const;
 };

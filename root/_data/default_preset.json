@@ -8,6 +8,7 @@
             "texture": "",
             "color": "yellow",
             "position": 0,
+            "hasSunLight": true,
             "lightning": "Sun Light",
             "effects": "None",
             "rotationDir": "Y",

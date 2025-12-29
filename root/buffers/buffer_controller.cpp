@@ -3,6 +3,7 @@
 #include "preview_controller.h"
 #include "../_utils/color_converter.h"
 #include <iostream>
+#include <emscripten/html5.h>
 
 BufferController::BufferController(
     Main* main,
@@ -130,30 +131,14 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
 
     uData.lightning =
         pData.hasKey("lightning") ?
-        pData["lighting"].asString() :
+        pData["lightning"].asString() :
         dData.lightning;
 
-    uData.hasSunLight =
-        pData.hasKey("hasSunLight") ?
-        pData["hasSunLight"].asBoolean() :
-        dData.hasSunLight;
-
-    if(uData.hasSunLight) {
-        PointLight pointLight;
-        pointLight.position = glm::vec3(0.0f, 0.0f, 0.0f);
-        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-        pointLight.intensity = 1.0f;
-        pointLight.radius = 100.0f;
-        pointLight.associatedPlanetId = uData.id;
-        pointLight.planetName = uData.name;
-        pointLight.isSunLight = true;
-
-        uData.sunLight = pointLight;
-        if(main && main->lightManager) {
-            main->lightManager->getPointLight()->add(pointLight);
-        }
+    if(pData.hasKey("lightning")) {
+        std::string lightningStr = pData["lightning"].asString();
+        uData.hasSunLight = (lightningStr == "Sun Light");
     } else {
-        uData.sunLight = PointLight();
+        uData.hasSunLight = dData.hasSunLight;
     }
 
     uData.effects =
@@ -387,6 +372,8 @@ void BufferController::loadPresetData(PresetData& preset) {
         buffers->clearBuffers();
     }
 
+    createPointLight();
+
     std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
     for(auto& planetBuffer : newPlanetBuffers) {
         float orbitRadius = planetBuffer.data.distanceFromCenter;
@@ -409,6 +396,62 @@ TextureLoader* BufferController::getTextureLoader() {
     return textureLoader;
 }
 
+/**
+ * Point Light
+ */
+void BufferController::createPointLight() {
+    if(!main || !main->lightManager) {
+        std::cout << "ERROR: Cannot create Sun light - no LightManager" << std::endl;
+        return;
+    }
+
+    main->lightManager->getPointLight()->pointLights.clear();
+
+    for(const auto& planet : currentPreset.planets) {
+        if(planet.hasSunLight) {
+            PointLight pointLight;
+
+            float orbitRadius = planet.distanceFromCenter;
+            float orbitAngle = planet.orbitAngle.y;
+            pointLight.position = glm::vec3(
+                orbitRadius * cos(glm::radians(orbitAngle)),
+                0.0f,
+                orbitRadius * sin(glm::radians(orbitAngle))
+            );
+            pointLight.color = glm::vec3(1.0f, 0.95f, 0.85f);
+            pointLight.intensity = 1.0f;
+            pointLight.constant = 1.0f;
+            pointLight.linear = 0.09f;
+            pointLight.quadratic = 0.032f;
+            pointLight.radius = 150.0f;
+            pointLight.associatedPlanetId = planet.id;
+            pointLight.planetName = planet.name;
+            pointLight.isSunLight = true;
+
+            main->lightManager->getPointLight()->add(pointLight);
+        }
+    }
+}
+
+void BufferController::updatePointLightPosition() {
+    if(!main || !main->lightManager) return;
+
+    auto& pointLights = main->lightManager->getPointLight()->pointLights;
+    for(auto& light : pointLights) {
+        if(!light.isSunLight) continue;
+
+        for(const auto& planetBuffer : buffers->planetBuffers) {
+            if(planetBuffer.data.id == light.associatedPlanetId) {
+                light.position = planetBuffer.worldPos;
+                if(light.planetName != planetBuffer.data.name) {
+                    light.planetName = planetBuffer.data.name;
+                }
+                break;
+            }
+        }
+    }
+}
+
 /*
 ** Render
 */
@@ -417,6 +460,15 @@ void BufferController::render(float deltaTime) {
         if(presetManager->getPresetLoader()->loadDefaultPreset()) {
             currentPreset = presetManager->getPresetLoader()->getCurrentPreset();
             presetLoaded = true;
+
+            std::cout << "Loaded preset with " << currentPreset.planets.size() << " planets" << std::endl;
+            for(const auto& planet : currentPreset.planets) {//
+                std::cout << "  Planet: " << planet.name 
+                          << ", Lightning: " << planet.lightning
+                          << ", hasSunLight: " << (planet.hasSunLight ? "true" : "false") << std::endl;
+            }
+
+            createPointLight();
 
             std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);
             buffers->planetBuffers.clear();
@@ -446,6 +498,10 @@ void BufferController::render(float deltaTime) {
     }
     bufferGenerator->updatePlanetRotation(buffers->planetBuffers, deltaTime);
     updatePlanetPositions();
+
+    if(main && main->lightManager) {
+        updatePointLightPosition();
+    }
 
     totalTime += deltaTime;
     if(skyboxRenderer) {

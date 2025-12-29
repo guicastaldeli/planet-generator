@@ -35,6 +35,14 @@ export class GeneratorConfig {
             outputKey: 'position',
             transform: (value: string) => Number(value) || this.defaultData.position
         },
+        'planet-lightning': {
+            outputKey: 'lightning',
+            transform: (value: string) => value || this.defaultData.lightning || "None"
+        },
+        'planet-effects': {
+            outputKey: 'effects',
+            transform: (value: string) => value || this.defaultData.effects || "None"
+        },
         'rotation-axis': {
             outputKey: 'rotationDir',
             transform: (value: string) => value || this.defaultData.rotationDir
@@ -181,6 +189,16 @@ export class GeneratorConfig {
             id: 'planet-position', 
             type: 'select', 
             defaultValue: () => this.defaultData.position?.toString()
+        },
+        { 
+            id: 'planet-lightning',
+            type: 'select', 
+            defaultValue: () => this.defaultData.lightning || "None"
+        },
+        { 
+            id: 'planet-effects',
+            type: 'select', 
+            defaultValue: () => this.defaultData.effects || "None"
         },
         { 
             id: 'rotation-axis', 

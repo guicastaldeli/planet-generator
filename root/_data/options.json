@@ -49,10 +49,14 @@
         "effects": [
             {
                 "id": 0,
-                "name": "Noise"
+                "name": "None"
             },
             {
                 "id": 1,
+                "name": "Noise"
+            },
+            {
+                "id": 2,
                 "name": "Earth Orbit"
             }
         ],

@@ -205,8 +205,12 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
 
     /* Lightning */
     if(val.hasKey("lightning")) {
-        data.lightning = val["lightning"].asString();
-        data.hasSunLight = (data.lightning == "Sun Light");
+        std::string lightningStr = val["lightning"].asString();
+        data.lightning = lightningStr;
+        data.hasSunLight = (lightningStr == "Sun Light");
+    } else {//
+        data.lightning = "None";
+        data.hasSunLight = false;
     }
 
     /* Effects */
@@ -239,4 +243,8 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         if(orbit.hasKey("y")) data.orbitAngle.y = orbit["y"].asFloat();
         if(orbit.hasKey("z")) data.orbitAngle.z = orbit["z"].asFloat();
     }
+}
+
+std::string PresetLoader::getDefaultPresetPath() const {
+    return defaultPresetPath;
 }

@@ -13,7 +13,7 @@ PreviewController::PreviewController(
     lightManager(lightManager),
     isPreviewing(false),
     isGeneratorActive(false),
-    previewLightId(-999)
+    previewLightId(PREVIEW_LIGHT_ID)
 {};
 PreviewController::~PreviewController() {};
 
@@ -156,31 +156,35 @@ void PreviewController::cleanupPreview() {
  * Preview Light
  */
 void PreviewController::createPreviewLight() {
-    PointLight previewLight;
-    previewLight.position = glm::vec3(0.0f, 5.0f, 5.0f);
-    previewLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    previewLight.intensity = 1.5f;
-    previewLight.constant = 1.0f;
-    previewLight.linear = 0.09f;
-    previewLight.quadratic = 0.032f;
-    previewLight.associatedPlanetId = previewLightId; 
-    previewLight.planetName = "PreviewLight";
-    previewLight.isSunLight = false;
-    previewLight.isHidden = false;  
-    previewLight.calcRadius();
-    
-    lightManager->getPointLight()->add(previewLight);
-    
-    emscripten_log(EM_LOG_CONSOLE, "Preview light created");
+    if(isPreviewing && isGeneratorActive) {
+        PointLight previewLight;
+        previewLight.position = glm::vec3(2.0f, 0.0f, 5.0f);
+        previewLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        previewLight.intensity = 1.5f;
+        previewLight.constant = 1.0f;
+        previewLight.linear = 0.09f;
+        previewLight.quadratic = 0.032f;
+        previewLight.associatedPlanetId = previewLightId; 
+        previewLight.planetName = "PreviewLight";
+        previewLight.isSunLight = false;
+        previewLight.isHidden = false;  
+        previewLight.calcRadius();
+        
+        lightManager->getPointLight()->add(previewLight);
+        
+        emscripten_log(EM_LOG_CONSOLE, "Preview light created");
+    }
 }
 
 void PreviewController::removePreviewLight() {
+    bool removeAny = false;
     auto& lights = lightManager->getPointLight()->pointLights;
-    for(size_t i = 0; i < lights.size(); i++) {
-        if(lights[i].associatedPlanetId == previewLightId) {
-            lightManager->getPointLight()->remove(i);
-            emscripten_log(EM_LOG_CONSOLE, "Preview light removed");
-            break;
+    for(auto it = lights.begin(); it != lights.end();) {
+        if(it->associatedPlanetId == previewLightId) {
+            it = lights.erase(it);
+            removeAny = true;
+        } else {
+            ++it;
         }
     }
 }

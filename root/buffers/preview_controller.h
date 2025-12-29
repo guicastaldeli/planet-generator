@@ -9,6 +9,7 @@ class PreviewController {
         BufferController* bufferController;
         LightManager* lightManager;
 
+        static const int PREVIEW_LIGHT_ID = -999999;
         int previewLightId;
 
         void lockCamera();

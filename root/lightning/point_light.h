@@ -28,6 +28,7 @@ class PointLight {
         void calcRadius();
         void add(const PointLight& pointLight);
         void remove(int i);
+        static void removeById(int id);
         void clear();
         const std::vector<PointLight>& get() const;
 

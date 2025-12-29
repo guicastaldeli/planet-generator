@@ -73,6 +73,15 @@ void PointLight::remove(int i) {
     }
 }
 
+void PointLight::removeById(int id) {
+    for(auto it = pointLights.begin(); it != pointLights.end(); ++it) {
+        if(it->associatedPlanetId == id) {
+            pointLights.erase(it);
+            return;
+        }
+    }
+}
+
 /**
  * Clear
  */

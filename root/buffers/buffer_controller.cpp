@@ -460,7 +460,7 @@ void BufferController::createPointLight(const PlanetData& planetData) {
     }
 
     PointLight pointLight;
-    pointLight.color = glm::vec3(1.0f, 0.95f, 0.85f);
+    pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     pointLight.intensity = 1.0f;
     pointLight.constant = 1.0f;
     pointLight.linear = 0.09f;

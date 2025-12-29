@@ -450,6 +450,23 @@ void Camera::releaseCamera() {
     }
 }
 
+/**
+ * Get View Direction
+ */
+glm::vec3 Camera::getViewDir() const {
+    return glm::normalize(target - position);
+}
+
+/**
+ * Get Front
+ */
+glm::vec3 Camera::getFront() const {
+    return glm::normalize(target - position);
+}
+
+/**
+ * Set Events
+ */
 void Camera::setEvents() {
     emscripten_set_mousedown_callback("#ctx", this, 1, mouseCallback);
     emscripten_set_mouseup_callback("#ctx", this, 1, mouseCallback);

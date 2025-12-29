@@ -7,6 +7,12 @@
 
 class BufferData {
     public:
+        enum class Type {
+            TRIANGLE,
+            CUBE,
+            SPHERE
+        };
+
         struct MeshData {
             std::vector<float> vertices;
             std::vector<GLuint> indices;
@@ -25,6 +31,10 @@ class BufferData {
             maxBounds(max) {}
         };
 
+        static const MeshData& GetMeshData(Type t) {
+            static const std::unordered_map<Type, MeshData> map = Data();
+            return map.at(t);
+        }
     private:
         static std::unordered_map<Type, MeshData> Data() {
             std::unordered_map<Type, MeshData> map;

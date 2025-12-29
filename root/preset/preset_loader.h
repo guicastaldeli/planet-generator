@@ -1,6 +1,7 @@
 #pragma once
 #include "preset_data.h"
 #include "../_data/data_parser.h"
+#include "../lightning/light_manager.h"
 
 class PresetManager;
 class PresetLoader {
@@ -23,4 +24,6 @@ class PresetLoader {
         PresetData getCurrentPreset() const;
         PresetData& getCurrentPreset();
         void setCurrentPreset(const PresetData& preset);
+
+        void initLightsFromPreset(LightManager* lightManager);
 };

@@ -120,6 +120,24 @@ PresetData PresetLoader::getCurrentPreset() const {
 }
 
 /**
+ * Init Lights
+ */
+void PresetLoader::initLightsFromPreset(LightManager* lightManager) {
+    if(!lightManager) return;
+
+    for(const auto& planet : currentPreset.planets) {
+        if(planet.hasSunLight) {
+            PointLight pointLight = planet.sunLight;
+            sunLight.position = glm::vec3(0.0);
+            if(planet.position == 0) pointLight.position = glm::vec3(0.0);
+
+            pointLight.associatedPlanetId = planet.id;
+            lightManager->getPointLight()->add(pointLight);
+        }
+    }
+}
+
+/**
  * 
  * Parse
  * 

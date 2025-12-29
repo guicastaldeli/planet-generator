@@ -137,6 +137,10 @@ void Main::init() {
             lightManager->updatePlanetLights(bufferController->buffers->planetBuffers);
             lightManager->setUniforms(shaderLoader->shaderController->shaderProgram);
         }
+        if(bufferController->presetManager) {
+            auto presetLoader = bufferController->presetManager->getPresetLoader();
+            presetLoader->initLightsFromPreset(lightManager);
+        }
         
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);

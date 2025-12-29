@@ -4,6 +4,7 @@ attribute vec3 aPos;
 attribute vec2 aTexCoord;
 attribute vec3 aColor;
 attribute float aPhase;
+attribute vec3 aNormal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -17,11 +18,14 @@ uniform float shaderType;
 varying vec2 vTexCoord;
 varying vec3 vViewDir;
 varying vec3 vPos;
+varying vec3 vNormal;
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     
     vTexCoord = aTexCoord;
+    vPos = vec3(model, vec4(aPos, 1.0));
+    vNormal = mat3(transpose(inverse(model))) * aNormal;
 
     if(shaderType > 1.9 && shaderType < 2.1) {
         vColor = aColor;
@@ -35,5 +39,4 @@ void main() {
 
     vec4 worldPos = model * vec4(aPos, 1.0);
     vViewDir = getSkyboxDir(worldPos.xyz);
-
 }

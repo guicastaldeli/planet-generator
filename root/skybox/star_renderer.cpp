@@ -104,21 +104,21 @@ void StarRenderer::createBuffers() {
     GLint colorLoc = glGetAttribLocation(shaderProgram, "aColor");
     GLint attrLoc = glGetAttribLocation(shaderProgram, "starAttr");
     GLint phaseLoc = glGetAttribLocation(shaderProgram, "aPhase");
-    const int STRIDE = 9 * sizeof(float);
+    const int stride = 9 * sizeof(float);
     if(posLoc != -1) {
-        glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)0);
+        glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(posLoc);
     }
     if(colorLoc != -1) {
-        glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(colorLoc);
     }
     if(attrLoc != -1) {
-        glVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, STRIDE, (void*)(6 * sizeof(float)));
+        glVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(attrLoc);
     }
     if(phaseLoc != -1) {
-        glVertexAttribPointer(phaseLoc, 1, GL_FLOAT, GL_FALSE, STRIDE, (void*)(8 * sizeof(float)));
+        glVertexAttribPointer(phaseLoc, 1, GL_FLOAT, GL_FALSE, stride, (void*)(8 * sizeof(float)));
         glEnableVertexAttribArray(phaseLoc);
     }
 

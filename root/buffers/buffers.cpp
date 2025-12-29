@@ -57,15 +57,22 @@ void Buffers::set(BufferData::Type type) {
         GL_STATIC_DRAW
     );
 
+    GLsizei stride = 8 * sizeof(float);
     GLuint posAttr = glGetAttribLocation(shaderController->shaderProgram, "aPos");
     if(posAttr != -1) {
-        glVertexAttribPointer(posAttr, 3, GL_FLOAT, GL_FALSE,  5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(posAttr, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
         glEnableVertexAttribArray(posAttr);
+    }
+
+    GLuint normalAttr = glGetAttribLocation(shaderController->shaderProgram, "aNormal");
+    if(normalAttr != -1) {
+        glVertexAttribPointer(normalAttr, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(normalAttr);
     }
 
     GLuint texCoordAttr = glGetAttribLocation(shaderController->shaderProgram, "aTexCoord");
     if(texCoordAttr != -1) {
-        glVertexAttribPointer(texCoordAttr, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(texCoordAttr, 3, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(texCoordAttr);
     }
 

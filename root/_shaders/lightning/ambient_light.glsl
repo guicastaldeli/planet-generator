@@ -2,14 +2,14 @@ struct Light {
     vec3 position;
     vec3 color;
     float intensity;
-}
+};
 
 struct Material {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
     float shininess;
-}
+};
 
 vec3 calcAmbient(
     Material material, 
@@ -20,6 +20,18 @@ vec3 calcAmbient(
 }
 
 vec3 calcDiffuse(
+    Material material,
+    vec3 lightColor,
+    float intensity,
+    vec3 normal,
+    vec3 lightDir,
+    vec3 viewDir
+) {
+    float diff = max(dot(normal, lightDir), 0.0);
+    return material.diffuse * diff * lightColor * intensity;
+}
+
+vec3 calcSpecular(
     Material material,
     vec3 lightColor,
     float intensity,
@@ -44,6 +56,14 @@ vec3 calcPhongLightning(
         material, 
         light.color, 
         light.intensity
+    );
+    vec3 diffuse = calcDiffuse(
+        material, 
+        light.color,
+        light.intensity, 
+        normal, 
+        lightDir, 
+        viewDir
     );
     vec3 specular = calcSpecular(
         material, 

@@ -24,8 +24,8 @@ void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     
     vTexCoord = aTexCoord;
-    vPos = vec3(model, vec4(aPos, 1.0));
-    vNormal = mat3(transpose(inverse(model))) * aNormal;
+    vPos = vec3(model * vec4(aPos, 1.0));
+    vNormal = normalize(vec3(model * vec4(aNormal, 0.0)));
 
     if(shaderType > 1.9 && shaderType < 2.1) {
         vColor = aColor;

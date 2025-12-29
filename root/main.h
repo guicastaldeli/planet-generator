@@ -5,6 +5,7 @@
 #include "controller/controls_wrapper_controller.h"
 #include "controller/info_wrapper_controller.h"
 #include "controller/generator_wrapper_controller.h"
+#include "lightning/light_manager.h"
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
@@ -18,6 +19,7 @@ class Main {
         Camera* camera;
         ShaderLoader* shaderLoader;
         BufferController* bufferController;
+        LightManager* lightManager;
 
         ControlsWrapperController* controlsWrapperController;
         InfoWrapperController* infoWapperController;

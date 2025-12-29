@@ -57,14 +57,18 @@ void main() {
 
         vec3 normal = normalize(vNormal);
         vec3 viewDir = normalize(-vPos);
-        vec3 lightning = calcPhongLightning(
-            vPos,
-            normal,
-            viewDir,
-            light,
-            ambientLightUniform,
-            material
-        );
+
+        vec3 lightning;
+        if(ambientLightUniform.enabled == true) {
+            lightning = calcPhongLightning(
+                vPos,
+                normal,
+                viewDir,
+                light,
+                ambientLightUniform,
+                material
+            );
+        }
 
         for(int i = 0; i < 15; i++) {
             if(i >= uNumPointLights) break;

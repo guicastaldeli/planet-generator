@@ -8,7 +8,7 @@ struct AmbientLight {
     vec3 color;
     float intensity;
     bool enabled;
-}
+};
 
 struct Material {
     vec3 ambient;

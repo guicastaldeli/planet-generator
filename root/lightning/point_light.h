@@ -4,6 +4,9 @@
 
 class PointLight {
     public:
+        PointLight();
+        ~PointLight();
+
         std::vector<PointLight> pointLights;
 
         glm::vec3 position;
@@ -19,7 +22,4 @@ class PointLight {
         void remove(int i);
         void clear();
         const std::vector<PointLight>& get() const;
-    private:
-        PointLight();
-        ~PointLight();
 };

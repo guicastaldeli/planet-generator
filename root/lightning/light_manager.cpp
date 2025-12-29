@@ -11,11 +11,27 @@ LightManager::LightManager(ShaderController* shaderController) :
 LightManager::~LightManager() {};
 
 void LightManager::setUniforms(GLuint shaderProgram) {
+    if(ambientLight->isEnabled()) {
+        GLuint ambientColorLoc = glGetUniformLocation(shaderProgram, "uAmbientLight.color");
+        GLuint ambientIntensityLoc = glGetUniformLocation(shaderProgram, "uAmbientLight.intensity");
+        GLuint ambientLightEnabledLoc = glGetUniformLocation(shaderProgram, "uAmbientLight.enabled");
+
+        if(ambientColorLoc != -1) {
+            glm::vec3 color = ambientLight->getColor();
+            glUniform3f(ambientColorLoc, color.r, color.g, color.b);
+        }
+        if(ambientIntensityLoc != -1) {
+            glUniform1f(ambientIntensityLoc, ambientLight->getIntensity());
+        }
+        if(ambientLightEnabledLoc != -1) {
+            glUniform1i(ambientLightEnabledLoc, ambientLight->isEnabled() ? 1 : 0);
+        }
+    }
     GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumLightPoints");
-    if(numLightsLoc != -1) glUniform1i(numLightsLoc, (int)pointLights.size());
+    if(numLightsLoc != -1) glUniform1i(numLightsLoc, (int)pointLight->pointLights.size());
 
     for(size_t i = 0; i < pointLight->pointLights.size(); i++) {
-        const PointLight& light = pointLights[i];
+        const PointLight& light = pointLight->pointLights[i];
         std::string baseName = "uPointLights[" + std::to_string(i) + "]";
 
         GLuint posLoc = glGetUniformLocation(shaderProgram, (baseName + ".position").c_str());
@@ -44,13 +60,13 @@ void LightManager::setUniforms(GLuint shaderProgram) {
 /**
  * Get Ambient Light
  */
-AmbientLight LightManager::getAmbientLight() {
+AmbientLight* LightManager::getAmbientLight() {
     return ambientLight;
 }
 
 /**
  * Get Point Light
  */
-PointLight LightManager::getPointLight() {
+PointLight* LightManager::getPointLight() {
     return pointLight;
 }

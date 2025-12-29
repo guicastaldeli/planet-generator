@@ -14,9 +14,10 @@ class LightManager {
 
         void setUniforms(GLuint shaderProgram);
 
-        AmbientLight getAmbientLight();
-        PointLight getPointLight();
+        AmbientLight* getAmbientLight();
+        PointLight* getPointLight();
     private:
         AmbientLight* ambientLight;
         PointLight* pointLight;
-}
+        ShaderController* shaderController;
+};

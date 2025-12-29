@@ -128,6 +128,11 @@ void Main::init() {
         bufferController->setCamera(camera);
         bufferController->init();
 
+        lightManager = new LightManager(shaderLoader->shaderController);
+        lightManager->getAmbientLight()->setColor(glm::vec3(0.1333f, 0.1333f, 0.1333f));
+        lightManager->getAmbientLight()->setIntensity(1.0f);
+        lightManager->getAmbientLight()->setEnabled(true);
+
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);
         generatorWrapperController = new GeneratorWrapperController(
@@ -158,6 +163,7 @@ void Main::render() {
 
     if(camera) camera->update();
     if(bufferController) bufferController->render(deltaTime);
+    if(lightManager) lightManager->setUniforms(shaderLoader->shaderController->shaderProgram);
 }
 
 void Main::loop() {

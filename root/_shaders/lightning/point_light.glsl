@@ -21,12 +21,12 @@ float calcAttenuationPointLight(PointLight light, float distance) {
 
 vec3 calcPointLight(
     PointLight light,
-    PointLightMaterial material,
+    Material material,
     vec3 position,
     vec3 normal,
     vec3 viewDir
 ) {
-    vec3 lightDir = normalize(light.positon - position);
+    vec3 lightDir = normalize(light.position - position);
     float distance = length(light.position - position);
     if(distance > light.radius) return vec3(0.0);
 

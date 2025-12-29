@@ -22,7 +22,7 @@ void PointLight::calcRadius() {
  */
 void PointLight::add(const PointLight& pointLight) {
     if(pointLights.size() < 15) {
-        pointLights.push_back(light);
+        pointLights.push_back(pointLight);
     }
 }
 

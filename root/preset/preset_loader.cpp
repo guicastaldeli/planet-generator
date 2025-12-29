@@ -2,6 +2,7 @@
 #include "preset_data.h"
 #include "../_data/data_parser.h"
 #include "../_utils/color_converter.h"
+#include "../lightning/light_manager.h"
 #include "preset_manager.h"
 #include <fstream>
 #include <iostream>
@@ -13,18 +14,116 @@ PresetLoader::PresetLoader(PresetManager* presetManager) :
 {};
 PresetLoader::~PresetLoader() {};
 
-/*
-** Set Path
-*/
+/**
+ * Set Path
+ */
 void PresetLoader::setPath(std::string& path) {
     defaultPresetPath = path;
 }
 
-/*
-**
-*** Parse
-**
-*/
+/**
+ * Load Preset
+ */
+bool PresetLoader::loadPreset(const std::string& path) {
+    std::ifstream file(path);
+    if(!file.is_open()) {
+        std::cerr << "Failed to open preset file: " << path << std::endl;
+        return false;
+    }
+
+    try {
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string dataStr = buffer.str();
+        return parse(dataStr);
+    } catch(const std::exception& err) {
+        std::cerr << "Error loading preset" << err.what() << std::endl;
+        return false;
+    }
+}
+
+bool PresetLoader::loadDefaultPreset() {
+    if(presetManager->getPresetSaver()->hasSavedPreset()) {
+        std::cout << "Attempting to load preset from localStorage..." << std::endl;
+        PresetData localStorageData;
+        if(presetManager->getPresetSaver()->loadFromLocalStorage(localStorageData)) {
+            std::cout << "Successfully loaded preset from localStorage!" << std::endl;
+            currentPreset = localStorageData;
+            return true;
+        } else {
+            std::cout << "Failed to load from localStorage, falling back to file" << std::endl;
+        }
+    } else {
+        std::cout << "No saved preset in localStorage" << std::endl;
+    }
+
+    std::cout << "Loading default preset from file: " << defaultPresetPath << std::endl;
+    return loadPreset(defaultPresetPath);
+}
+
+
+bool PresetLoader::loadDefaultPresetFile() {
+    return loadPreset(defaultPresetPath);
+}
+
+/**
+ * Validate Preset
+ */
+bool PresetLoader::validatePreset() {
+    if(currentPreset.planets.empty()) {
+        std::cerr << "No planets in preset!" << std::endl;
+        return false;
+    }
+
+    bool hasCenter = false;
+    for(const auto& planet : currentPreset.planets) {
+        if(planet.position == 0) {
+            hasCenter = true;
+            break;
+        }
+    }
+    if(!hasCenter) {
+        std::cerr << "No center planet found!" << std::endl;
+        return false;
+    }
+
+    std::vector<int> positions;
+    for(const auto& planet : currentPreset.planets) {
+        if(planet.position != 0) {
+            if(std::find(
+                positions.begin(),
+                positions.end(),
+                planet.position
+            ) != positions.end()) {
+                std::cerr << "Duplicate position found: " << planet.position << std::endl;
+                return false;
+            }
+            positions.push_back(planet.position);
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Current Preset
+ */
+void PresetLoader::setCurrentPreset(const PresetData& preset) {
+    currentPreset = preset;
+}
+
+PresetData& PresetLoader::getCurrentPreset() {
+    return currentPreset;
+}
+PresetData PresetLoader::getCurrentPreset() const {
+    return currentPreset;
+}
+
+/**
+ * 
+ * Parse
+ * 
+ */
 bool PresetLoader::parse(const std::string& data) {
     try {
         DataParser::Value root = DataParser::Parser::parse(data);
@@ -86,6 +185,20 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         else data.shape = BufferData::Type::SPHERE;
     }
 
+    /* Lightning */
+    if(val.hasKey("lightning")) {
+        data.lightning = val["lightning"].asString();
+        data.hasSunLight = (data.lightning == "Sun Light");
+    }
+
+    /* Effects */
+    if(val.hasKey("effects")) {
+        data.effects = val["effects"].asString();
+        if(data.effects == "None") data.effectType = 0;
+        else if(data.effects == "Earth Orbit") data.effectType = 1;
+        else if(data.effects == "Noise") data.effectType = 2;
+    }
+
     /* Rotation */
     if(val.hasKey("rotationDir")) {
         std::string rotStr = val["rotationDir"].asString();
@@ -108,99 +221,4 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         if(orbit.hasKey("y")) data.orbitAngle.y = orbit["y"].asFloat();
         if(orbit.hasKey("z")) data.orbitAngle.z = orbit["z"].asFloat();
     }
-}
-
-/*
-** Load Preset
-*/
-bool PresetLoader::loadPreset(const std::string& path) {
-    std::ifstream file(path);
-    if(!file.is_open()) {
-        std::cerr << "Failed to open preset file: " << path << std::endl;
-        return false;
-    }
-
-    try {
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        std::string dataStr = buffer.str();
-        return parse(dataStr);
-    } catch(const std::exception& err) {
-        std::cerr << "Error loading preset" << err.what() << std::endl;
-        return false;
-    }
-}
-
-bool PresetLoader::loadDefaultPreset() {
-    if(presetManager->getPresetSaver()->hasSavedPreset()) {
-        std::cout << "Attempting to load preset from localStorage..." << std::endl;
-        PresetData localStorageData;
-        if(presetManager->getPresetSaver()->loadFromLocalStorage(localStorageData)) {
-            std::cout << "Successfully loaded preset from localStorage!" << std::endl;
-            currentPreset = localStorageData;
-            return true;
-        } else {
-            std::cout << "Failed to load from localStorage, falling back to file" << std::endl;
-        }
-    } else {
-        std::cout << "No saved preset in localStorage" << std::endl;
-    }
-
-    std::cout << "Loading default preset from file: " << defaultPresetPath << std::endl;
-    return loadPreset(defaultPresetPath);
-}
-
-
-bool PresetLoader::loadDefaultPresetFile() {
-    return loadPreset(defaultPresetPath);
-}
-
-/*
-** Validate Preset
-*/
-bool PresetLoader::validatePreset() {
-    if(currentPreset.planets.empty()) {
-        std::cerr << "No planets in preset!" << std::endl;
-        return false;
-    }
-
-    bool hasCenter = false;
-    for(const auto& planet : currentPreset.planets) {
-        if(planet.position == 0) {
-            hasCenter = true;
-            break;
-        }
-    }
-    if(!hasCenter) {
-        std::cerr << "No center planet found!" << std::endl;
-        return false;
-    }
-
-    std::vector<int> positions;
-    for(const auto& planet : currentPreset.planets) {
-        if(planet.position != 0) {
-            if(std::find(
-                positions.begin(),
-                positions.end(),
-                planet.position
-            ) != positions.end()) {
-                std::cerr << "Duplicate position found: " << planet.position << std::endl;
-                return false;
-            }
-            positions.push_back(planet.position);
-        }
-    }
-
-    return true;
-}
-
-PresetData& PresetLoader::getCurrentPreset() {
-    return currentPreset;
-}
-PresetData PresetLoader::getCurrentPreset() const {
-    return currentPreset;
-}
-
-void PresetLoader::setCurrentPreset(const PresetData& preset) {
-    currentPreset = preset;
 }

@@ -10,6 +10,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform float shaderType;
+uniform float uPlanetSize;
 
 #include "color.glsl"
 #include "../skybox/skybox_vert.glsl"

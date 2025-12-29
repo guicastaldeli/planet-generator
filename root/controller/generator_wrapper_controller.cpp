@@ -270,6 +270,7 @@ extern "C" {
         str << "\"position\":" << defaultData.position << ",";
         str << "\"lightning\":\"None\",";
         str << "\"effects\":\"" << defaultData.effects << "\",";
+        str << "\"effectType\":\"" << defaultData.effectType << "\",";
         str << "\"rotationDir\":\"" << (
             defaultData.rotationDir == RotationAxis::X ? "X" : 
             defaultData.rotationDir == RotationAxis::Y ? "Y" : 

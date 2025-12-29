@@ -53,11 +53,11 @@
             },
             {
                 "id": 1,
-                "name": "Noise"
+                "name": "Earth Orbit"
             },
             {
                 "id": 2,
-                "name": "Earth Orbit"
+                "name": "Noise"
             }
         ],
         "orbitPositions": [

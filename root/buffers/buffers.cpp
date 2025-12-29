@@ -25,9 +25,9 @@ Buffers::~Buffers() {
     } 
 }
 
-/*
-** Set Buffers
-*/
+/**
+ * Set Buffers
+ */
 void Buffers::set(BufferData::Type type) {
     if(vaos.find(type) != vaos.end()) return;
 
@@ -84,19 +84,20 @@ void Buffers::set(BufferData::Type type) {
     indexCounts[type] = meshData.indices.size();
 }
 
-/*
-** Create Buffer for Planet
-*/
+/**
+ * Create Buffer
+ */
 void Buffers::createBufferForPlanet(const PlanetBuffer& planetBuffer) {
     set(planetBuffer.data.shape);
 }
 
-/*
-** Render
-*/
+/**
+ * Render
+ */
 void Buffers::render() {
     glUseProgram(shaderController->shaderProgram);
     
+    /* Normal Mesh */
     if(!isPreviewMode) {
         for(auto& planetBuffer : planetBuffers) {
             auto it = vaos.find(planetBuffer.data.shape);
@@ -164,6 +165,11 @@ void Buffers::render() {
             if(effectTypeLoc != -1) {
                 glUniform1f(effectTypeLoc, static_cast<float>(planetBuffer.data.effectType));
             }
+
+            GLuint planetSizeLoc = glGetUniformLocation(shaderController->shaderProgram, "uPlanetSize");
+            if(planetSizeLoc != -1) {
+                glUniform1f(planetSizeLoc, planetBuffer.data.size);
+            }
     
             glDrawElements(
                 GL_TRIANGLES,
@@ -171,8 +177,13 @@ void Buffers::render() {
                 GL_UNSIGNED_INT,
                 0
             );
+
+            if(planetBuffer.data.effectType == 1) {
+                renderAtmosphere(planetBuffer);
+            }
         }
     }
+    /* Preview Mesh */
     if(!previewPlanet.data.name.empty()) {
         auto it = vaos.find(previewPlanet.data.shape);
         if(it != vaos.end()) {
@@ -245,12 +256,21 @@ void Buffers::render() {
                 glUniform1f(effectTypeLoc, static_cast<float>(previewPlanet.data.effectType));
             }
 
+            GLuint planetSizeLoc = glGetUniformLocation(shaderController->shaderProgram, "uPlanetSize");
+            if(planetSizeLoc != -1) {
+                glUniform1f(planetSizeLoc, previewPlanet.data.size);
+            }
+
             glDrawElements(
                 GL_TRIANGLES,
                 indexCounts[previewPlanet.data.shape],
                 GL_UNSIGNED_INT,
                 0
             );
+
+            if(previewPlanet.data.effectType == 1) {
+                renderAtmosphere(previewPlanet);
+            }
             
             if(!isPreviewMode) {
                 camera->set();
@@ -261,11 +281,100 @@ void Buffers::render() {
     glBindVertexArray(0);
 }
 
-/*
-**
-*** Preview Planet
-**
-*/
+/**
+ * Render Atmosphere
+ */
+void Buffers::renderAtmosphere(const PlanetBuffer& planetBuffer) {
+    GLboolean depthMask;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    
+    if(planetBuffer.isPreview) {
+        float screenX = 0.3f;
+        float screenY = 0.0f;
+        model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
+        
+        static float previewRotation = 0.0f;
+        previewRotation += 0.5f;
+        
+        if(planetBuffer.data.rotationDir == RotationAxis::X) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Y) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 1.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Z) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+    } else {
+        float orbitRadius = planetBuffer.data.distanceFromCenter;
+        float orbitAngle = planetBuffer.data.orbitAngle.y;
+        glm::vec3 worldPos = glm::vec3(
+            orbitRadius * cos(glm::radians(orbitAngle)),
+            0.0f,
+            orbitRadius * sin(glm::radians(orbitAngle))
+        );
+        
+        model = glm::translate(model, worldPos);
+        model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    
+    float atmosphereScale = planetBuffer.data.size * 1.05f;
+    model = glm::scale(model, glm::vec3(atmosphereScale));
+
+    unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
+    if(planetColorLoc != -1) {
+        glm::vec3 atmosphereColor = glm::vec3(0.2f, 0.4f, 1.0f);
+        glUniform3f(planetColorLoc, atmosphereColor.r, atmosphereColor.g, atmosphereColor.b);
+    }
+
+    GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
+    if(emissiveStrengthLoc != -1) {
+        glUniform1f(emissiveStrengthLoc, 0.7f);
+    }
+    
+    GLuint isAtmosphereLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsAtmosphere");
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 1.0f);
+    }
+    
+    GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+    if(useTexLoc != -1) {
+        glUniform1i(useTexLoc, 0);
+    }
+    
+    glDrawElements(
+        GL_TRIANGLES,
+        indexCounts[planetBuffer.data.shape],
+        GL_UNSIGNED_INT,
+        0
+    );
+
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 0.0f);
+    }
+    if(emissiveStrengthLoc != -1) {
+        float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
+        glUniform1f(emissiveStrengthLoc, originalEmissive);
+    }
+    glDepthMask(depthMask);//
+    if(!blendEnabled) {
+        glDisable(GL_BLEND);
+    }
+}
+
+/**
+ * 
+ * Preview Planet
+ * 
+ */
 void Buffers::setupPreviewPlanet(const PlanetData& data) {
     previewPlanet.data = data;
     previewPlanet.isPreview = true;
@@ -285,14 +394,6 @@ void Buffers::updatePreviewPlanet(const PlanetData& data) {
     set(previewPlanet.data.shape);
 }
 
-void Buffers::cleanupPreviewPlanet() {
-    previewPlanet = PlanetBuffer();
-}
-
-void Buffers::clearBuffers() {
-    planetBuffers.clear();
-}
-
 void Buffers::setPreviewMode(bool preview) {
     isPreviewMode = preview;
 }
@@ -301,10 +402,17 @@ bool Buffers::isInPreviewMode() const {
     return isPreviewMode;
 }
 
-/*
-** Init
-*/
+void Buffers::cleanupPreviewPlanet() {
+    previewPlanet = PlanetBuffer();
+}
+
+void Buffers::clearBuffers() {
+    planetBuffers.clear();
+}
+
+/**
+ * Init
+ */
 void Buffers::init() {
-    //shaderController->initProgram();
     emscripten_log(EM_LOG_CONSOLE, "init buffers!");
 }

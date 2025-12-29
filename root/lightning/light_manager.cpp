@@ -5,6 +5,7 @@ LightManager::LightManager(ShaderController* shaderController) :
     shaderController(nullptr)
 {
     shaderController = shaderController;
+    ambientLight = new AmbientLight();
     pointLight = new PointLight();
 };
 LightManager::~LightManager() {};
@@ -38,6 +39,13 @@ void LightManager::setUniforms(GLuint shaderProgram) {
         GLint radiusLoc = glGetUniformLocation(shaderProgram, (baseName + ".radius").c_str());
         if(radiusLoc != -1) glUniform1f(radiusLoc, light.radius);
     }
+}
+
+/**
+ * Get Ambient Light
+ */
+AmbientLight LightManager::getAmbientLight() {
+    return ambientLight;
 }
 
 /**

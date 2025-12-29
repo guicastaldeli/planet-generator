@@ -57,7 +57,7 @@ void BufferController::initGenerator() {
 }
 
 void BufferController::initPreviewController() {
-    previewController = new PreviewController(this, camera);
+    previewController = new PreviewController(this, camera, main->lightManager);
 }
 
 void BufferController::initTextureLoader() {

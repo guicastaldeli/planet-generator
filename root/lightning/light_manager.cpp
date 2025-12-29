@@ -5,7 +5,7 @@
 LightManager::LightManager(ShaderController* shaderController) :
     shaderController(nullptr)
 {
-    shaderController = shaderController;
+    shaderController = shaderController;//
     ambientLight = new AmbientLight();
     pointLight = new PointLight();
 };

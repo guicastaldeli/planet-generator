@@ -1,14 +1,19 @@
 #include "preview_controller.h"
 #include "../buffers/buffers.h"
 #include "../_utils/default_data.h"
-#include "../lightning/point_light.h"
 #include <emscripten.h>
 
-PreviewController::PreviewController(BufferController* bufferController, Camera* camera) :
+PreviewController::PreviewController(
+    BufferController* bufferController, 
+    Camera* camera,
+    LightManager* lightManager
+) :
     bufferController(bufferController),
     camera(camera),
+    lightManager(lightManager),
     isPreviewing(false),
-    isGeneratorActive(false)
+    isGeneratorActive(false),
+    previewLightId(-999)
 {};
 PreviewController::~PreviewController() {};
 
@@ -70,7 +75,7 @@ void PreviewController::startGeneratorPreview() {
         preview();
     }
 
-    PointLight::hide();
+    lightManager->getPointLight()->hide();
 
     PlanetData previewData;
     if(bufferController && 
@@ -102,6 +107,8 @@ void PreviewController::startGeneratorPreview() {
         bufferController->buffers->setupPreviewPlanet(previewData);
         bufferController->buffers->setPreviewMode(true);
     }
+
+    createPreviewLight();
 }
 
 /*
@@ -136,9 +143,48 @@ void PreviewController::cleanupPreview() {
         bufferController->buffers->setPreviewMode(false);
     }
 
-    PointLight::show();
+    removePreviewLight();
+    lightManager->getPointLight()->show();
+
     isGeneratorActive = false;
     isPreviewing = false;
 
     emscripten_log(EM_LOG_CONSOLE, "Cleanup completed!");
+}
+
+/**
+ * Preview Light
+ */
+void PreviewController::createPreviewLight() {
+    PointLight previewLight;
+    previewLight.position = glm::vec3(0.0f, 5.0f, 5.0f);
+    previewLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    previewLight.intensity = 1.5f;
+    previewLight.constant = 1.0f;
+    previewLight.linear = 0.09f;
+    previewLight.quadratic = 0.032f;
+    previewLight.associatedPlanetId = previewLightId; 
+    previewLight.planetName = "PreviewLight";
+    previewLight.isSunLight = false;
+    previewLight.isHidden = false;  
+    previewLight.calcRadius();
+    
+    lightManager->getPointLight()->add(previewLight);
+    
+    emscripten_log(EM_LOG_CONSOLE, "Preview light created");
+}
+
+void PreviewController::removePreviewLight() {
+    auto& lights = lightManager->getPointLight()->pointLights;
+    for(size_t i = 0; i < lights.size(); i++) {
+        if(lights[i].associatedPlanetId == previewLightId) {
+            lightManager->getPointLight()->remove(i);
+            emscripten_log(EM_LOG_CONSOLE, "Preview light removed");
+            break;
+        }
+    }
+}
+
+bool PreviewController::isInGeneratorMode() const { 
+    return isGeneratorActive;
 }

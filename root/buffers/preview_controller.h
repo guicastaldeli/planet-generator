@@ -1,17 +1,25 @@
 #pragma once
 #include "../camera.h"
 #include "buffer_controller.h"
+#include "../lightning/light_manager.h"
 
 class PreviewController {
     private:
         Camera* camera;
         BufferController* bufferController;
+        LightManager* lightManager;
+
+        int previewLightId;
 
         void lockCamera();
         void unlockCamera();
 
     public:
-        PreviewController(BufferController* bufferController, Camera* camera);
+        PreviewController(
+            BufferController* bufferController, 
+            Camera* camera,
+            LightManager* lightManager
+        );
         ~PreviewController();
 
         bool isPreviewing;
@@ -23,7 +31,8 @@ class PreviewController {
         void startGeneratorPreview();
         void updatePreview(const PlanetData& data);
         void cleanupPreview();
-        bool isInGeneratorMode() const { 
-            return isGeneratorActive;
-        }
+        bool isInGeneratorMode() const;
+
+        void createPreviewLight();
+        void removePreviewLight();
 };  

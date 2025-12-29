@@ -31,6 +31,6 @@ class PointLight {
         void clear();
         const std::vector<PointLight>& get() const;
 
-        static void hide();
-        static void show();
+        void hide();
+        void show();
 };

@@ -94,7 +94,8 @@ function Build-Project {
             "-s" "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString','stringToUTF8','lengthBytesUTF8']" `
             --preload-file $RootDir/_data@/_data `
             -s STACK_SIZE=10MB `
-            -s ALLOW_MEMORY_GROWTH=1
+            -s ALLOW_MEMORY_GROWTH=1 `
+            -s EXCEPTION_CATCHING_ALLOWED=1
         
         if($LASTEXITCODE -ne 0) { 
             Write-Host "Linking failed" -ForegroundColor Red

@@ -128,7 +128,7 @@ void PresetLoader::initLightsFromPreset(LightManager* lightManager) {
     for(const auto& planet : currentPreset.planets) {
         if(planet.hasSunLight) {
             PointLight pointLight = planet.sunLight;
-            sunLight.position = glm::vec3(0.0);
+            pointLight.position = glm::vec3(0.0);
             if(planet.position == 0) pointLight.position = glm::vec3(0.0);
 
             pointLight.associatedPlanetId = planet.id;

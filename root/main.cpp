@@ -1,6 +1,7 @@
 #include "main.h"
 #include "buffers/buffer_data.h"
 #include "lightning/point_light.h"
+#include "buffers/buffers.h"
 
 static Main* g_app = nullptr;
 
@@ -37,7 +38,7 @@ int Main::initGlWindow() {
     glfwWindowHint(GLFW_SAMPLES, 16);
     glfwWindowHint(GLFW_ALPHA_BITS, 16);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
-    glfwWindowHint(GLFW_STENCIL_BITS, 8);//
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
     GLFWwindow* window = glfwCreateWindow(
         width,

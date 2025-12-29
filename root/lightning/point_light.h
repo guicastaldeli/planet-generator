@@ -6,9 +6,11 @@
 class PointLight {
     public:
         PointLight();
+        PointLight(const PointLight& ot);
+        PointLight& operator=(const PointLight& ot);
         ~PointLight();
 
-        std::vector<PointLight> pointLights;
+        static std::vector<PointLight> pointLights;
 
         glm::vec3 position;
         glm::vec3 color;

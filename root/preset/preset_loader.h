@@ -2,6 +2,7 @@
 #include "preset_data.h"
 #include "../_data/data_parser.h"
 #include "../lightning/light_manager.h"
+#include <glm/glm.hpp>
 
 class PresetManager;
 class PresetLoader {

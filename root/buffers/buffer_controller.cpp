@@ -135,7 +135,7 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
 
     uData.hasSunLight =
         pData.hasKey("hasSunLight") ?
-        pData["hasSunLight"].asBool() :
+        pData["hasSunLight"].asBoolean() :
         dData.hasSunLight;
 
     if(uData.hasSunLight) {
@@ -155,6 +155,16 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
     } else {
         uData.sunLight = PointLight();
     }
+
+    uData.effects =
+        pData.hasKey("effects") ?
+        pData["effects"].asString() :
+        dData.effects;
+
+    uData.effectType =
+        pData.hasKey("effectType") ?
+        pData["effectType"].asInt() :
+        dData.effectType;
 
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();

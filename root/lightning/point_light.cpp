@@ -1,5 +1,7 @@
 #include "point_light.h"
 
+std::vector<PointLight> PointLight::pointLights;
+
 PointLight::PointLight() :
     position(0.0f, 0.0f, 0.0f),
     color(1.0f, 1.0f, 1.0f),
@@ -13,6 +15,33 @@ PointLight::PointLight() :
 {
     calcRadius();
 };
+PointLight::PointLight(const PointLight& ot) :
+    position(ot.position),
+    color(ot.color),
+    intensity(ot.intensity),
+    constant(ot.constant),
+    linear(ot.linear),
+    quadratic(ot.quadratic),
+    radius(ot.radius),
+    associatedPlanetId(ot.associatedPlanetId),
+    planetName(ot.planetName),
+    isSunLight(ot.isSunLight)
+{};
+PointLight& PointLight::operator=(const PointLight& ot) {
+    if(this != &ot) {
+        position = ot.position;
+        color = ot.color;
+        intensity = ot.intensity;
+        constant = ot.constant;
+        linear = ot.linear;
+        quadratic = ot.quadratic;
+        radius = ot.radius;
+        associatedPlanetId = ot.associatedPlanetId;
+        planetName = ot.planetName;
+        isSunLight = ot.isSunLight;
+    }
+    return *this;
+}
 PointLight::~PointLight() {};
 
 void PointLight::calcRadius() {

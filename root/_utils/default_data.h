@@ -21,6 +21,11 @@ class DefaultData {
             glm::vec3 currentRotation;
             glm::vec3 orbitAngle;
 
+            std::string lightning = "None";
+            bool hasSunLight = false;
+            std::string effects = "None";
+            int effectType = 0;
+
             PlanetData toPlanetData() const;
         };
 

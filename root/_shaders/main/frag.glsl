@@ -47,7 +47,7 @@ void main() {
 
         Light light;
         light.position = vec3(0.0, 5.0, 5.0);
-        light.color = vec3(0.1333, 0.1333, 0.1333);
+        light.color = vec3(0.0431, 0.0431, 0.0431);
         light.intensity = 1.0;
 
         AmbientLight ambientLightUniform;

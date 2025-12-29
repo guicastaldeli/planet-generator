@@ -286,7 +286,7 @@ namespace DataParser {
                 result = "\"" + Parser::encodeString(*string_value) + "\"";
                 break;
             case ValueType::Array: {
-                result = "[";//
+                result = "[";
                 if(pretty && !array_value->empty()) {
                     result += "\n";
                 }

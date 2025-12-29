@@ -5,8 +5,11 @@ PointLight::PointLight() :
     color(1.0f, 1.0f, 1.0f),
     intensity(1.0f),
     constant(1.0f),
-    linear(0.09f)
-{};
+    linear(0.09f),
+    quadratic(0.032f)
+{
+    calcRadius();
+};
 PointLight::~PointLight() {};
 
 void PointLight::calcRadius() {

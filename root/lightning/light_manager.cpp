@@ -27,7 +27,7 @@ void LightManager::setUniforms(GLuint shaderProgram) {
             glUniform1i(ambientLightEnabledLoc, ambientLight->isEnabled() ? 1 : 0);
         }
     }
-    GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumLightPoints");
+    GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumPointLights");
     if(numLightsLoc != -1) glUniform1i(numLightsLoc, (int)pointLight->pointLights.size());
 
     for(size_t i = 0; i < pointLight->pointLights.size(); i++) {

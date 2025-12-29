@@ -1,5 +1,6 @@
 #include "main.h"
 #include "buffers/buffer_data.h"
+#include "lightning/point_light.h"
 
 static Main* g_app = nullptr;
 
@@ -132,6 +133,12 @@ void Main::init() {
         lightManager->getAmbientLight()->setColor(glm::vec3(0.1333f, 0.1333f, 0.1333f));
         lightManager->getAmbientLight()->setIntensity(1.0f);
         lightManager->getAmbientLight()->setEnabled(true);
+
+        PointLight pointLight;
+        pointLight.position = glm::vec3(0.0f, 0.0f, 1.0f);
+        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        pointLight.intensity = 10.0f;
+        lightManager->getPointLight()->add(pointLight);
 
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);

@@ -128,6 +128,34 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         pData["texture"].asString() : 
         dData.texture;
 
+    uData.lightning =
+        pData.hasKey("lightning") ?
+        pData["lighting"].asString() :
+        dData.lightning;
+
+    uData.hasSunLight =
+        pData.hasKey("hasSunLight") ?
+        pData["hasSunLight"].asBool() :
+        dData.hasSunLight;
+
+    if(uData.hasSunLight) {
+        PointLight pointLight;
+        pointLight.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        pointLight.intensity = 1.0f;
+        pointLight.radius = 100.0f;
+        pointLight.associatedPlanetId = uData.id;
+        pointLight.planetName = uData.name;
+        pointLight.isSunLight = true;
+
+        uData.sunLight = pointLight;
+        if(main && main->lightManager) {
+            main->lightManager->getPointLight()->add(pointLight);
+        }
+    } else {
+        uData.sunLight = PointLight();
+    }
+
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();
         uData.rotationDir = bufferGenerator->rotationToBufferType(rotation);

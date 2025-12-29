@@ -223,27 +223,6 @@ extern "C" {
                 buffers->
                 planetBuffers.push_back(std::move(newPlanetBuffer));
 
-            if(data.hasSunLight) {
-                PointLight pointLight;
-                pointLight.position = glm(0.0f, 0.0f, 0.0f);
-                pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-                pointLight.intensity = 1.0f;
-                pointLight.radius = 100.0f;
-                pointLight.associatedPlanetId = newPlanet.id;
-                pointLight.planetName = newPlanet.name;
-                pointLight.isSunLight = true;
-
-                newPlanet.sunLight = pointLight;
-                newPlanet.hasSunLight = true;
-
-                if(g_generatorWrapperController->bufferController->mainApp &&
-                    g_generatorWrapperController->bufferController->mainApp->lightManager
-                ) {
-                    g_generatorWrapperController->bufferController->mainApp
-                        ->lightManager->getPointLight()->add(pointLight);
-                }
-            }
-
             printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);
         } catch(const std::exception& e) {
             printf("Error generating planet: %s\n", e.what());

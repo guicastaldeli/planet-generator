@@ -10,6 +10,7 @@ varying float vPhase;
 uniform float isHovered;
 uniform float uTime;
 uniform float shaderType;
+uniform float uEmissiveStrength;
 
 #include "color.glsl"
 #include "texture.glsl"
@@ -43,6 +44,7 @@ void main() {
         material.ambient = base * 0.2;
         material.diffuse = base;
         material.specular = vec3(0.0, 0.0, 0.0);
+        material.emissive = uEmissiveStrength > 0.0 ? base * uEmissiveStrength : vec3(0.0);
         material.shininess = 0.0;
 
         Light light;
@@ -82,7 +84,9 @@ void main() {
         }
 
         vec3 hoverColor = vec3(1.0, 1.0, 1.0);
-        vec3 finalColor = mix(lightning, hoverColor, isHovered * 0.3);
+
+        vec3 litColor = lightning + material.emissive;
+        vec3 finalColor = mix(litColor, hoverColor, isHovered * 0.3);
         finalColor = min(finalColor, vec3(1.0));
 
         gl_FragColor = vec4(finalColor, 1.0);

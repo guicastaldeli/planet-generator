@@ -117,6 +117,12 @@ void Buffers::render() {
 
             GLuint shaderTypeLoc = glGetUniformLocation(shaderController->shaderProgram, "shaderType");
             if(shaderTypeLoc != -1) glUniform1f(shaderTypeLoc, 0.0f);
+
+            GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
+            if(emissiveStrengthLoc != -1) {
+                float emissiveStrength = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
+                glUniform1f(emissiveStrengthLoc, emissiveStrength);
+            }
     
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, planetBuffer.worldPos);
@@ -198,6 +204,12 @@ void Buffers::render() {
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+            GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
+            if(emissiveStrengthLoc != -1) {
+                float emissiveStrength = previewPlanet.data.hasSunLight ? 1.0f : 0.0;
+                glUniform1f(emissiveStrengthLoc, emissiveStrength);
+            }
 
             GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
             if(planetColorLoc != -1) {

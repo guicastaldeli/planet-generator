@@ -134,12 +134,13 @@ void Main::init() {
         lightManager->getAmbientLight()->setIntensity(1.0f);
         lightManager->getAmbientLight()->setEnabled(true);
 
+        /*
         PointLight pointLight;
         pointLight.position = glm::vec3(0.0f, 0.0f, 1.0f);
         pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
         pointLight.intensity = 10.0f;
         lightManager->getPointLight()->add(pointLight);
-
+        */
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);
         generatorWrapperController = new GeneratorWrapperController(

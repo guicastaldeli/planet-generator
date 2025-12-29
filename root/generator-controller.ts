@@ -6,16 +6,24 @@ interface GeneratorOptions {
         id: string; 
         name: string; 
         description: string;
-    }>
+    }>;
     rotationAxes: Array<{ 
         id: string;
         name: string;
-    }>
+    }>;
+    lightning: Array<{ 
+        id: number; 
+        name: string; 
+    }>;
+    effects: Array<{ 
+        id: number; 
+        name: string; 
+    }>;
     orbitPositions: Array<{ 
         id: number; 
         name: string; 
         distance: number;
-    }>
+    }>;
     sizeRange: { 
         min: number; 
         max: number; 

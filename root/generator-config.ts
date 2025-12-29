@@ -70,6 +70,26 @@ export class GeneratorConfig {
             })
         },
         {
+            id: 'planet-lightning',
+            type: 'select',
+            dataPath: 'lightning',
+            createOption: (item: any) => ({
+                value: item.id.toString(),
+                text: item.name,
+                selected: false
+            })
+        },
+        {
+            id: 'planet-effects',
+            type: 'select',
+            dataPath: 'effects',
+            createOption: (item: any) => ({
+                value: item.id.toString(),
+                text: item.name,
+                selected: false
+            })
+        },
+        {
             id: 'planet-position',
             type: 'select',
             dataPath: 'orbitPositions',

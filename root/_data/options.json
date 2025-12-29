@@ -3,28 +3,23 @@
         "shapes": [
             {
                 "id": "SPHERE",
-                "name": "Sphere",
-                "description": "Round spherical planet"
+                "name": "Sphere"
             },
             {
                 "id": "CUBE",
-                "name": "Cube",
-                "description": "Cube-shaped planet"
+                "name": "Cube"
             },
             {
                 "id": "TRIANGLE",
-                "name": "Triangle",
-                "description": "Triangular planet"
+                "name": "Triangle"
             },
             {
                 "id": "TORUS",
-                "name": "Torus",
-                "description": "Donut-shaped planet"
+                "name": "Torus"
             },
             {
                 "id": "CYLINDER",
-                "name": "Cylinder",
-                "description": "Cylindrical planet"
+                "name": "Cylinder"
             }
         ],
         "rotationAxes": [
@@ -39,6 +34,26 @@
             {
                 "id": "Z",
                 "name": "Z Axis"
+            }
+        ],
+        "lightning": [
+            {
+                "id": 0,
+                "name": "None"
+            },
+            {
+                "id": 1,
+                "name": "Sun Light"
+            }
+        ],
+        "effects": [
+            {
+                "id": 0,
+                "name": "Noise"
+            },
+            {
+                "id": 1,
+                "name": "Earth Orbit"
             }
         ],
         "orbitPositions": [
@@ -84,37 +99,37 @@
             },
             {
                 "id": 9,
-                "name": "Custom Orbit 1",
+                "name": "Orbit 9",
                 "distance": 1.0
             },
             {
                 "id": 10,
-                "name": "Custom Orbit 2",
+                "name": "Orbit 10",
                 "distance": 1.15
             },
             {
                 "id": 11,
-                "name": "Custom Orbit 3",
+                "name": "Orbit 11",
                 "distance": 1.3
             },
             {
                 "id": 12,
-                "name": "Custom Orbit 4",
+                "name": "Orbit 12",
                 "distance": 1.45
             },
             {
                 "id": 13,
-                "name": "Custom Orbit 5",
+                "name": "Orbit 13",
                 "distance": 1.6
             },
             {
                 "id": 14,
-                "name": "Custom Orbit 6",
+                "name": "Orbit 14",
                 "distance": 1.75
             },
             {
                 "id": 15,
-                "name": "Custom Orbit 7",
+                "name": "Orbit 15",
                 "distance": 1.9
             }
         ],

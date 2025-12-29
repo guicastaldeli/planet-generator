@@ -31,12 +31,23 @@ void LightManager::setUniforms(GLuint shaderProgram) {
             glUniform1i(ambientLightEnabledLoc, ambientLight->isEnabled() ? 1 : 0);
         }
     }
-    GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumPointLights");
-    if(numLightsLoc != -1) glUniform1i(numLightsLoc, (int)pointLight->pointLights.size());
 
+    int visibleLightCount = 0;
+    for(const auto& light : pointLight->pointLights) {
+        if(!light.isHidden) {
+            visibleLightCount++;
+        }
+    }
+
+    GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumPointLights");
+    if(numLightsLoc != -1) glUniform1i(numLightsLoc, visibleLightCount);
+    
+    int visibleIndex = 0;
     for(size_t i = 0; i < pointLight->pointLights.size(); i++) {
         const PointLight& light = pointLight->pointLights[i];
-        std::string baseName = "uPointLights[" + std::to_string(i) + "]";
+        if(light.isHidden) continue;
+
+         std::string baseName = "uPointLights[" + std::to_string(visibleIndex) + "]";
 
         GLuint posLoc = glGetUniformLocation(shaderProgram, (baseName + ".position").c_str());
         if(posLoc != -1) glUniform3f(posLoc, light.position.x, light.position.y, light.position.z);
@@ -58,6 +69,8 @@ void LightManager::setUniforms(GLuint shaderProgram) {
             
         GLint radiusLoc = glGetUniformLocation(shaderProgram, (baseName + ".radius").c_str());
         if(radiusLoc != -1) glUniform1f(radiusLoc, light.radius);
+
+        visibleIndex++;
     }
 }
 
@@ -66,6 +79,8 @@ void LightManager::setUniforms(GLuint shaderProgram) {
  */
 void LightManager::updatePlanetLights(const std::vector<PlanetBuffer>& planetBuffers) {
     for(auto& pointLight : pointLight->pointLights) {
+        if(pointLight.isHidden) continue;
+
         for(const auto& planetBuffer : planetBuffers) {
             if(planetBuffer.data.id == pointLight.associatedPlanetId) {
                 pointLight.position = planetBuffer.worldPos;

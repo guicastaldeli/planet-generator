@@ -1,6 +1,7 @@
 #include "preview_controller.h"
 #include "../buffers/buffers.h"
 #include "../_utils/default_data.h"
+#include "../lightning/point_light.h"
 #include <emscripten.h>
 
 PreviewController::PreviewController(BufferController* bufferController, Camera* camera) :
@@ -69,6 +70,8 @@ void PreviewController::startGeneratorPreview() {
         preview();
     }
 
+    PointLight::hide();
+
     PlanetData previewData;
     if(bufferController && 
         bufferController->defaultData &&
@@ -133,6 +136,7 @@ void PreviewController::cleanupPreview() {
         bufferController->buffers->setPreviewMode(false);
     }
 
+    PointLight::show();
     isGeneratorActive = false;
     isPreviewing = false;
 

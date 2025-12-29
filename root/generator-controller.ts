@@ -262,8 +262,10 @@ export class GeneratorController {
             colorRgb: data.color,
             texture: data.texture || data.texture.name,
             position: Number(data.position),
-            lightning: data.lightning || "None",
-            effects: data.effects || "None",
+            lightning: data.lightning,
+            hasSunLight: this.generatorConfig!.setLightning(data.lightning),
+            effects: data.effects,
+            effectType: this.generatorConfig!.setEffects(data.effects),
             rotationDir: data.rotationDir,
             rotationSpeedItself: data.rotationSpeedItself,
             rotationSpeedCenter: data.rotationSpeedCenter
@@ -505,6 +507,8 @@ export class GeneratorController {
             console.log('Setting texture in data:', data.texture);
         }
 
+        //HERE
+        data.hasSunLight = data.lightning === "Sun Light";
         return data;
     }
 

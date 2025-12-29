@@ -83,6 +83,10 @@ void PreviewController::startGeneratorPreview() {
         previewData.colorRgb = defaultDataPtr->colorRgb;
         previewData.texture = defaultDataPtr->texture;
         previewData.position = defaultDataPtr->position;
+        previewData.lightning = defaultDataPtr->lightning;
+        previewData.hasSunLight = defaultDataPtr->hasSunLight;
+        previewData.effects = defaultDataPtr->effects;
+        previewData.effectType = defaultDataPtr->effectType;
         previewData.rotationDir = defaultDataPtr->rotationDir;
         previewData.rotationSpeedItself = defaultDataPtr->rotationSpeedItself;
         previewData.rotationSpeedCenter = defaultDataPtr->rotationSpeedCenter;

@@ -82,7 +82,7 @@ export class GeneratorConfig {
             type: 'select',
             dataPath: 'lightning',
             createOption: (item: any) => ({
-                value: item.id.toString(),
+                value: item.name,
                 text: item.name,
                 selected: false
             })
@@ -92,7 +92,7 @@ export class GeneratorConfig {
             type: 'select',
             dataPath: 'effects',
             createOption: (item: any) => ({
-                value: item.id.toString(),
+                value: item.name,
                 text: item.name,
                 selected: false
             })
@@ -349,5 +349,19 @@ export class GeneratorConfig {
         if(cancelBtn) {
             cancelBtn.addEventListener('click', () => cancelGeneration());
         }
+    }
+
+    public setLightning(data: string): boolean {
+        const option = this.data?.generatorOptions?.lightning.find(
+            (item: any) => item.name === data
+        );
+        return option ? option.id === 1 : false;
+    }
+
+    public setEffects(data: string): number {
+        const option = this.data?.generatorOptions?.effects.find(
+            (item: any) => item.name === data
+        );
+        return option ? option.id : (this.defaultData.effects ?? 0);
     }
 }

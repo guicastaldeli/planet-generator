@@ -23,10 +23,14 @@ class PointLight {
         int associatedPlanetId;
         std::string planetName;
         bool isSunLight;
+        bool isHidden;
 
         void calcRadius();
         void add(const PointLight& pointLight);
         void remove(int i);
         void clear();
         const std::vector<PointLight>& get() const;
+
+        static void hide();
+        static void show();
 };

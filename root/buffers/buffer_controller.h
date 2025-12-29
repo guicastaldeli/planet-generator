@@ -73,5 +73,6 @@ class BufferController {
         bool isPreviewActive() const;
 
         void createPointLight();
+        void createPointLight(const PlanetData& planetData);
         void updatePointLightPosition();
 };

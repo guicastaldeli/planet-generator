@@ -133,12 +133,29 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         pData.hasKey("lightning") ?
         pData["lightning"].asString() :
         dData.lightning;
-
-    if(pData.hasKey("lightning")) {
+    if(pData.hasKey("hasSunLight")) {
+        uData.hasSunLight = pData["hasSunLight"].asBoolean();
+    } else if(pData.hasKey("lightning")) {
         std::string lightningStr = pData["lightning"].asString();
         uData.hasSunLight = (lightningStr == "Sun Light");
     } else {
         uData.hasSunLight = dData.hasSunLight;
+    }
+
+    uData.effects =
+        pData.hasKey("effects") ?
+        pData["effects"].asString() :
+        dData.effects;
+    if(pData.hasKey("effectType")) {
+        uData.effectType = pData["effectType"].asInt();
+    } else if(pData.hasKey("effects")) {
+        std::string effectsStr = pData["effects"].asString();
+        if(effectsStr == "None") uData.effectType = 0;
+        else if(effectsStr == "Earth Orbit") uData.effectType = 1;
+        else if(effectsStr == "Noise") uData.effectType = 2;
+        else uData.effectType = 0;
+    } else {
+        uData.effectType = dData.effectType;
     }
 
     uData.effects =
@@ -325,6 +342,25 @@ void BufferController::deleteSelectedPlanet() {
     }
 
     if(selectedPlanetIndex < buffers->planetBuffers.size()) {
+        int planetId = buffers->planetBuffers[selectedPlanetIndex].data.id;
+        std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
+        buffers->planetBuffers.erase(
+            buffers->planetBuffers.begin() + selectedPlanetIndex
+        );
+
+        if(main && main->lightManager) {
+            auto& pointLights = main->lightManager->getPointLight()->pointLights;
+            for(auto it = pointLights.begin(); it != pointLights.end(); ++it) {
+                if(it->associatedPlanetId == planetId && it->isSunLight) {
+                    pointLights.erase(it);
+                    std::cout << "Removed point light for planet: " << planetName << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(selectedPlanetIndex < buffers->planetBuffers.size()) {
         std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
         buffers->planetBuffers.erase(
             buffers->planetBuffers.begin() + selectedPlanetIndex
@@ -399,37 +435,53 @@ TextureLoader* BufferController::getTextureLoader() {
 /**
  * Point Light
  */
+void BufferController::createPointLight(const PlanetData& planetData) {
+    if(!main || !main->lightManager) {
+        std::cout << "ERROR: Cannot create Sun light - no LightManager" << std::endl;
+        return;
+    }
+    if(!planetData.hasSunLight) {
+        return;
+    }
+
+    auto& pointLights = main->lightManager->getPointLight()->pointLights;
+    for(auto& light : pointLights) {
+        if(light.associatedPlanetId == planetData.id) {
+            float orbitRadius = planetData.distanceFromCenter;
+            float orbitAngle = planetData.orbitAngle.y;
+            light.position = glm::vec3(
+                orbitRadius * cos(glm::radians(orbitAngle)),
+                0.0f,
+                orbitRadius * sin(glm::radians(orbitAngle))
+            );
+            light.planetName = planetData.name;
+            return;
+        }
+    }
+
+    PointLight pointLight;
+    pointLight.color = glm::vec3(1.0f, 0.95f, 0.85f);
+    pointLight.intensity = 1.0f;
+    pointLight.constant = 1.0f;
+    pointLight.linear = 0.09f;
+    pointLight.quadratic = 0.032f;
+    pointLight.radius = 150.0f;
+    pointLight.associatedPlanetId = planetData.id;
+    pointLight.planetName = planetData.name;
+    pointLight.isSunLight = true;
+
+    main->lightManager->getPointLight()->add(pointLight);
+    std::cout << "Created point light for planet: " << planetData.name 
+              << " (ID: " << planetData.id << ")" << std::endl;
+}
 void BufferController::createPointLight() {
     if(!main || !main->lightManager) {
         std::cout << "ERROR: Cannot create Sun light - no LightManager" << std::endl;
         return;
     }
 
-    main->lightManager->getPointLight()->pointLights.clear();
-
     for(const auto& planet : currentPreset.planets) {
-        if(planet.hasSunLight) {
-            PointLight pointLight;
-
-            float orbitRadius = planet.distanceFromCenter;
-            float orbitAngle = planet.orbitAngle.y;
-            pointLight.position = glm::vec3(
-                orbitRadius * cos(glm::radians(orbitAngle)),
-                0.0f,
-                orbitRadius * sin(glm::radians(orbitAngle))
-            );
-            pointLight.color = glm::vec3(1.0f, 0.95f, 0.85f);
-            pointLight.intensity = 1.0f;
-            pointLight.constant = 1.0f;
-            pointLight.linear = 0.09f;
-            pointLight.quadratic = 0.032f;
-            pointLight.radius = 150.0f;
-            pointLight.associatedPlanetId = planet.id;
-            pointLight.planetName = planet.name;
-            pointLight.isSunLight = true;
-
-            main->lightManager->getPointLight()->add(pointLight);
-        }
+        createPointLight(planet);
     }
 }
 

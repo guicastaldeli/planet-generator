@@ -201,6 +201,10 @@ extern "C" {
             preset.planets.push_back(newPlanet);
             g_generatorWrapperController->bufferController->currentPreset.planets.push_back(newPlanet);
             
+            if(newPlanet.hasSunLight) {
+                g_generatorWrapperController->bufferController->createPointLight(newPlanet);
+            }
+            
             PlanetBuffer newPlanetBuffer;
             newPlanetBuffer.data = newPlanet;
             newPlanetBuffer.isPreview = false;

@@ -9,7 +9,7 @@
             "color": "yellow",
             "position": 0,
             "hasSunLight": true,
-            "lightning": "Sun Light",
+            "lightning": "None",
             "effects": "None",
             "rotationDir": "Y",
             "rotationSpeedItself": 0.01,

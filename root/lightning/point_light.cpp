@@ -11,7 +11,8 @@ PointLight::PointLight() :
     quadratic(0.032f),
     associatedPlanetId(-1),
     planetName(""),
-    isSunLight(false)
+    isSunLight(false),
+    isHidden(false)
 {
     calcRadius();
 };
@@ -25,7 +26,8 @@ PointLight::PointLight(const PointLight& ot) :
     radius(ot.radius),
     associatedPlanetId(ot.associatedPlanetId),
     planetName(ot.planetName),
-    isSunLight(ot.isSunLight)
+    isSunLight(ot.isSunLight),
+    isHidden(ot.isHidden)
 {};
 PointLight& PointLight::operator=(const PointLight& ot) {
     if(this != &ot) {
@@ -39,6 +41,7 @@ PointLight& PointLight::operator=(const PointLight& ot) {
         associatedPlanetId = ot.associatedPlanetId;
         planetName = ot.planetName;
         isSunLight = ot.isSunLight;
+        isHidden = ot.isHidden;
     }
     return *this;
 }
@@ -82,4 +85,22 @@ void PointLight::clear() {
  */
 const std::vector<PointLight>& PointLight::get() const {
     return pointLights;
+}
+
+/**
+ * Hide
+ */
+void PointLight::hide() {
+    for(auto& light : pointLights) {
+        light.isHidden = true;
+    }
+}
+
+/**
+ * Show
+ */
+void PointLight::show() {
+    for(auto& light : pointLights) {
+        light.isHidden = false;
+    }
 }

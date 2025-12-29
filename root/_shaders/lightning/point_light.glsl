@@ -13,7 +13,7 @@ struct PointLightMaterial {
     vec3 diffuse;
     vec3 specular;
     float shininess;
-}
+};
 
 float calcAttenuationPointLight(PointLight light, float distance) {
     return 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));

@@ -50,6 +50,11 @@ void main() {
         light.color = vec3(0.1333, 0.1333, 0.1333);
         light.intensity = 1.0;
 
+        AmbientLight ambientLightUniform;
+        ambientLightUniform.color = uAmbientLight.color;
+        ambientLightUniform.intensity = uAmbientLight.intensity;
+        ambientLightUniform.enabled = bool(uAmbientLight.enabled);
+
         vec3 normal = normalize(vNormal);
         vec3 viewDir = normalize(-vPos);
         vec3 lightning = calcPhongLightning(
@@ -57,6 +62,7 @@ void main() {
             normal,
             viewDir,
             light,
+            ambientLightUniform,
             material
         );
 

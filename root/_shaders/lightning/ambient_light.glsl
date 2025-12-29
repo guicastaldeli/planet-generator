@@ -4,6 +4,12 @@ struct Light {
     float intensity;
 };
 
+struct AmbientLight {
+    vec3 color;
+    float intensity;
+    bool enabled;
+}
+
 struct Material {
     vec3 ambient;
     vec3 diffuse;
@@ -11,12 +17,14 @@ struct Material {
     float shininess;
 };
 
+uniform AmbientLight uAmbientLight;
+
 vec3 calcAmbient(
     Material material, 
-    vec3 lightColor, 
-    float intensity
+    AmbientLight ambientLight
 ) {
-    return material.ambient * lightColor * intensity;
+    if(!ambientLight.enabled) return vec3(0.0);
+    return material.ambient * ambientLight.color * ambientLight.intensity;
 }
 
 vec3 calcDiffuse(
@@ -49,14 +57,11 @@ vec3 calcPhongLightning(
     vec3 normal,
     vec3 viewDir,
     Light light,
+    AmbientLight ambientLight,
     Material material
 ) {
     vec3 lightDir = normalize(light.position - position);
-    vec3 ambient = calcAmbient(
-        material, 
-        light.color, 
-        light.intensity
-    );
+    vec3 ambient = calcAmbient(material, ambientLight);
     vec3 diffuse = calcDiffuse(
         material, 
         light.color,

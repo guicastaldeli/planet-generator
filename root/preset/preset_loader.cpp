@@ -30,8 +30,7 @@ bool PresetLoader::parse(const std::string& data) {
         DataParser::Value root = DataParser::Parser::parse(data);
         currentPreset.planets.clear();
 
-        if(
-            root.hasKey("name") || 
+        if(root.hasKey("name") || 
             root.hasKey("size") || 
             root.hasKey("shape")
         ) {
@@ -47,7 +46,8 @@ bool PresetLoader::parse(const std::string& data) {
                 parseData(val, data);
                 currentPreset.planets.push_back(data);
             }
-        } else {
+        } 
+        else {
             std::cerr << "Invalid format!" << std::endl;
             return false;
         }

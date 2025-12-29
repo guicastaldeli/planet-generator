@@ -1,10 +1,11 @@
 #pragma once
 #include "point_light.h"
+#include "ambient_light.h"
+#include "point_light.h"
+#include "../buffers/buffer_generator.h"
 #include <vector>
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
-#include "ambient_light.h"
-#include "point_light.h"
 
 class ShaderController;
 class LightManager {
@@ -13,6 +14,7 @@ class LightManager {
         ~LightManager();
 
         void setUniforms(GLuint shaderProgram);
+        void updatePlanetLights(const std::vector<PlanetBuffer>& planetBuffers);
 
         AmbientLight* getAmbientLight();
         PointLight* getPointLight();

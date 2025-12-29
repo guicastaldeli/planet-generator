@@ -133,14 +133,11 @@ void Main::init() {
         lightManager->getAmbientLight()->setColor(glm::vec3(0.1333f, 0.1333f, 0.1333f));
         lightManager->getAmbientLight()->setIntensity(1.0f);
         lightManager->getAmbientLight()->setEnabled(true);
-
-        /*
-        PointLight pointLight;
-        pointLight.position = glm::vec3(0.0f, 0.0f, 1.0f);
-        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-        pointLight.intensity = 10.0f;
-        lightManager->getPointLight()->add(pointLight);
-        */
+        if(lightManager && bufferController && bufferController->buffers) {
+            lightManager->updatePlanetLights(bufferController->buffers->planetBuffers);
+            lightManager->setUniforms(shaderLoader->shaderController->shaderProgram);
+        }
+        
         controlsWrapperController = new ControlsWrapperController(bufferController);
         infoWapperController = new InfoWrapperController(camera, bufferController);
         generatorWrapperController = new GeneratorWrapperController(

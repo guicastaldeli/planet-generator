@@ -6,7 +6,10 @@ PointLight::PointLight() :
     intensity(1.0f),
     constant(1.0f),
     linear(0.09f),
-    quadratic(0.032f)
+    quadratic(0.032f),
+    associatedPlanetId(-1),
+    planetName(""),
+    isSunLight(false)
 {
     calcRadius();
 };

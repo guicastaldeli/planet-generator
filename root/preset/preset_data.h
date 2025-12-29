@@ -1,5 +1,6 @@
 #pragma once
 #include "../buffers/buffer_data.h"
+#include "../lightning/point_light.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -26,6 +27,13 @@ struct PlanetData {
     float distanceFromCenter;
     glm::vec3 currentRotation;
     glm::vec3 orbitAngle;
+
+    std::string lightning = "None";
+    bool hasSunLight = false;
+    PointLight sunLight;
+
+    std::string effects = "None";
+    int effectType = 0;
 };
 
 struct PresetData {

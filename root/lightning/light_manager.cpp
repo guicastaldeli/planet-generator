@@ -1,5 +1,6 @@
 #include "light_manager.h"
 #include "../_shaders/shader_controller.h"
+#include "../buffers/buffer_generator.h"
 
 LightManager::LightManager(ShaderController* shaderController) :
     shaderController(nullptr)
@@ -10,6 +11,9 @@ LightManager::LightManager(ShaderController* shaderController) :
 };
 LightManager::~LightManager() {};
 
+/**
+ * Set Uniforms
+ */
 void LightManager::setUniforms(GLuint shaderProgram) {
     if(ambientLight->isEnabled()) {
         GLuint ambientColorLoc = glGetUniformLocation(shaderProgram, "uAmbientLight.color");
@@ -54,6 +58,20 @@ void LightManager::setUniforms(GLuint shaderProgram) {
             
         GLint radiusLoc = glGetUniformLocation(shaderProgram, (baseName + ".radius").c_str());
         if(radiusLoc != -1) glUniform1f(radiusLoc, light.radius);
+    }
+}
+
+/**
+ * Update Planet Lights
+ */
+void LightManager::updatePlanetLights(const std::vector<PlanetBuffer>& planetBuffers) {
+    for(auto& pointLight : pointLight->pointLights) {
+        for(const auto& planetBuffer : planetBuffers) {
+            if(planetBuffer.data.id == pointLight.associatedPlanetId) {
+                pointLight.position = planetBuffer.worldPos;
+                break;
+            }
+        }
     }
 }
 

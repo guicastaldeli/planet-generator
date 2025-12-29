@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
+#include <string>
 
 class PointLight {
     public:
@@ -16,6 +17,10 @@ class PointLight {
         float linear;
         float quadratic;
         float radius;
+
+        int associatedPlanetId;
+        std::string planetName;
+        bool isSunLight;
 
         void calcRadius();
         void add(const PointLight& pointLight);

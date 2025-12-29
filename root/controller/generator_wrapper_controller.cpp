@@ -268,14 +268,7 @@ extern "C" {
         str << "},";
         str << "\"texture\":\"" << defaultData.texture << "\",";
         str << "\"position\":" << defaultData.position << ",";
-        if(defaultData.position == 0) {
-            str << "\"lightning\":\"Sun Light\",";
-            str << "\"lightColor\":[1.0, 0.95, 0.85],";
-            str << "\"lightIntensity\":1.0,";
-            str << "\"lightRadius\":150.0,";
-        } else {
-            str << "\"lightning\":\"None\",";
-        }
+        str << "\"lightning\":\"None\",";
         str << "\"effects\":\"" << defaultData.effects << "\",";
         str << "\"rotationDir\":\"" << (
             defaultData.rotationDir == RotationAxis::X ? "X" : 

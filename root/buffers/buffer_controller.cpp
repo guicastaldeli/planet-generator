@@ -158,16 +158,6 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         uData.effectType = dData.effectType;
     }
 
-    uData.effects =
-        pData.hasKey("effects") ?
-        pData["effects"].asString() :
-        dData.effects;
-
-    uData.effectType =
-        pData.hasKey("effectType") ?
-        pData["effectType"].asInt() :
-        dData.effectType;
-
     if(pData.hasKey("rotationDir")) {
         std::string rotation = pData["rotationDir"].asString();
         uData.rotationDir = bufferGenerator->rotationToBufferType(rotation);

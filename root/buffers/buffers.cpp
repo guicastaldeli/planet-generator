@@ -159,6 +159,11 @@ void Buffers::render() {
             if(hoverLoc != -1) {
                 glUniform1f(hoverLoc, (float)isThisPlanetHovered);
             }
+
+            GLuint effectTypeLoc = glGetUniformLocation(shaderController->shaderProgram, "uEffectType");
+            if(effectTypeLoc != -1) {
+                glUniform1f(effectTypeLoc, static_cast<float>(planetBuffer.data.effectType));
+            }
     
             glDrawElements(
                 GL_TRIANGLES,
@@ -234,6 +239,11 @@ void Buffers::render() {
 
             GLuint hoverLoc = glGetUniformLocation(shaderController->shaderProgram, "isHovered"); 
             if(hoverLoc != -1) glUniform1f(hoverLoc, 0.0f);
+
+            GLuint effectTypeLoc = glGetUniformLocation(shaderController->shaderProgram, "uEffectType");
+            if(effectTypeLoc != -1) {
+                glUniform1f(effectTypeLoc, static_cast<float>(previewPlanet.data.effectType));
+            }
 
             glDrawElements(
                 GL_TRIANGLES,

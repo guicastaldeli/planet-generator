@@ -5,12 +5,13 @@ varying vec3 vViewDir;
 varying vec3 vPos;
 varying vec3 vNormal;
 varying vec2 vStarAttr;
-varying float vPhase;
 
 uniform float isHovered;
 uniform float uTime;
 uniform float shaderType;
 uniform float uEmissiveStrength;
+uniform float uEffectType;
+varying float vPhase;
 
 #include "color.glsl"
 #include "texture.glsl"
@@ -18,6 +19,7 @@ uniform float uEmissiveStrength;
 #include "../skybox/star_color.glsl"
 #include "../lightning/ambient_light.glsl"
 #include "../lightning/point_light.glsl"
+#include "../effect/fresnel.glsl"
 
 uniform int uNumPointLights;
 uniform PointLight uPointLights[15];
@@ -39,6 +41,10 @@ void main() {
     } 
     else {
         vec3 base = getBaseColor();
+
+        if(uEffectType > 0.5 && uEffectType < 1.5) {
+            base = applyFresnel(base, normalize(vNormal), normalize(-vPos));
+        }
         
         Material material;
         material.ambient = base * 0.2;

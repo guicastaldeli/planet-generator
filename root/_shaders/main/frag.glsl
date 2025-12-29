@@ -16,6 +16,10 @@ uniform float shaderType;
 #include "../skybox/skybox_frag.glsl"
 #include "../skybox/star_color.glsl"
 #include "../lightning/ambient_light.glsl"
+#include "../lightning/point_light.glsl"
+
+uniform int uNumPointLights;
+uniform PointLight uPointLights[15];
 
 void main() {
     //Stars
@@ -55,6 +59,17 @@ void main() {
             light,
             material
         );
+
+        for(int i = 0; i < 15; i++) {
+            if(i >= uNumPointLights) break;
+            lightning += calcPointLight(
+                uPointLights[i],
+                material,
+                vPos,
+                normal,
+                viewDir
+            );
+        }
 
         vec3 hoverColor = vec3(1.0, 1.0, 1.0);
         vec3 finalColor = mix(lightning, hoverColor, isHovered * 0.3);

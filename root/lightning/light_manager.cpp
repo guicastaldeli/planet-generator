@@ -1,0 +1,48 @@
+#include "light_manager.h"
+#include "../_shaders/shader_controller.h"
+
+LightManager::LightManager(ShaderController* shaderController) :
+    shaderController(nullptr)
+{
+    shaderController = shaderController;
+    pointLight = new PointLight();
+};
+LightManager::~LightManager() {};
+
+void LightManager::setUniforms(GLuint shaderProgram) {
+    GLuint numLightsLoc = glGetUniformLocation(shaderProgram, "uNumLightPoints");
+    if(numLightsLoc != -1) glUniform1i(numLightsLoc, (int)pointLights.size());
+
+    for(size_t i = 0; i < pointLight->pointLights.size(); i++) {
+        const PointLight& light = pointLights[i];
+        std::string baseName = "uPointLights[" + std::to_string(i) + "]";
+
+        GLuint posLoc = glGetUniformLocation(shaderProgram, (baseName + ".position").c_str());
+        if(posLoc != -1) glUniform3f(posLoc, light.position.x, light.position.y, light.position.z);
+
+        GLuint colorLoc = glGetUniformLocation(shaderProgram, (baseName + ".color").c_str());
+        if(colorLoc != -1) glUniform3f(colorLoc, light.color.r, light.color.g, light.color.b);
+
+        GLint intensityLoc = glGetUniformLocation(shaderProgram, (baseName + ".intensity").c_str());
+        if(intensityLoc != -1) glUniform1f(intensityLoc, light.intensity);
+            
+        GLint constantLoc = glGetUniformLocation(shaderProgram, (baseName + ".constant").c_str());
+        if(constantLoc != -1) glUniform1f(constantLoc, light.constant);
+            
+        GLint linearLoc = glGetUniformLocation(shaderProgram, (baseName + ".linear").c_str());
+        if(linearLoc != -1) glUniform1f(linearLoc, light.linear);
+            
+        GLint quadraticLoc = glGetUniformLocation(shaderProgram, (baseName + ".quadratic").c_str());
+        if(quadraticLoc != -1) glUniform1f(quadraticLoc, light.quadratic);
+            
+        GLint radiusLoc = glGetUniformLocation(shaderProgram, (baseName + ".radius").c_str());
+        if(radiusLoc != -1) glUniform1f(radiusLoc, light.radius);
+    }
+}
+
+/**
+ * Get Point Light
+ */
+PointLight LightManager::getPointLight() {
+    return pointLight;
+}

@@ -410,6 +410,14 @@ void Buffers::clearBuffers() {
     planetBuffers.clear();
 }
 
+bool Buffers::hasPreviewPlanet() const {
+    return !previewPlanet.data.name.empty();
+}
+
+const PlanetBuffer& Buffers::getPreviewBuffer() const {
+    return previewPlanet;
+} 
+
 /**
  * Init
  */

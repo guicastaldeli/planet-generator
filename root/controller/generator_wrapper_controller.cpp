@@ -131,6 +131,17 @@ extern "C" {
     }
 
     /**
+     * Clear Texture
+     */
+    void clearCurrentTexture() {
+        if(g_generatorWrapperController && g_generatorWrapperController->bufferController) {
+            g_generatorWrapperController->
+                bufferController->
+                previewController->clearCurrentTexture();
+        }
+    }
+
+    /**
      * Hide Generator
      */
     void hideGenerator() {

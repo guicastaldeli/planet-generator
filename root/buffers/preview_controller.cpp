@@ -153,6 +153,40 @@ void PreviewController::cleanupPreview() {
 }
 
 /**
+ * Clear Texture
+ */
+void PreviewController::clearCurrentTexture() {
+    if(!isGeneratorActive) return;
+
+    PlanetData currentData = getCurrentPreviewData();
+    currentData.texture = "";
+    if(bufferController && bufferController->buffers) {
+        bufferController->buffers->updatePreviewPlanet(currentData);
+    }
+
+    currentPreviewData = currentData;
+}
+
+/**
+ * Get Current Preview Data
+ */
+PlanetData PreviewController::getCurrentPreviewData() const {
+    PlanetData data;
+    if(bufferController && bufferController->buffers) {
+        const auto& previewBuffer = bufferController->buffers->getPreviewBuffer();
+        if(!previewBuffer.data.name.empty()) {
+            data = previewBuffer.data;
+        } else {
+            data = currentPreviewData;
+        }
+    } else {
+        data = currentPreviewData;
+    }
+
+    return data;
+}
+
+/**
  * Preview Light
  */
 void PreviewController::createPreviewLight() {

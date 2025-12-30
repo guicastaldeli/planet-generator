@@ -32,6 +32,7 @@ extern "C" {
         int height
     );
     void EMSCRIPTEN_KEEPALIVE showGenerator();
+    void EMSCRIPTEN_KEEPALIVE clearCurrentTexture();
 #ifdef __cplusplus
 }
 #endif

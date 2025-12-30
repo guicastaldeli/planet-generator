@@ -23,6 +23,8 @@ class PreviewController {
         );
         ~PreviewController();
 
+        PlanetData currentPreviewData;
+
         bool isPreviewing;
         bool isGeneratorActive;
 
@@ -30,8 +32,10 @@ class PreviewController {
         void exitPreview();
 
         void startGeneratorPreview();
+        PlanetData getCurrentPreviewData() const;
         void updatePreview(const PlanetData& data);
         void cleanupPreview();
+        void clearCurrentTexture();
         bool isInGeneratorMode() const;
 
         void createPreviewLight();

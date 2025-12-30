@@ -42,8 +42,7 @@ GLuint TextureLoader::loadTexture(
             std::cerr << "stbi_load_from_memory failed: " << stbi_failure_reason() << std::endl;
             return 0;
         }
-        
-        int middleIndex = (imgWidth * (imgHeight/2) + (imgWidth/2)) * channels;        
+
         GLuint texId = loadTextureFromMemory(pixels, imgWidth, imgHeight, channels);
         stbi_image_free(pixels);
         
@@ -59,7 +58,6 @@ GLuint TextureLoader::loadTexture(
         return 0;
     }
 }
-
 GLuint TextureLoader::loadTextureFromMemory(
     const unsigned char* data,
     int width,
@@ -111,28 +109,66 @@ GLuint TextureLoader::loadTextureFromMemory(
     GLenum error = glGetError();
     if(error != GL_NO_ERROR) {
         std::cerr << "OpenGL error after glTexImage2D: 0x" << std::hex << error << std::dec << std::endl;
-        glDeleteTextures(1, &texId);
-        return 0;
+        
+        if(error == GL_INVALID_OPERATION) {
+            std::cout << "Retrying with simple format..." << std::endl;
+            glTexImage2D(
+                GL_TEXTURE_2D, 
+                0, 
+                format,
+                width, 
+                height, 
+                0, 
+                format, 
+                GL_UNSIGNED_BYTE, 
+                data
+            );
+            
+            error = glGetError();
+            if(error != GL_NO_ERROR) {
+                std::cerr << "Still failing after retry: 0x" << std::hex << error << std::dec << std::endl;
+                glDeleteTextures(1, &texId);
+                return 0;
+            }
+        } else {
+            glDeleteTextures(1, &texId);
+            return 0;
+        }
     }
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
     bool isPowerOfTwo = (width & (width - 1)) == 0 && (height & (height - 1)) == 0;
+    
     if(isPowerOfTwo) {
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     } else {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    
+    GLint maxTextureSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    
+    if(width > maxTextureSize || height > maxTextureSize) {
+        std::cerr << "ERROR: Texture size " << width << "x" << height 
+                  << " exceeds WebGL maximum " << maxTextureSize << std::endl;
+        glDeleteTextures(1, &texId);
+        return 0;
     }
     
     glBindTexture(GL_TEXTURE_2D, 0);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     
     std::cout << "  Texture created successfully. ID: " << texId 
-              << " Size: " << width << "x" << height << std::endl;
+              << " Size: " << width << "x" << height 
+              << " (NPOT: " << (!isPowerOfTwo ? "yes" : "no") << ")" << std::endl;
     
     return texId;
 }

@@ -36,9 +36,8 @@ class Buffers {
         void setupPreviewPlanet(const PlanetData& data);
         void updatePreviewPlanet(const PlanetData& data);
         void cleanupPreviewPlanet();
-        bool hasPreviewPlanet() const {
-            return !previewPlanet.data.name.empty();
-        }
+        bool hasPreviewPlanet() const;
+        const PlanetBuffer& getPreviewBuffer() const;
 
         void createBufferForPlanet(const PlanetBuffer& planetBuffer);
         void clearBuffers();

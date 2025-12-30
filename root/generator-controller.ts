@@ -339,6 +339,7 @@ export class GeneratorController {
             return;
         }
 
+        /* Upload Texture */
         const texInput = this.container.querySelector('#planet-texture') as HTMLInputElement;
             texInput.addEventListener('change', (e) => {
                 const file = (e.target as HTMLInputElement).files?.[0];
@@ -350,7 +351,7 @@ export class GeneratorController {
                         img.onload = () => {
                             const base64Data = result.split(',')[1];
                             
-                            (window as any).currenttexData = {
+                            (window as any).currentTexData = {
                                 name: file.name.replace(/\.(jpg|jpeg|png|gif|bmp)$/i, ""),
                                 path: file.name.replace(/\.(jpg|jpeg|png|gif|bmp)$/i, ""),
                                 data: base64Data,
@@ -358,10 +359,10 @@ export class GeneratorController {
                                 height: img.height
                             };
                             
-                            console.log('currenttexData set:', (window as any).currenttexData);
+                            console.log('currentTexData set:', (window as any).currentTexData);
                             console.log('Data length:', base64Data.length);
                             
-                            this.uploadTexture((window as any).currenttexData);
+                            this.uploadTexture((window as any).currentTexData);
                             
                             debouncedUpdate();
                         };
@@ -376,6 +377,13 @@ export class GeneratorController {
                     reader.readAsDataURL(file);
             }
         });
+        /* Clear Texture */
+        const clearTexBtn = this.container.querySelector('#btn-clear-tex') as HTMLButtonElement;
+        if(clearTexBtn) {
+            clearTexBtn.addEventListener('click', () => {
+                this.clearCurrentTexture();
+            });
+        }
 
         const updatePreview = () => {
             const data = this.getCurrentData();
@@ -391,7 +399,7 @@ export class GeneratorController {
                     ['string'], 
                     [dataStr]
                 );
-                const texData = (window as any).currenttexData;
+                const texData = (window as any).currentTexData;
                 console.log('Texture data available for preview:', !!texData);
                 
                 return;
@@ -501,7 +509,7 @@ export class GeneratorController {
             }
         });
 
-        const texData = (window as any).currenttexData;
+        const texData = (window as any).currentTexData;
         if(texData) {
             data.texture = texData.name || texData.path;
             console.log('Setting texture in data:', data.texture);
@@ -556,5 +564,34 @@ export class GeneratorController {
                 this.emscriptenModule._hideGenerator();
             }
         });
+    }
+
+    /**
+     * Clear Texture
+     */
+    private clearCurrentTexture(): void {
+        const texInput = this.container?.querySelector('#planet-texture') as HTMLInputElement;
+        if(texInput) {
+            texInput.value = '';
+        }
+        if((window as any).currentTexData) {
+            delete (window as any).currentTexData;
+        }
+
+        if(this.emscriptenModule._clearCurrentTexture) {
+            this.emscriptenModule._clearCurrentTexture();
+        } else if(this.emscriptenModule.ccall) {
+            this.emscriptenModule.ccall(
+                'clearCurrentTexture',
+                null,
+                [],
+                []
+            );
+        }
+
+        const texDisplay = this.container?.querySelector('#texture-display');
+        if(texDisplay) {
+            texDisplay.innerHTML = '';
+        }
     }
 }

@@ -61,7 +61,8 @@ bool PresetLoader::loadDefaultPreset() {
 
 
 bool PresetLoader::loadDefaultPresetFile() {
-    return loadPreset("/_data/default_preset.json");
+    std::string path = "/_data/default_preset.json";
+    return loadPreset(path);
 }
 
 /**

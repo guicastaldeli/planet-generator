@@ -472,6 +472,13 @@ glm::vec3 Camera::getFront() const {
 }
 
 /**
+ * Get Positiom
+ */
+glm::vec3 Camera::getPosition() const {
+    return glm::normalize(position);
+}
+
+/**
  * Get Aspect Ratio
  */
 float Camera::getAspectRatio() const {

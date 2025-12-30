@@ -364,7 +364,7 @@ void Buffers::renderAtmosphere(const PlanetBuffer& planetBuffer) {
         float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
         glUniform1f(emissiveStrengthLoc, originalEmissive);
     }
-    glDepthMask(depthMask);//
+    glDepthMask(depthMask);
     if(!blendEnabled) {
         glDisable(GL_BLEND);
     }

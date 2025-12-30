@@ -22,6 +22,7 @@ varying float vPhase;
 #include "../lightning/ambient_light.glsl"
 #include "../lightning/point_light.glsl"
 #include "../effect/fresnel.glsl"
+#include "../effect/noise.glsl"
 
 uniform int uNumPointLights;
 uniform PointLight uPointLights[15];
@@ -56,12 +57,23 @@ void main() {
 
             gl_FragColor = vec4(base + glow, alpha);
         }
-        //Default
         else {
             vec3 base = getBaseColor();
             vec3 normal = normalize(vNormal);
             vec3 viewDir = normalize(-vPos);
+
+            //Noise
+            if(uEffectType > 1.5 && uEffectType < 2.5) {
+                base = applyTurbulence(
+                    base,
+                    normal,
+                    vPos,
+                    uPlanetSize,
+                    uTime
+                );
+            }
         
+            //Default
             Material material;
             material.ambient = base * 0.2;
             material.diffuse = base;

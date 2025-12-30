@@ -15,6 +15,9 @@ void DefaultData::init() {
     setData();
 }
 
+/**
+ * Set Path for Default Data
+ */
 void DefaultData::setPath() {
     path = "/_data/default_planet_data.json";
     presetManager->getPresetLoader()->setPath(path);

@@ -63,7 +63,7 @@ bool PresetLoader::loadDefaultPreset() {
 
 
 bool PresetLoader::loadDefaultPresetFile() {
-    return loadPreset(defaultPresetPath);
+    return loadPreset("/_data/default_preset.json");
 }
 
 /**
@@ -147,15 +147,7 @@ bool PresetLoader::parse(const std::string& data) {
         DataParser::Value root = DataParser::Parser::parse(data);
         currentPreset.planets.clear();
 
-        if(root.hasKey("name") || 
-            root.hasKey("size") || 
-            root.hasKey("shape")
-        ) {
-            PlanetData data;
-            parseData(root, data);
-            currentPreset.planets.push_back(data);
-        }
-        else if(root.hasKey("planets") && root["planets"].isArray()) {
+        if(root.hasKey("planets") && root["planets"].isArray()) {
             const auto& dataArray = root["planets"].asArray();
             for(const auto& val : dataArray) {
                 if(!val.isObject()) continue;
@@ -163,9 +155,14 @@ bool PresetLoader::parse(const std::string& data) {
                 parseData(val, data);
                 currentPreset.planets.push_back(data);
             }
-        } 
+        }
+        else if(root.hasKey("name") || root.hasKey("size") || root.hasKey("shape")) {
+            PlanetData data;
+            parseData(root, data);
+            currentPreset.planets.push_back(data);
+        }
         else {
-            std::cerr << "Invalid format!" << std::endl;
+            std::cerr << "Invalid format! Expected either a planets array or a single planet object." << std::endl;
             return false;
         }
 
@@ -208,7 +205,7 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         std::string lightningStr = val["lightning"].asString();
         data.lightning = lightningStr;
         data.hasSunLight = (lightningStr == "Sun Light");
-    } else {//
+    } else {
         data.lightning = "None";
         data.hasSunLight = false;
     }

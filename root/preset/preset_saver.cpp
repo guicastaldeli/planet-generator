@@ -1,5 +1,6 @@
 #include "preset_saver.h"
 #include "../buffers/buffer_controller.h"
+#include "../buffers/buffers.h"
 #include "preset_manager.h"
 #include "../_utils/color_converter.h"
 #include <emscripten.h>
@@ -281,6 +282,21 @@ void PresetSaver::clearLocalStorage() {
     }, key.c_str());
 }
 
+/**
+ * Update Preset from Buffers
+ */
+void PresetSaver::updatePresetFromBuffers() {
+    if(!bufferController) return;
+
+    PresetData& preset = bufferController->currentPreset;
+    preset.planets.clear();
+
+    const auto& planetBuffers = bufferController->buffers->planetBuffers;
+    for(const auto& planetBuffer : planetBuffers) {
+        preset.planets.push_back(planetBuffer.data);
+    }
+}
+
 /*
 **
 *** Save
@@ -291,6 +307,8 @@ bool PresetSaver::save() {
         std::cerr << "No bufferController!, ERR. **save" << std::endl;
         return false;
     }
+
+    updatePresetFromBuffers();
 
     PresetData currentPreset = bufferController->getCurrentPreset();
     if (currentPreset.planets.empty()) {

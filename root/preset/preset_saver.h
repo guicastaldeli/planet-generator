@@ -28,6 +28,7 @@ class PresetSaver {
         std::string presetToData(PresetData& preset);
         bool convertToPreset(const std::string& data, PresetData& preset);
 
+        void updatePresetFromBuffers();
         bool save();
         bool load();
 };

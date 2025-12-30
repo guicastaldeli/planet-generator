@@ -15,16 +15,9 @@ void PresetReset::resetToDefault() {
     }
 
     bufferController->clearBuffers();
-    if(
-        bufferController->
-            presetManager->
-            getPresetLoader()-> 
-            loadDefaultPresetFile()
-    ) {
-        bufferController->currentPreset = bufferController->
-            presetManager->
-            getPresetLoader()-> 
-            getCurrentPreset();
+    if(bufferController->presetManager->getPresetLoader()->loadDefaultPreset()) {
+        PresetData loadedPreset = bufferController->presetManager->getPresetLoader()->getCurrentPreset();
+        bufferController->currentPreset = loadedPreset;
         bufferController->presetLoaded = true;
 
         std::vector<PlanetBuffer> newPlanetBuffers = bufferController->

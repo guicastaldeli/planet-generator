@@ -17,8 +17,8 @@ PreviewController::PreviewController(
 {};
 PreviewController::~PreviewController() {};
 
-/*
- *
+/**
+ * 
  * Lock and Unlock Camera
  * 
  */
@@ -38,9 +38,9 @@ void PreviewController::unlockCamera() {
     }
 }
 
-/*
-** Preview
-*/
+/**
+ * Preview
+ */
 void PreviewController::preview() {
     isGeneratorActive = true;
     isPreviewing = true;
@@ -59,9 +59,9 @@ void PreviewController::exitPreview() {
     }
 }
 
-/*
-** Start Generator Preview
-*/
+/**
+ * Start Generator Preview
+ */
 void PreviewController::startGeneratorPreview() {
     isGeneratorActive = true;
     isPreviewing = true;
@@ -111,9 +111,9 @@ void PreviewController::startGeneratorPreview() {
     createPreviewLight();
 }
 
-/*
-** Update Preview
-*/
+/**
+ * Update Preview
+ */
 void PreviewController::updatePreview(const PlanetData& data) {
     if(!isGeneratorActive) return;
     if(!bufferController || !bufferController->buffers) return;
@@ -125,9 +125,9 @@ void PreviewController::updatePreview(const PlanetData& data) {
     bufferController->buffers->updatePreviewPlanet(previewData);
 }
 
-/*
-** Cleanup Preview
-*/
+/**
+ * Cleanup Preview
+ */
 void PreviewController::cleanupPreview() {
     if(!isPreviewing && !isGeneratorActive) return;
 

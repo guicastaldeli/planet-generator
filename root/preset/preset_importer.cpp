@@ -17,9 +17,9 @@ PresetImporter::PresetImporter(PresetManager* presetManager) :
 };
 PresetImporter::~PresetImporter() {};
 
-/*
-** Upload
-*/
+/**
+ * Upload
+ */
 void PresetImporter::upload() {
     EM_ASM({
         const input = document.createElement('input');
@@ -61,9 +61,9 @@ void PresetImporter::upload() {
     });
 }
 
-/*
-** Import Preset
-*/
+/**
+ * Import
+ */
 bool PresetImporter::import(const std::string& data) {
     if(!presetManager || !presetManager->getPresetSaver()) {
         std::cerr << "Preset manager or saver not available" << std::endl;

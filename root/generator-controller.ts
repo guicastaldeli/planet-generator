@@ -97,9 +97,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Load Options
-    */
+    /**
+     * Load Options
+     */
     private async loadOptions(): Promise<void> {
         try {
             const res = await fetch('./_data/options.json');
@@ -112,9 +112,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Get Default Data
-    */
+    /**
+     * Get Default Data
+     */
     private async getDefaultData(): Promise<void> {
         try {
             let dataStr = "";
@@ -150,9 +150,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Set Options
-    */
+    /**
+     * Set Options
+     */
     private async setOptions(): Promise<void> {
         const domContainer = document.querySelector('#planet-creator-modal') || this.container;
         if(!domContainer || !this.options || !this.generatorConfig) {
@@ -197,9 +197,9 @@ export class GeneratorController {
         });
     }
 
-    /*
-    ** Extract Container
-    */
+    /**
+     * Extract Container
+     */
     private async extractContainer(): Promise<HTMLElement | null> {
         try {
             const doc = await this.loader.load();
@@ -213,9 +213,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Upload Texture
-    */
+    /**
+     * Upload Texture
+     */
     private uploadTexture(data: any): void {
         console.log('Uploading texture:', data);
         if (!data.name || !data.data || !data.width || !data.height) {
@@ -244,9 +244,10 @@ export class GeneratorController {
             console.error('Emscripten ccall not available');
         }
     }
-    /*
-    ** Generate
-    */
+
+    /**
+     * Generate
+     */
     private generate(): void {
         if(!this.container) {
             console.error('container not found in DOM');
@@ -310,9 +311,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Cancel Generation
-    */
+    /**
+     * Cancel Generation
+     */
     private cancelGeneration(): void {
         if(this.container) {
             (this.container as HTMLElement).style.display = 'none';
@@ -330,9 +331,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Setup Event Listeners
-    */
+    /**
+     * Setup Event Listeners
+     */
     public setupEventListeners(): void {
         if(!this.container) {
             console.error('setupEventListeners - modal not found in DOM');
@@ -438,9 +439,9 @@ export class GeneratorController {
         this.onCancelClick = cb;
     }
 
-    /*
-    ** Reset Form Values
-    */
+    /**
+     * Reset Form Values
+     */
     private resetFormValues(): void {
         if(!this.container) return;
 
@@ -482,9 +483,9 @@ export class GeneratorController {
         });
     }
 
-    /*
-    ** Get Current Data
-    */
+    /**
+     * Get Current Data
+     */
     private getCurrentData(): any {
         if(!this.container || !this.generatorConfig) {
             console.log('no container or config!');
@@ -520,9 +521,9 @@ export class GeneratorController {
         return data;
     }
 
-    /*
-    ** Show Generator
-    */
+    /**
+     * Show Generator
+     */
     public showGenerator(): void {
         if(this.container) {
             (this.container as HTMLElement).style.display = 'block';
@@ -530,9 +531,9 @@ export class GeneratorController {
         }
     }
 
-    /*
-    ** Setup Callbacks
-    */
+    /**
+     * Setup Callbacks
+     */
     public setupCallbacks(): void {
         this.onGenerate((data: any) => {
             const dataStr = JSON.stringify(data);

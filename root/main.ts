@@ -1,8 +1,8 @@
 const canvas = document.getElementById('ctx') as HTMLCanvasElement;
 
-/*
-** Wait for Emscripten
-*/
+/**
+ * Wait for Emscripten
+ */
 function waitForEmscripten(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (window.Module) {
@@ -26,9 +26,9 @@ function waitForEmscripten(): Promise<any> {
     });
 }
 
-/*
-** Init App 
-*/
+/**
+ * Init App 
+ */
 async function initApp(): Promise<void> {
     try {
         console.log('Waiting for Emscripten...');
@@ -46,9 +46,9 @@ async function initApp(): Promise<void> {
     }
 }
 
-/*
-** Disable Context Menu
-*/
+/**
+ * Disable Context Menu
+ */
 function disableContextMenu(): void {
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
@@ -60,9 +60,9 @@ function disableContextMenu(): void {
     });
 }
 
-/*
-** Resize Window
-*/
+/**
+ * Resize Window
+ */
 function resize(): void {
     const width = window.innerWidth * window.devicePixelRatio;
     const height = window.innerHeight * window.devicePixelRatio;
@@ -72,9 +72,6 @@ function resize(): void {
     canvas.style.height = window.innerHeight + 'px';
 }
 
-/*
-** Run
-*/
 async function run(): Promise<void> {
     console.log('Starting application...');
     disableContextMenu();

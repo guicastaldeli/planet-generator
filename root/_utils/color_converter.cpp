@@ -9,7 +9,7 @@
 ColorConverter::ColorConverter() {}
 ColorConverter::~ColorConverter() {}
 
-/*
+/**
  * Hex to Rgb
  */
 glm::vec3 ColorConverter::hexToRgb(const std::string& hex) {
@@ -53,7 +53,7 @@ glm::vec3 ColorConverter::hexToRgb(const std::string& hex) {
 }
 
 
-/*
+/**
  * Rgb to Hex
  */
 std::string ColorConverter::rgbToHex(const glm::vec3& rgb) {
@@ -73,7 +73,7 @@ std::string ColorConverter::rgbToHex(const glm::vec3& rgb) {
     return str.str();
 }
 
-/*
+/**
  * Parse Rgb String
  */
 glm::vec3 ColorConverter::parseRgbString(const std::string& rgbStr) {
@@ -111,7 +111,7 @@ glm::vec3 ColorConverter::parseRgbString(const std::string& rgbStr) {
     return hexToRgb(rgbStr);
 }
 
-/*
+/**
  * Parse Color
  */
 glm::vec3 ColorConverter::parseColor(const std::string& color) {

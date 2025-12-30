@@ -11,37 +11,37 @@ PresetManager::PresetManager(BufferController* bufferController) :
 }
 PresetManager::~PresetManager() {};
 
-/*
-** Preset Loader
-*/
+/**
+ * Preset Loader
+ */
 PresetLoader* PresetManager::getPresetLoader() {
     return presetLoader;
 }
 
-/*
-** Preset Save
-*/
+/**
+ * Preset Saver
+ */
 PresetSaver* PresetManager::getPresetSaver() {
     return presetSaver;
 }
 
-/*
-** Preset Importer
-*/
+/**
+ * Preset Importer
+ */
 PresetImporter* PresetManager::getPresetImporter() {
     return presetImporter;
 }
 
-/*
-** Preset Exporter
-*/
+/**
+ * Preset Exporter
+ */
 PresetExporter* PresetManager::getPresetExporter() {
     return presetExporter;
 }
 
-/*
-** Preset Reset
-*/
+/**
+ * Preset Reset
+ */
 PresetReset* PresetManager::getPresetReset() {
     return presetReset;
 }

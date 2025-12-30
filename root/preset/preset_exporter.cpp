@@ -11,9 +11,9 @@ PresetExporter::PresetExporter(PresetManager* presetManager) :
 {};
 PresetExporter::~PresetExporter() {};
 
-/*
-** Get Preset Data
-*/
+/**
+ * Get Preset Data
+ */
 std::string PresetExporter::getPresetData(const PresetData& preset) {
     if(!presetManager || !presetManager->getPresetSaver()) {
         std::cerr << "Preset saver not available" << std::endl;
@@ -25,9 +25,9 @@ std::string PresetExporter::getPresetData(const PresetData& preset) {
         presetToData(const_cast<PresetData&>(preset));
 }
 
-/*
-** Export Preset
-*/
+/**
+ * Export
+ */
 void PresetExporter::exportPreset(const PresetData& preset) {
     std::string data = getPresetData(preset);
     if(data.empty()) {

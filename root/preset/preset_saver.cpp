@@ -15,9 +15,9 @@ PresetSaver::PresetSaver(BufferController* bufferController, PresetManager* pres
 {};
 PresetSaver::~PresetSaver() {};
 
-/*
-** Planet To Value
-*/
+/**
+ * Planet To Value
+ */
 DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     using namespace DataParser;
     
@@ -146,9 +146,9 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
     }
 }
 
-/*
-** Preset To Value
-*/
+/**
+ * Preset To Value
+ */
 DataParser::Value PresetSaver::presetToVal(PresetData& preset) {
     using namespace DataParser;
 
@@ -162,9 +162,9 @@ DataParser::Value PresetSaver::presetToVal(PresetData& preset) {
     return result;
 }
 
-/*
-** Value to Preset
-*/
+/**
+ * Value to Preset
+ */
 bool PresetSaver::valueToPreset(const DataParser::Value& value, PresetData& preset) {
     using namespace DataParser;
 
@@ -208,9 +208,9 @@ bool PresetSaver::convertToPreset(const std::string& data, PresetData& preset) {
     }
 }
 
-/*
-** Save to Local Storage
-*/
+/**
+ * Save to Local Storage
+ */
 bool PresetSaver::saveToLocalStorage(PresetData& preset) {
     std::string jsonData = presetToData(preset);
     bool success = EM_ASM_INT({
@@ -228,9 +228,9 @@ bool PresetSaver::saveToLocalStorage(PresetData& preset) {
     return success == 1;
 }
 
-/*
-** Load from Local Storage
-*/
+/**
+ * Load from Local Storage
+ */
 bool PresetSaver::loadFromLocalStorage(PresetData& preset) {
     char* str = (char*)EM_ASM_INT({
         try {
@@ -297,11 +297,11 @@ void PresetSaver::updatePresetFromBuffers() {
     }
 }
 
-/*
-**
-*** Save
-**
-*/
+/**
+ * 
+ * Save
+ * 
+ */
 bool PresetSaver::save() {
     if(!bufferController) {
         std::cerr << "No bufferController!, ERR. **save" << std::endl;
@@ -326,11 +326,11 @@ bool PresetSaver::save() {
     return success;
 }
 
-/*
-**
-*** Save
-**
-*/
+/**
+ * 
+ * Load
+ * 
+ */
 bool PresetSaver::load() {
      if (!bufferController) {
         std::cerr << "No bufferController!, ERR. **load" << std::endl;

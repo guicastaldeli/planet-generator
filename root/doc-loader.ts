@@ -6,6 +6,10 @@ export class DocLoader {
         this.url = url;
     }
 
+    public setUrl(url: string): void {
+        this.url = url;
+    }
+
     public static getInstance(url: string): DocLoader {
         if(!DocLoader.instances.has(url)) {
             if(!url) throw new Error('url is required');
@@ -14,9 +18,9 @@ export class DocLoader {
         return DocLoader.instances.get(url!)!;
     }
 
-    /*
-    ** Load
-    */
+    /**
+     * Load
+     */
     public async load(): Promise<Document | undefined> {
         try {
             const res = await fetch(this.url);
@@ -30,12 +34,5 @@ export class DocLoader {
             console.error(err);
             return undefined;
         }
-    }
-
-    /*
-    ** Set URL
-    */
-    public setUrl(url: string): void {
-        this.url = url;
     }
 }

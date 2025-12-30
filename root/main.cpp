@@ -68,9 +68,9 @@ int Main::initGlWindow() {
     return GL_TRUE;
 }
 
-/*
-** Resize
-*/
+/**
+ * Resize
+ */
 void Main::resize() {
     EM_ASM({
         const canvas = document.getElementById("ctx");
@@ -112,9 +112,6 @@ void Main::resizeCanvas() {
     );
 }
 
-/*
-** Init
-*/
 void Main::init() {
     shaderLoader = new ShaderLoader();
     shaderLoader->load();
@@ -156,9 +153,9 @@ void Main::init() {
     resizeCanvas();
 }
 
-/*
-** Render
-*/
+/**
+ * Render
+ */
 void Main::render() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);

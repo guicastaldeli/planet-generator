@@ -23,9 +23,6 @@ BufferController::BufferController(
 {};
 BufferController::~BufferController() {};
 
-/*
-** Init
-*/
 void BufferController::init() {
     initPresetManager();
     setDefaultData();
@@ -64,9 +61,9 @@ void BufferController::initTextureLoader() {
     textureLoader = new TextureLoader();
 }
 
-/*
-** Preset
-*/
+/**
+ * Preset
+ */
 void BufferController::setDefaultData() {
     defaultData = new DefaultData(presetManager);
     defaultData->init();
@@ -85,9 +82,9 @@ void BufferController::onPresetImported(const PresetData& preset) {
     loadPresetData(presetCopy);
 }
 
-/*
-** Set Data to Update
-*/
+/**
+ * Set Data to Update
+ */
 void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Value& pData) {
     if(!defaultData || defaultData->getAllData().empty()) {
         printf("Error: no default data available\n");
@@ -185,9 +182,9 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
     uData.orbitAngle = dData.orbitAngle;
 }
 
-/*
-** Update Planet Positions
-*/
+/**
+ * Update Planet Positions
+ */
 void BufferController::updatePlanetPositions() {
     for(auto& planet : buffers->planetBuffers) {
         float orbitRadius = planet.data.distanceFromCenter;
@@ -200,9 +197,9 @@ void BufferController::updatePlanetPositions() {
     }
 }
 
-/*
-** Check Planet Intersections
-*/
+/**
+ * Check Planet Intersections
+ */
 int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
     if(!raycaster || buffers->planetBuffers.empty()) {
         return -1;
@@ -231,9 +228,9 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
     return foundIndex;
 }
 
-/*
-** Handle Raycaster
-*/
+/**
+ * Handle Raycaster
+ */
 void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
     if(!raycaster) return;
 
@@ -273,9 +270,9 @@ void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
     }
 }
 
-/*
-** Get Selected Planet
-*/
+/**
+ * Get Selected Planet
+ */
 const PlanetBuffer* BufferController::getSelectedPlanet() const {
     if(camera && 
         camera->isFollowingPlanet &&
@@ -396,9 +393,9 @@ bool BufferController::isPreviewActive() const {
         previewController->isGeneratorActive);
 }
 
-/*
-** Load Preset Data
-*/
+/**
+ * Load Preset Data
+ */
 void BufferController::loadPresetData(PresetData& preset) {
     currentPreset = preset;
     presetLoaded = true;
@@ -506,9 +503,9 @@ void BufferController::updatePointLightPosition() {
     }
 }
 
-/*
-** Render
-*/
+/**
+ * Render
+ */
 void BufferController::render(float deltaTime) {
     if(!presetLoaded) {
         if(presetManager->getPresetLoader()->loadDefaultPreset()) {
@@ -516,7 +513,7 @@ void BufferController::render(float deltaTime) {
             presetLoaded = true;
 
             std::cout << "Loaded preset with " << currentPreset.planets.size() << " planets" << std::endl;
-            for(const auto& planet : currentPreset.planets) {//
+            for(const auto& planet : currentPreset.planets) {
                 std::cout << "  Planet: " << planet.name 
                           << ", Lightning: " << planet.lightning
                           << ", hasSunLight: " << (planet.hasSunLight ? "true" : "false") << std::endl;

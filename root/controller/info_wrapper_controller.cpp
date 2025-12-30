@@ -30,7 +30,7 @@ extern "C" {
         }, html);
     }
 
-    /*
+    /**
      * Display Info
      */
     void display(const char* name, const char* info) {
@@ -46,7 +46,7 @@ extern "C" {
         }, name, info);
     }
 
-    /*
+    /**
      * Close
      */
     void closeMenu() {
@@ -61,7 +61,7 @@ extern "C" {
         });
     }
 
-    /*
+    /**
      * Delete Planet
      */
     void deletePlanet() {

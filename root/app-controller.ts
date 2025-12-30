@@ -9,18 +9,18 @@ export class AppController {
         this.exposeToEngine();
     }
 
-    /*
-    ** Setup Callbacks
-    */
+    /**
+     * Setup Callbacks
+     */
     private setupCallbacks(): void {
         this.appManager.getControlsController().setupCallbacks();
         this.appManager.getGeneratorController().setupCallbacks();
         this.appManager.getInfoController().setupCallbacks();
     }
 
-    /*
-    ** Expose to Engine
-    */
+    /**
+     * Expose to Engine
+     */
     private exposeToEngine(): void {
         (window as any).appController = this;
         this.getAppManager();

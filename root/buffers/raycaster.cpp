@@ -67,11 +67,11 @@ bool Raycaster::checkIntersection(
     return intersects;
 }
 
-/*
-**
-*** Intersection
-**
-*/
+/**
+ * 
+ * Intersection
+ * 
+ */
 bool Raycaster::sphereIntersection(
     glm::vec3 rayWorldDir,
     const glm::vec3& planetPosition,
@@ -242,9 +242,9 @@ bool Raycaster::rayTriangleIntersection(
     return t > EPSILON;
 }
 
-/*
-** Handle Click
-*/
+/**
+ * Handle Click
+ */
 bool Raycaster::handleClick(
     double x, 
     double y, 
@@ -284,9 +284,9 @@ bool Raycaster::isMouseIntersecting() const {
     return isIntersecting;
 }
 
-/*
-** Render
-*/
+/**
+ * Render
+ */
 void Raycaster::render(
     double x, 
     double y,

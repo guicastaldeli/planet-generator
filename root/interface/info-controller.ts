@@ -29,9 +29,9 @@ export class InfoController {
         }
     }
 
-    /*
-    ** Display Info
-    */
+    /**
+     * Display Info
+     */
     public display(name: string, info: string): void {
         const domContainer = document.querySelector('.info--container') as HTMLDivElement;
         this.container = domContainer;
@@ -54,9 +54,9 @@ export class InfoController {
         }
     }
 
-    /*
-    ** Extract Container
-    */
+    /**
+     * Extract Container
+     */
     private async extractContainer(): Promise<HTMLElement | null> {
         try {
             const doc = await this.loader.load();
@@ -70,9 +70,9 @@ export class InfoController {
         }
     }
 
-    /*
-    ** Setup Event Listeners
-    */
+    /**
+     * Setup Event Listeners
+     */
     private setupEventListeners(): void {
         setTimeout(() => {
             const domContainer = document.querySelector('.info--container') as HTMLDivElement;

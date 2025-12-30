@@ -19,9 +19,9 @@ BufferGenerator::BufferGenerator(Camera* camera) :
 };
 BufferGenerator::~BufferGenerator() {};
 
-/*
-** Load Distance Map
-*/
+/**
+ * Load Distance Map
+ */
 void BufferGenerator::loadDistanceMap() {
     try {
         std::ifstream file("/_data/positions.json");
@@ -61,9 +61,9 @@ void BufferGenerator::loadDistanceMap() {
     }
 }
 
-/*
-** Shape to Buffer Type
-*/
+/**
+ * Shape to Buffer Type
+ */
 BufferData::Type BufferGenerator::shapeToBufferType(const std::string& name) {
     static const std::unordered_map<std::string, BufferData::Type> map = {
         { "SPHERE", BufferData::Type::SPHERE },
@@ -75,9 +75,9 @@ BufferData::Type BufferGenerator::shapeToBufferType(const std::string& name) {
     return it != map.end() ? it->second : BufferData::Type::SPHERE;
 }
 
-/*
-** Rotation to Buffer Type
-*/
+/**
+ * Rotation to Buffer Type
+ */
 RotationAxis BufferGenerator::rotationToBufferType(const std::string& axis) {
     static const std::unordered_map<std::string, RotationAxis> map = {
         { "X", RotationAxis::X },
@@ -89,9 +89,9 @@ RotationAxis BufferGenerator::rotationToBufferType(const std::string& axis) {
     return it != map.end() ? it->second : RotationAxis::Y;
 }
 
-/*
-** Shape to String
-*/
+/**
+ * Shape to String
+ */
 std::string BufferGenerator::shapeToString(BufferData::Type type) {
     static const std::unordered_map<BufferData::Type, std::string> map = {
         { BufferData::Type::SPHERE, "SPHERE" },
@@ -103,9 +103,9 @@ std::string BufferGenerator::shapeToString(BufferData::Type type) {
     return it != map.end() ? it->second : "SPHERE";
 }
 
-/*
-** Rotation
-*/
+/**
+ * Rotation
+ */
 std::string BufferGenerator::rotationToString(RotationAxis axis) {
     static const std::unordered_map<RotationAxis, std::string> map = {
         { RotationAxis::X, "X" },
@@ -118,9 +118,9 @@ std::string BufferGenerator::rotationToString(RotationAxis axis) {
 }
 
 
-/*
-** Calculate Distance from Pos
-*/
+/**
+ * Calculate Distance from Position
+ */
 float BufferGenerator::calculateDistanceFromPosition(int position) {
     auto it = distanceMap.find(position);
     if(it != distanceMap.end()) {
@@ -129,9 +129,9 @@ float BufferGenerator::calculateDistanceFromPosition(int position) {
     return 1.0f + (position - 8) * 0.15f;
 }
 
-/*
-** Generate Planets
-*/
+/**
+ * Generate Planets
+ */
 std::vector<PlanetBuffer> BufferGenerator::generateFromPreset(const PresetData& preset) {
     std::vector<PlanetBuffer> planetBuffers;
     for(const auto& data : preset.planets) {
@@ -146,9 +146,9 @@ PlanetBuffer BufferGenerator::generatePlanet(const PlanetData& data) {
     return planetBuffer;
 }
 
-/*
-** Update Planets
-*/
+/**
+ * Update Planets
+ */
 void BufferGenerator::updatePlanetRotation(std::vector<PlanetBuffer>& planets, float deltaTime) {
     const float SPEED_MULTIPLIER_CENTER = 2000.0f;
     const float SPEED_MULTIPLIER_ITSELF = 20.0f;
@@ -177,9 +177,9 @@ void BufferGenerator::updatePlanetRotation(std::vector<PlanetBuffer>& planets, f
     }
 }
 
-/*
-** Find Available Position
-*/
+/**
+ * Find Available Position
+ */
 int BufferGenerator::findAvailablePosition(const std::vector<PlanetData>& planets) {
     const int MAX_PLANETS = 15;
     std::vector<bool> occupied(MAX_PLANETS, false);
@@ -202,9 +202,9 @@ int BufferGenerator::findAvailablePosition(const std::vector<PlanetData>& planet
     return -1;
 }
 
-/*
-** Replace Last Planet
-*/
+/**
+ * Replace Last Planet
+ */
 bool BufferGenerator::replaceLastPlanet(
     std::vector<PlanetData>& planets,
     const PlanetData& newPlanet
@@ -229,9 +229,9 @@ bool BufferGenerator::replaceLastPlanet(
     return true;
 };
 
-/*
-** Generate
-*/
+/**
+ * Generate
+ */
 void BufferGenerator::generate(const char* data) {
     try {
         std::string str(data);

@@ -13,23 +13,23 @@ export class AppManager {
         this.infoController = new InfoController(module);
     }
 
-    /*
-    ** Controls Controller
-    */
+    /**
+     * Controls Controller
+     */
     public getControlsController(): ControlsController {
         return this.controlsController;
     }
 
-    /*
-    ** Info Controller
-    */
+    /**
+     * Info Controller
+     */
     public getInfoController(): InfoController {
         return this.infoController;
     }
 
-    /*
-    ** Generator Controller
-    */
+    /**
+     * Generator Controller
+     */
     public getGeneratorController(): GeneratorController {
         return this.generatorController;
     }

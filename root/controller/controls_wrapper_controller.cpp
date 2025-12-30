@@ -31,14 +31,14 @@ extern "C" {
         }, html);
     }
 
-    /*
+    /**
      * Controls Menu
      */
     void onControlsMenu() {
         std::cout << "Main button clicked from TypeScript!" << std::endl;
     }
     
-    /*
+    /**
      * Custom Preset
      */
     void onCustomPreset() {
@@ -56,7 +56,7 @@ extern "C" {
         });
     }
 
-    /*
+    /**
      * Save Preset
      */
     void onSavePreset() {
@@ -79,7 +79,7 @@ extern "C" {
         }
     }
     
-    /*
+    /**
      * Import Preset
      */
     void onImportPreset(const char* data) {
@@ -91,7 +91,7 @@ extern "C" {
         }
     }
     
-    /*
+    /**
      * Export Preset
      */
     void onExportPreset() {
@@ -105,7 +105,7 @@ extern "C" {
         }
     }
     
-    /*
+    /**
      * Reset to Default Preset
      */
     void onResetToDefault() {
@@ -118,7 +118,7 @@ extern "C" {
         }
     }
 
-    /*
+    /**
      * Clear Preset
      */
     void onClear() {

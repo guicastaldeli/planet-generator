@@ -38,9 +38,9 @@ export class ControlsController {
         }
     }
 
-    /*
-    ** Extract Container
-    */
+    /**
+     * Extract Container
+     */
     private async extractContainer(): Promise<HTMLElement | null> {
         try {
             const doc = await this.loader.load();
@@ -54,9 +54,9 @@ export class ControlsController {
         }
     }
 
-    /*
-    ** Setup Event Listeners
-    */
+    /**
+     * Setup Event Listeners
+     */
     private setupEventListeners(): void {
         const container = document.querySelector('.controls--container');
         if(!container) {
@@ -104,11 +104,11 @@ export class ControlsController {
         );
     }
 
-    /*
-    **
-    *** Actions
-    **
-    */
+    /**
+     * 
+     * Actions
+     * 
+     */
     private showControls(show: boolean): void {
         if(!this.container) throw new Error('container err');
         this.container.style.display = show ? 'block' : 'none';
@@ -120,11 +120,11 @@ export class ControlsController {
         this.showControls(this.isVisible);
     }
 
-    /*
-    **
-    *** Callbacks
-    **
-    */
+    /**
+     * 
+     * Callbacks
+     * 
+     */
     public onControlsMenu(cb: () => void): void {
         this.onControlsMenuClick = cb;
     }

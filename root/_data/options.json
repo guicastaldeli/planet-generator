@@ -12,14 +12,6 @@
             {
                 "id": "TRIANGLE",
                 "name": "Triangle"
-            },
-            {
-                "id": "TORUS",
-                "name": "Torus"
-            },
-            {
-                "id": "CYLINDER",
-                "name": "Cylinder"
             }
         ],
         "rotationAxes": [
@@ -147,7 +139,7 @@
             "min": 0,
             "max": 5.0,
             "step": 0.001,
-            "default": 1.0
+            "default": 0.05
         },
         "orbitSpeedRange": {
             "min": 0,

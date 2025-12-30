@@ -34,7 +34,7 @@ namespace DataParser {
         cleanup();
     }
     
-    void Value::cleanup() {
+    void Value::cleanup() {//
         switch (type) {
             case ValueType::String:
                 delete string_value;

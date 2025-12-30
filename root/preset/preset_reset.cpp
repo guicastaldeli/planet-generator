@@ -14,8 +14,16 @@ void PresetReset::resetToDefault() {
         return;
     }
 
+    bool emptyBuffers = bufferController->buffers->planetBuffers.empty();
     bufferController->clearBuffers();
-    if(bufferController->presetManager->getPresetLoader()->loadDefaultPreset()) {
+
+    bool success = false;
+    if(emptyBuffers) {
+        success = bufferController->presetManager->getPresetLoader()->loadDefaultPresetFile();
+    } else {
+        success = bufferController->presetManager->getPresetLoader()->loadDefaultPreset();
+    }
+    if(success) {
         PresetData loadedPreset = bufferController->presetManager->getPresetLoader()->getCurrentPreset();
         bufferController->currentPreset = loadedPreset;
         bufferController->presetLoaded = true;

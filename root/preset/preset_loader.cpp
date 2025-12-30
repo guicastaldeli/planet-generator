@@ -44,10 +44,8 @@ bool PresetLoader::loadPreset(const std::string& path) {
 
 bool PresetLoader::loadDefaultPreset() {
     if(presetManager->getPresetSaver()->hasSavedPreset()) {
-        std::cout << "Attempting to load preset from localStorage..." << std::endl;
         PresetData localStorageData;
         if(presetManager->getPresetSaver()->loadFromLocalStorage(localStorageData)) {
-            std::cout << "Successfully loaded preset from localStorage!" << std::endl;
             currentPreset = localStorageData;
             return true;
         } else {

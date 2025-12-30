@@ -205,11 +205,10 @@ void BufferController::updatePlanetPositions() {
 */
 int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
     if(!raycaster || buffers->planetBuffers.empty()) {
-        selectedPlanetIndex = -1;
         return -1;
     }
     
-    selectedPlanetIndex = -1;
+    int foundIndex = -1;
     float closestDistance = std::numeric_limits<float>::max();
     for(int i = 0; i < buffers->planetBuffers.size(); i++) {
         auto& planet = buffers->planetBuffers[i];
@@ -224,12 +223,12 @@ int BufferController::checkPlanetIntersections(double mouseX, double mouseY) {
             float distance = glm::length(planet.worldPos - camera->position);
             if(distance < closestDistance) {
                 closestDistance = distance;
-                selectedPlanetIndex = i;
+                foundIndex = i;
             }
         }
     }
     
-    return selectedPlanetIndex;
+    return foundIndex;
 }
 
 /*
@@ -257,6 +256,7 @@ void BufferController::handleRaycasterRender(double mouseX, double mouseY) {
 void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
     int clickedPlanetIndex = checkPlanetIntersections(mouseX, mouseY);
     if(clickedPlanetIndex != -1) {
+        selectedPlanetIndex = clickedPlanetIndex;
         auto& planet = buffers->planetBuffers[clickedPlanetIndex];
         if(raycaster->handleClick(
             mouseX, mouseY,
@@ -268,6 +268,8 @@ void BufferController::handleRaycasterClick(double mouseX, double mouseY) {
         )) {
             camera->zoomToObj(planet.worldPos, planet.data.size);
         }
+    } else {
+        selectedPlanetIndex = -1;
     }
 }
 
@@ -327,50 +329,60 @@ void BufferController::clearBuffers() {
 }
 
 void BufferController::deleteSelectedPlanet() {
-    if(selectedPlanetIndex == -1 || buffers->planetBuffers.empty()) {
+    if(selectedPlanetIndex == -1) {
+        emscripten_console_log("ERR: No planet selected");
+        return;
+    }
+    if(buffers->planetBuffers.empty()) {
+        emscripten_console_log("ERR: No planets to delete");
+        selectedPlanetIndex = -1;
+        return;
+    }
+    if(selectedPlanetIndex >= buffers->planetBuffers.size()) {
+        emscripten_console_log("ERR: Selected planet index out of bounds");
+        selectedPlanetIndex = -1;
         return;
     }
 
-    if(selectedPlanetIndex < buffers->planetBuffers.size()) {
-        int planetId = buffers->planetBuffers[selectedPlanetIndex].data.id;
-        std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
-        buffers->planetBuffers.erase(
-            buffers->planetBuffers.begin() + selectedPlanetIndex
-        );
+    int planetId = buffers->planetBuffers[selectedPlanetIndex].data.id;
+    std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
 
-        if(main && main->lightManager) {
-            auto& pointLights = main->lightManager->getPointLight()->pointLights;
-            for(auto it = pointLights.begin(); it != pointLights.end(); ++it) {
-                if(it->associatedPlanetId == planetId && it->isSunLight) {
-                    pointLights.erase(it);
-                    std::cout << "Removed point light for planet: " << planetName << std::endl;
-                    break;
-                }
+    buffers->planetBuffers.erase(buffers->planetBuffers.begin() + selectedPlanetIndex);
+
+    auto it = std::find_if(currentPreset.planets.begin(), currentPreset.planets.end(),
+        [planetId](const PlanetData& p) { return p.id == planetId; });
+    if(it != currentPreset.planets.end()) {
+        currentPreset.planets.erase(it);
+    }
+
+    if(presetManager->getPresetLoader()) {
+        auto& loaderPlanets = presetManager->getPresetLoader()->getCurrentPreset().planets;
+        auto loaderIt = std::find_if(loaderPlanets.begin(), loaderPlanets.end(),
+            [planetId](const PlanetData& p) { return p.id == planetId; });
+        if(loaderIt != loaderPlanets.end()) {
+            loaderPlanets.erase(loaderIt);
+        }
+    }
+
+    if(main && main->lightManager) {
+        auto& pointLights = main->lightManager->getPointLight()->pointLights;
+        for(auto it = pointLights.begin(); it != pointLights.end(); ++it) {
+            if(it->associatedPlanetId == planetId && it->isSunLight) {
+                pointLights.erase(it);
+                break;
             }
         }
     }
 
-    if(selectedPlanetIndex < buffers->planetBuffers.size()) {
-        std::string planetName = buffers->planetBuffers[selectedPlanetIndex].data.name;
-        buffers->planetBuffers.erase(
-            buffers->planetBuffers.begin() + selectedPlanetIndex
-        );
-    }
-    if(selectedPlanetIndex < currentPreset.planets.size()) {
-        std::string planetName = currentPreset.planets[selectedPlanetIndex].name;
-        currentPreset.planets.erase(
-            currentPreset.planets.begin() + selectedPlanetIndex
-        );
-    }
-    if(presetManager->getPresetLoader() && 
-       selectedPlanetIndex < presetManager->getPresetLoader()->getCurrentPreset().planets.size()) {
-        presetManager->getPresetLoader()->getCurrentPreset().planets.erase(
-            presetManager->getPresetLoader()->getCurrentPreset().planets.begin() + selectedPlanetIndex
-        );
-    }
-    if(camera && camera->isFollowingPlanet && camera->followingPlanetIndex == selectedPlanetIndex) {
+    if(camera && 
+        camera->isFollowingPlanet && 
+        camera->followingPlanetIndex == selectedPlanetIndex
+    ) {
         camera->resetToSavedPos();
+        camera->isFollowingPlanet = false;
+        camera->followingPlanetIndex = -1;
     }
+
     selectedPlanetIndex = -1;
     if(raycaster) {
         raycaster->selectedPlanetIndex = -1;

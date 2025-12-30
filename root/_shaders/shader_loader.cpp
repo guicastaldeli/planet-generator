@@ -206,13 +206,13 @@ std::string ShaderLoader::getShader(ShaderPath::Type type) {
     
     std::string processed = processIncludes(mainShader, filePath);
     
-    
+    /*
     printf("\n\n■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
     printf("SHADER: %s (Type: %d)\n", filePath.c_str(), type);
     printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
     printf("%s\n", processed.c_str());
     printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n\n");
-    
+    */
     return processed;
 }
 

@@ -107,4 +107,5 @@ class Camera {
 
         glm::vec3 getViewDir() const;
         glm::vec3 getFront() const;
+        float getAspectRatio() const;
 };

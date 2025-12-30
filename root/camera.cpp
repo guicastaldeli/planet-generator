@@ -61,11 +61,11 @@ void Camera::set() {
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 }
 
-/*
-**
-*** Controls
-**
-*/
+/**
+ * 
+ * Controls
+ * 
+ */
 void Camera::rotate(float deltaX, float deltaY) {
     if(rotationLocked) return;
 
@@ -77,6 +77,7 @@ void Camera::rotate(float deltaX, float deltaY) {
 
     updateVectors();
 }
+
 void Camera::pan(float deltaX, float deltaY) {
     if(panningLocked) return;
 
@@ -129,6 +130,9 @@ void Camera::pan(float deltaX, float deltaY) {
     target = newTarget;
 }
 
+/**
+ * Reset
+ */
 void Camera::reset() {
     position = glm::vec3(0.0f, 0.0f, 3.0f);
     target = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -140,6 +144,9 @@ void Camera::reset() {
     updateProjection();
 }
 
+/**
+ * Update Vectors
+ */
 void Camera::updateVectors() {
     glm::vec3 front;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -279,11 +286,11 @@ void Camera::lockRotation(bool lock) {
     rotationLocked = lock;
 }
 
-/*
-**
-*** Mouse Controls
-**
-*/
+/**
+ * 
+ * Mouse Controls
+ * 
+ */
 void Camera::handleMouseDown(double x, double y, int button) {
     lastMouseX = x;
     lastMouseY = y;
@@ -320,11 +327,11 @@ void Camera::handleMouseScroll(double delta) {
     zoom(delta);
 }
 
-/*
-**
-*** Events
-**
-*/
+/**
+ * 
+ * Events
+ * 
+ */
 EM_BOOL mouseCallback(
     int eventType, 
     const EmscriptenMouseEvent* e,
@@ -462,6 +469,13 @@ glm::vec3 Camera::getViewDir() const {
  */
 glm::vec3 Camera::getFront() const {
     return glm::normalize(target - position);
+}
+
+/**
+ * Get Aspect Ratio
+ */
+float Camera::getAspectRatio() const {
+    return static_cast<float>(main->width) / static_cast<float>(main->height);
 }
 
 /**

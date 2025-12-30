@@ -2,6 +2,7 @@
 #include "../_shaders/shader_controller.h"
 #include "../camera.h"
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #include <GLES3/gl3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -194,8 +195,7 @@ void Buffers::render() {
 
             float screenX = 0.3f;
             float screenY = 0.0f;
-            int screenWidth = camera->main->width;
-            int screenHeight = camera->main->height;
+            float screenZ = 0.0f;
             glUseProgram(shaderController->shaderProgram);
 
             glm::mat4 view = glm::lookAt(
@@ -207,7 +207,7 @@ void Buffers::render() {
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
+            model = glm::translate(model, glm::vec3(screenX, screenY, screenZ));
             
             if(previewPlanet.data.rotationDir == RotationAxis::X) {
                 model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -216,7 +216,6 @@ void Buffers::render() {
             } else if(previewPlanet.data.rotationDir == RotationAxis::Z) {
                 model = glm::rotate(model, glm::radians(previewRotation * previewPlanet.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
             }
-            
             model = glm::scale(model, glm::vec3(previewPlanet.data.size));
             unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -270,10 +269,6 @@ void Buffers::render() {
 
             if(previewPlanet.data.effectType == 1) {
                 renderAtmosphere(previewPlanet);
-            }
-            
-            if(!isPreviewMode) {
-                camera->set();
             }
         }
     }

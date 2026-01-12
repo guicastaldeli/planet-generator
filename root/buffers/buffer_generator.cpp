@@ -233,7 +233,7 @@ bool BufferGenerator::replaceLastPlanet(
  * Generate
  */
 void BufferGenerator::generate(const char* data) {
-    try {
+    try {//
         std::string str(data);
 
         PlanetData newPlanet;

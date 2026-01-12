@@ -154,11 +154,19 @@ void Camera::updateVectors() {
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     front = glm::normalize(front);
 
-    float distance = glm::length(target - position);
-    target = position + front * distance;
+    if(!isFollowingPlanet) {
+        float distance = glm::length(target - position);
+        target = position + front * distance;
 
-    right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
-    up = glm::normalize(glm::cross(right, front));
+        right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        up = glm::normalize(glm::cross(right, front));
+    } else {
+        float distance = glm::length(position - target);
+        position = target + front * distance;
+
+        right = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), front));
+        up = glm::normalize(glm::cross(front, right));
+    }
 }
 
 /**
@@ -213,6 +221,7 @@ void Camera::zoomToObj(const glm::vec3& planetPosition, float planetSize) {
 
     float baseDistance = planetSize * 3.0f;
     float distance = baseDistance;
+    
     glm::vec3 directionToPlanet = glm::normalize(planetPosition - position);
     followingPlanetOffset = -directionToPlanet * distance;
     position = planetPosition + followingPlanetOffset;

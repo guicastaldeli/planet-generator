@@ -46,11 +46,24 @@ export class InfoController {
         
         const nameEl = domContainer.querySelector('#info--obj-name p');
         const infoEl = domContainer.querySelector('#info--obj-info p');
-        if(nameEl && infoEl) {
+        const infoContainer = domContainer.querySelector('#info--obj-info') as HTMLDivElement;
+        
+        if(nameEl) {
             nameEl.textContent = name;
-            infoEl.textContent = info;
         } else {
-            console.error('Couldnt not find elements');
+            console.error('Name element not found');
+        }
+
+        if(infoEl && infoContainer) {
+            if(info && info.trim() !== '') {
+                infoEl.textContent = info;
+                infoContainer.style.display = 'block';
+            } else {
+                infoEl.textContent = '';
+                infoContainer.style.display = 'none';
+            }
+        } else {
+            console.error('Info elements not found');
         }
     }
 

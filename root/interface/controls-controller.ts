@@ -115,9 +115,8 @@ export class ControlsController {
             console.warn('Control list not found in DOM');
             return;
         }
-        
         if(window.getComputedStyle(controlList).display === "none") {
-            controlList.style.display = "block";
+            controlList.style.display = "flex";
         } else {
             controlList.style.display = "none";
         }

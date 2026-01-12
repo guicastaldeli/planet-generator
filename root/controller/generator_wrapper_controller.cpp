@@ -57,6 +57,10 @@ extern "C" {
                     if(window.generatorController) {
                         window.generatorController.showGenerator();
                     }
+                    const controlList = document.querySelector('.controls--container');
+                    if(controlList) {
+                        controlList.style.display = 'none';
+                    }
                 } else {
                     console.error('Generator err');
                 }

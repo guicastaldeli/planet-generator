@@ -291,7 +291,7 @@ void Buffers::renderAtmosphere(const PlanetBuffer& planetBuffer) {
     glm::mat4 model = glm::mat4(1.0f);
     
     if(planetBuffer.isPreview) {
-        float screenX = 0.3f;
+        float screenX = -0.5f;
         float screenY = 0.0f;
         model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
         

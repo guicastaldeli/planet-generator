@@ -319,6 +319,11 @@ export class GeneratorController {
             (this.container as HTMLElement).style.display = 'none';
         }
 
+        const controlList = <HTMLDivElement>document.querySelector('.controls--container');
+        if(controlList) {
+            controlList.style.display = 'flex';
+        }
+
         if(this.emscriptenModule._cleanupPreview) {
             this.emscriptenModule._cleanupPreview();
         } else if(this.emscriptenModule.ccall) {
@@ -516,7 +521,6 @@ export class GeneratorController {
             console.log('Setting texture in data:', data.texture);
         }
 
-        //HERE
         data.hasSunLight = data.lightning === "Sun Light";
         return data;
     }
@@ -525,10 +529,17 @@ export class GeneratorController {
      * Show Generator
      */
     public showGenerator(): void {
-        if(this.container) {
-            (this.container as HTMLElement).style.display = 'block';
-            this.resetFormValues();
-        }
+        (this.container as HTMLElement).style.display = 'block';
+        this.resetFormValues();
+    }
+
+    /**
+     * Hide Generator
+     */
+    public hideGenerator(): void {
+        (this.container as HTMLElement).style.display = 'block';
+        console.log("syysysy");
+        this.resetFormValues();
     }
 
     /**
@@ -546,8 +557,10 @@ export class GeneratorController {
             }
         });
         this.onCancel(() => {
+            console.log("TSTSTTSTST")
             if(this.emscriptenModule._cleanupPreview) {
                 this.emscriptenModule._cleanupPreview();
+                this.emscriptenModule._hideGenerator();
             } else if(this.emscriptenModule.ccall) {
                 this.emscriptenModule.ccall(
                     'cleanupPreview',
@@ -562,6 +575,7 @@ export class GeneratorController {
                     []
                 );
             } else if(this.emscriptenModule._hideGenerator) {
+                console.log('hideeeeeeeeee')
                 this.emscriptenModule._hideGenerator();
             }
         });

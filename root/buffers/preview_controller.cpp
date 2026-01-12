@@ -55,6 +55,7 @@ void PreviewController::exitPreview() {
     isGeneratorActive = false;
     isPreviewing = false;
     if(!isPreviewing && !isGeneratorActive) {
+        camera->zoomLevel = 45.0f;
         unlockCamera();
         camera->releaseCamera();
     }

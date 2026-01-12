@@ -29,8 +29,11 @@ button:hover {
     
 #control--list {
     margin: 0;
-    display: flex;
-    /* display: none;*/
-    gap: 0.5rem;
+    display: none;
+}
 
+#control--list-el {
+    display: flex;
+    margin: 0;
+    gap: 0.5rem;
 }

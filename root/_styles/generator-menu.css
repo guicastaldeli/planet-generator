@@ -226,6 +226,7 @@ label {
 }
 
 .close {
+    width: 3rem;
     user-select: none;
 }
 .close:hover {

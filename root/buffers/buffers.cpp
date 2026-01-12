@@ -193,7 +193,7 @@ void Buffers::render() {
             static float previewRotation = 0.0f;
             previewRotation += 0.5f;
 
-            float screenX = 0.3f;
+            float screenX = -0.5f;
             float screenY = 0.0f;
             float screenZ = 0.0f;
             glUseProgram(shaderController->shaderProgram);

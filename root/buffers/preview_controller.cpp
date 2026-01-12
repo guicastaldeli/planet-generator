@@ -45,7 +45,7 @@ void PreviewController::preview() {
     isGeneratorActive = true;
     isPreviewing = true;
     if(isPreviewing && isGeneratorActive) {
-        camera->zoomLevel = 45.0f;
+        camera->zoomLevel = 13.0f;
         camera->updateProjection();
         lockCamera();
     }

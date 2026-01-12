@@ -146,7 +146,6 @@ p {
     color: rgb(25, 25, 25);
 }
 
-/* Hide default file input text */
 #planet-texture::file-selector-button {
     display: none;
 }

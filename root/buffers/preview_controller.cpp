@@ -45,7 +45,8 @@ void PreviewController::preview() {
     isGeneratorActive = true;
     isPreviewing = true;
     if(isPreviewing && isGeneratorActive) {
-        camera->saveCurrentPosBefore();
+        camera->zoomLevel = 45.0f;
+        camera->updateProjection();
         lockCamera();
     }
 }
@@ -68,7 +69,7 @@ void PreviewController::startGeneratorPreview() {
 
     if(camera) {
         emscripten_console_log("camera");
-        camera->saveCurrentPosBefore();
+        camera->saveCurrentPos();
         preview();
     } else {
         emscripten_console_log("no camera");
@@ -132,7 +133,7 @@ void PreviewController::cleanupPreview() {
     if(!isPreviewing && !isGeneratorActive) return;
 
     if(camera) {
-        camera->resetToSavedPos();
+        camera->releaseCamera();
         unlockCamera();
     }
     if(isPreviewing) {

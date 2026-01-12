@@ -26,7 +26,6 @@ class Camera {
         float panSpeed;
         float zoomSpeed;
 
-        float fov = 45.0f;
         float zNear = 0.1f;
         float zFar = 100.f;
         glm::mat4 projection;
@@ -107,6 +106,8 @@ class Camera {
 
         glm::vec3 getViewDir() const;
         glm::vec3 getFront() const;
+        glm::vec3 getRight() const;
+        glm::vec3 getUp() const;
         glm::vec3 getPosition() const;
         float getAspectRatio() const;
 };

@@ -70,7 +70,7 @@ void Camera::rotate(float deltaX, float deltaY) {
     if(rotationLocked) return;
 
     yaw += deltaX * rotationSpeed;
-    pitch -= deltaY * rotationSpeed;
+    pitch -= deltaY * rotationSpeed;//
 
     if(pitch > 89.0f) pitch = 89.0f;
     if(pitch < -89.0f) pitch = -89.0f;
@@ -154,8 +154,8 @@ void Camera::updateVectors() {
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     front = glm::normalize(front);
 
-    float distance = glm::length(position - target);
-    position = target - front * distance;
+    float distance = glm::length(target - position);
+    target = position + front * distance;
 
     right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
     up = glm::normalize(glm::cross(right, front));
@@ -261,7 +261,7 @@ void Camera::resetToSavedPos() {
     target = savedTarget;
     zoomLevel = savedZoomLevel;
 
-    glm::vec3 direction = glm::normalize(position - target);
+    glm::vec3 direction = glm::normalize(target - position);
     yaw = glm::degrees(atan2(direction.z, direction.x));
     pitch = glm::degrees(asin(direction.y));
 
@@ -448,7 +448,7 @@ void Camera::releaseCamera() {
         target = savedTarget;
         zoomLevel = savedZoomLevel;
 
-        glm::vec3 direction = glm::normalize(position - target);
+        glm::vec3 direction = glm::normalize(target - position);
         yaw = glm::degrees(atan2(direction.z, direction.x));
         pitch = glm::degrees(asin(direction.y));
 
@@ -472,10 +472,24 @@ glm::vec3 Camera::getFront() const {
 }
 
 /**
- * Get Positiom
+ * Get Right
+ */
+glm::vec3 Camera::getRight() const {
+    return glm::normalize(glm::cross(getFront(), glm::vec3(0.0f, 1.0f, 0.0f)));
+}
+
+/**
+ * Get Up
+ */
+glm::vec3 Camera::getUp() const {
+    return glm::normalize(glm::cross(getRight(), getFront()));
+}
+
+/**
+ * Get Position
  */
 glm::vec3 Camera::getPosition() const {
-    return glm::normalize(position);
+    return position;
 }
 
 /**

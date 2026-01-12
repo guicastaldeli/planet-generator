@@ -110,8 +110,17 @@ export class ControlsController {
      * 
      */
     private showControls(show: boolean): void {
-        if(!this.container) throw new Error('container err');
-        this.container.style.display = show ? 'block' : 'none';
+        const controlList = <HTMLDivElement>document.querySelector('#control--list');
+        if(!controlList) {
+            console.warn('Control list not found in DOM');
+            return;
+        }
+        
+        if(window.getComputedStyle(controlList).display === "none") {
+            controlList.style.display = "block";
+        } else {
+            controlList.style.display = "none";
+        }
         this.isVisible = show;
     }
 

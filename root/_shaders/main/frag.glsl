@@ -23,6 +23,7 @@ varying float vPhase;
 #include "../lightning/point_light.glsl"
 #include "../effect/fresnel.glsl"
 #include "../effect/noise.glsl"
+#include "../effect/glow.glsl"
 
 uniform int uNumPointLights;
 uniform PointLight uPointLights[15];
@@ -62,6 +63,16 @@ void main() {
             vec3 normal = normalize(vNormal);
             vec3 viewDir = normalize(-vPos);
 
+            //Glow
+            vec3 glowResult = applyGlow(
+                base,
+                normal,
+                viewDir,
+                uEmissiveStrength,
+                uTime,
+                uPlanetSize
+            );
+
             //Noise
             if(uEffectType > 1.5 && uEffectType < 2.5) {
                 base = applyTurbulence(
@@ -72,13 +83,13 @@ void main() {
                     uTime
                 );
             }
-        
+            
             //Default
             Material material;
             material.ambient = base * 0.2;
             material.diffuse = base;
             material.specular = vec3(0.0, 0.0, 0.0);
-            material.emissive = uEmissiveStrength > 0.0 ? base * uEmissiveStrength : vec3(0.0);
+            material.emissive = uEmissiveStrength > 0.0 ? glowResult : vec3(0.0);
             material.shininess = 0.0;
 
             Light light;

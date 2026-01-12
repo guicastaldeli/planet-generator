@@ -3,17 +3,34 @@
     bottom: 10px;
     left: 10px;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.7);
     padding: 10px;
     color: white;
-    font-family: Arial, sans-serif;
+    gap: 0.5rem;
+    display: flex;
+}
+
+button {
+    border: 0;
+    color: rgb(212, 212, 212);
+    background-color: rgb(25, 25, 25);
+
+    font-size: 1.5rem;
+    padding: 0.8rem;
+}
+button:hover {
+    background-color: rgb(212, 212, 212);
+    color: rgb(25, 25, 25);
 }
     
 .controls--container button {
+    margin: 0;
     display: block;
 }
     
 #control--list {
-    margin-top: 10px;
-    padding-top: 10px;
+    margin: 0;
+    display: flex;
+    /* display: none;*/
+    gap: 0.5rem;
+
 }

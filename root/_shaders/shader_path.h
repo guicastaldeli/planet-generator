@@ -16,6 +16,7 @@ class ShaderPath {
             STAR_COLOR,
             STAR_ATTR,
             FRESNEL,
+            GLOW,
             NOISE
         };
 

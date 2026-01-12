@@ -1,70 +1,71 @@
 <div id="planet-creator-modal" class="modal" style="display: none;">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Create New Planet</h2>
-        
-        <div class="form-group">
-            <label for="planet-name">Planet Name:</label>
-            <input type="text" id="planet-name" placeholder="Enter planet name">
+        <div class="info-form">
+            <span class="close">&times;</span>
+            <span class="info-text">Create New Planet</span>
         </div>
         
-        <div class="form-group">
-            <label for="planet-shape">Shape:</label>
-            <select id="planet-shape"></select>
-        </div>
-        
-        <div class="form-group">
-            <label for="planet-size">Size:</label>
-            <input type="range" id="planet-size" class="range-slider">
-            <span id="size-value"></span>
-        </div>
-        
-        <div class="form-group">
-            <label for="planet-color">Color:</label>
-            <input type="color" id="planet-color" value="#808080">
-            <div id="color-presets" class="color-presets"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="planet-texture">Texture:</label>
-            <input type="file" id="planet-texture">
-            <button id="btn-clear-tex">Clear</button>
-        </div>
-
-        <div class="form-group">
-            <label for="planet-lightning">Lightning:</label>
-            <select id="planet-lightning"></select>
-        </div>
-
-        <div class="form-group">
-            <label for="planet-effects">Effects:</label>
-            <select id="planet-effects"></select>
-        </div>
-        
-        <div class="form-group">
-            <label for="planet-position">Orbit Position:</label>
-            <select id="planet-position"></select>
-        </div>
-        
-        <div class="form-group">
-            <label for="rotation-axis">Rotation Axis:</label>
-            <select id="rotation-axis"></select>
-        </div>
-        
-        <div class="form-group">
-            <label for="self-rotation">Self Rotation Speed:</label>
-            <input type="range" id="self-rotation" class="range-slider">
-            <span id="self-rotation-value"></span>
-        </div>
-        
-        <div class="form-group">
-            <label for="orbit-speed">Orbit Speed:</label>
-            <input type="range" id="orbit-speed" class="range-slider">
-            <span id="orbit-speed-value"></span>
+        <div class="planet-form">
+            <div class="form-group">
+                <label for="planet-name">Planet Name:</label>
+                <input type="text" id="planet-name" placeholder="Enter planet name">
+            </div>
+            <div class="form-group">
+                <label for="planet-shape">Shape:</label>
+                <select id="planet-shape"></select>
+            </div>
+            <div class="form-group">
+                <label for="planet-size">Size:</label>
+                <div class="range-group">
+                    <input type="range" id="planet-size" class="range-slider">
+                    <p id="size-value">50</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="planet-color">Color:</label>
+                <input type="color" id="planet-color" value="#808080">
+            </div>
+            <div class="form-group">
+                <label for="planet-texture">Texture:</label>
+                <div class="range-group">
+                    <input type="file" id="planet-texture">
+                    <button id="btn-clear-tex">Clear</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="planet-lightning">Lightning:</label>
+                <select id="planet-lightning"></select>
+            </div>
+            <div class="form-group">
+                <label for="planet-effects">Effects:</label>
+                <select id="planet-effects"></select>
+            </div>
+            <div class="form-group">
+                <label for="planet-position">Orbit Position:</label>
+                <select id="planet-position"></select>
+            </div>
+            <div class="form-group">
+                <label for="rotation-axis">Rotation Axis:</label>
+                <select id="rotation-axis"></select>
+            </div>
+            <div class="form-group">
+                <label for="orbit-speed">Orbit Speed:</label>
+                <div class="range-group">
+                    <input type="range" id="orbit-speed" class="range-slider">
+                    <p id="orbit-speed-value">50</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="self-rotation">Self Rotation Speed:</label>
+                <div class="range-group">
+                    <input type="range" id="self-rotation" class="range-slider">
+                    <p id="self-rotation-value">50</p>
+                </div>
+            </div>
         </div>
         
         <div class="form-buttons">
-            <button id="create-planet-btn" class="btn-primary">GENERATE!</button>
+            <button id="create-planet-btn" class="btn-primary">GENERATE</button>
             <button id="cancel-planet-btn" class="btn-secondary">Cancel</button>
         </div>
     </div>

@@ -1,7 +1,16 @@
+@font-face {
+    font-family: 'HomeVideo';
+    src: url('../_resource/font/homevideo.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     margin: 0px;
     padding: 0px;
+    user-select: none;
     box-sizing: border-box;
+    font-family: 'HomeVideo';
 }
 
 #ctx {

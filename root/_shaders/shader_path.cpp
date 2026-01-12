@@ -17,5 +17,6 @@ std::vector<ShaderPath::File> ShaderPath::files = {
     { path + "skybox/star_color.glsl", STAR_COLOR },
     { path + "skybox/star_attr.glsl", STAR_ATTR },
     { path + "effect/fresnel.glsl", FRESNEL },
+    { path + "effect/glow.glsl", GLOW },
     { path + "effect/noise.glsl", NOISE }
 };

@@ -7,13 +7,16 @@ vec3 applyGlow(
     float planetSize
 ) {
     if(emissiveStrength <= 0.0) {
-        return baseColor;
+        return vec3(0.0);
     }
 
     float fresnel = 1.0 - max(dot(normal, viewDir), 0.0);
-    fresnel = pow(fresnelm 1.5);
+    fresnel = pow(fresnel, 1.5);
+    
+    float radialEffect = (normal.y * 0.5 + 0.5) * 0.3;
+    
+    float glow = (fresnel + radialEffect) * emissiveStrength;
+    float pulse = 0.9 + 0.1 * sin(time * 2.0);
 
-    vec2 uv = gl_PointColor - 0.5;
-    float dist = length(uv);
-    float radialGlow = 1.0 - smoothstep(0.0, 0.5, dist)
+    return baseColor * glow * pulse;
 }

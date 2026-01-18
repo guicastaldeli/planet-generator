@@ -77,6 +77,11 @@ span {
     border-radius: 0;
 }
 
+.range-group p {
+    text-shadow: 0px 3.5px 0px #060606 !important;
+    font-size: 2.0rem !important;
+}
+
 .range-slider::-webkit-slider-runnable-track {
     background: rgb(128, 128, 128);
     height: 8px;
@@ -289,4 +294,173 @@ label {
     padding: 0;
     border: none;
     border-radius: 0;
+}
+
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+    #planet-creator-modal {
+        width: 50%;
+    }
+    
+    .planet-form {
+        width: 90%;
+    }
+    
+    label {
+        font-size: 1.8rem;
+    }
+    
+    .range-group p {
+        font-size: 1.8rem !important;
+    }
+    
+    span {
+        font-size: 2.5rem;
+    }
+}
+
+/* Tablets in portrait mode */
+@media (max-width: 768px) {
+    #planet-creator-modal {
+        width: 60%;
+        height: 97%;
+    }
+    
+    .planet-form {
+        width: 95%;
+        gap: 1.5rem;
+        padding: 0.8rem;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .range-group {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    label {
+        font-size: 1.6rem;
+    }
+    
+    .range-slider {
+        width: 150px;
+    }
+    
+    #planet-name,
+    select {
+        min-width: 250px;
+        width: 100%;
+    }
+    
+    .form-buttons button {
+        font-size: 2rem;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+    #planet-creator-modal {
+        width: 95%;
+        right: 2.5%;
+        height: 96%;
+        top: 2%;
+    }
+    
+    .modal-content {
+        gap: 0.5rem;
+    }
+    
+    .planet-form {
+        width: 98%;
+        gap: 1rem;
+        padding: 0.5rem;
+    }
+    
+    label {
+        font-size: 1.4rem;
+        text-shadow: 0px 2px 0px #060606;
+    }
+    
+    span {
+        font-size: 2rem;
+    }
+    
+    .range-group p {
+        font-size: 1.5rem !important;
+        text-shadow: 0px 2px 0px #060606 !important;
+    }
+    
+    .range-slider {
+        width: 120px;
+        font-size: 1.2rem;
+        padding: 0.6rem;
+    }
+    
+    #planet-name,
+    select,
+    #planet-texture,
+    #btn-clear-tex {
+        font-size: 1.2rem;
+        padding: 0.6rem;
+        min-width: 200px;
+        width: 100%;
+    }
+    
+    #planet-color {
+        width: 80px;
+        height: 40px;
+    }
+    
+    .form-buttons {
+        width: 98%;
+    }
+    
+    .form-buttons button {
+        font-size: 1.6rem;
+    }
+    
+    .close {
+        width: 2.5rem;
+        font-size: 1.8rem;
+    }
+}
+
+/* Very small mobile devices */
+@media (max-width: 360px) {
+    .planet-form {
+        gap: 0.8rem;
+    }
+    
+    label {
+        font-size: 1.2rem;
+    }
+    
+    span {
+        font-size: 1.8rem;
+    }
+    
+    .range-group p {
+        font-size: 1.3rem !important;
+    }
+    
+    .range-slider {
+        width: 100px;
+    }
+    
+    #planet-name,
+    select,
+    #planet-texture,
+    #btn-clear-tex {
+        font-size: 1rem;
+        min-width: 180px;
+    }
+    
+    .form-buttons button {
+        font-size: 1.4rem;
+    }
 }

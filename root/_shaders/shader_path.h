@@ -17,7 +17,9 @@ class ShaderPath {
             STAR_ATTR,
             FRESNEL,
             GLOW,
-            NOISE
+            NOISE,
+            CLOUDS,
+            RINGS
         };
 
         struct File {

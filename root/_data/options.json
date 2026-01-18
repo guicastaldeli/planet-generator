@@ -50,6 +50,14 @@
             {
                 "id": 2,
                 "name": "Noise"
+            },
+            {
+                "id": 3,
+                "name": "Clouds"
+            },
+            {
+                "id": 4,
+                "name": "Rings"
             }
         ],
         "orbitPositions": [

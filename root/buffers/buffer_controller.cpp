@@ -150,6 +150,8 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         if(effectsStr == "None") uData.effectType = 0;
         else if(effectsStr == "Earth Orbit") uData.effectType = 1;
         else if(effectsStr == "Noise") uData.effectType = 2;
+        else if(effectsStr == "Clouds") uData.effectType = 3;
+        else if(effectsStr == "Rings") uData.effectType = 4;
         else uData.effectType = 0;
     } else {
         uData.effectType = dData.effectType;

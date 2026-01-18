@@ -72,9 +72,28 @@ void main() {
                 uTime,
                 uPlanetSize
             );
-
             //Noise
             if(uEffectType > 1.5 && uEffectType < 2.5) {
+                base = applyTurbulence(
+                    base,
+                    normal,
+                    vPos,
+                    uPlanetSize,
+                    uTime
+                );
+            }
+            //Clouds
+            if(uEffectType > 2.5 && uEffectType < 3.5) {
+                base = applyTurbulence(
+                    base,
+                    normal,
+                    vPos,
+                    uPlanetSize,
+                    uTime
+                );
+            }
+            //Rings
+            if(uEffectType > 3.5 && uEffectType < 4.5) {
                 base = applyTurbulence(
                     base,
                     normal,

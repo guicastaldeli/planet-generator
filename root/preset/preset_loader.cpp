@@ -215,6 +215,8 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         if(data.effects == "None") data.effectType = 0;
         else if(data.effects == "Earth Orbit") data.effectType = 1;
         else if(data.effects == "Noise") data.effectType = 2;
+        else if(data.effects == "Clouds") data.effectType = 3;
+        else if(data.effects == "Rings") data.effectType = 4;
     }
 
     /* Rotation */

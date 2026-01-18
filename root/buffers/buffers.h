@@ -46,6 +46,8 @@ class Buffers {
         bool isInPreviewMode() const;
 
         void render();
+        void renderRings(const PlanetBuffer& planetBuffer);
+        void renderClouds(const PlanetBuffer& planetBuffer);
         void renderAtmosphere(const PlanetBuffer& planetBuffer);
         void init();
 };

@@ -179,9 +179,9 @@ void Buffers::render() {
                 0
             );
 
-            if(planetBuffer.data.effectType == 1) {
-                renderAtmosphere(planetBuffer);
-            }
+            if(planetBuffer.data.effectType == 1) renderAtmosphere(planetBuffer);
+            if(planetBuffer.data.effectType == 3) renderClouds(planetBuffer);
+            if(planetBuffer.data.effectType == 4) renderRings(planetBuffer);
         }
     }
     /* Preview Mesh */
@@ -267,13 +267,191 @@ void Buffers::render() {
                 0
             );
 
-            if(previewPlanet.data.effectType == 1) {
-                renderAtmosphere(previewPlanet);
-            }
+            if(previewPlanet.data.effectType == 1) renderAtmosphere(previewPlanet);
+            if(previewPlanet.data.effectType == 3) renderClouds(previewPlanet);
+            if(previewPlanet.data.effectType == 4) renderRings(previewPlanet);
         }
     }
 
     glBindVertexArray(0);
+}
+
+/**
+ * Render Rings
+ */
+void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
+    GLboolean depthMask;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    
+    if(planetBuffer.isPreview) {
+        float screenX = -0.5f;
+        float screenY = 0.0f;
+        model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
+        
+        static float previewRotation = 0.0f;
+        previewRotation += 0.5f;
+        
+        if(planetBuffer.data.rotationDir == RotationAxis::X) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Y) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 1.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Z) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+    } else {
+        float orbitRadius = planetBuffer.data.distanceFromCenter;
+        float orbitAngle = planetBuffer.data.orbitAngle.y;
+        glm::vec3 worldPos = glm::vec3(
+            orbitRadius * cos(glm::radians(orbitAngle)),
+            0.0f,
+            orbitRadius * sin(glm::radians(orbitAngle))
+        );
+        
+        model = glm::translate(model, worldPos);
+        model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    
+    float atmosphereScale = planetBuffer.data.size * 1.05f;
+    model = glm::scale(model, glm::vec3(atmosphereScale));
+
+    unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
+    if(planetColorLoc != -1) {
+        glm::vec3 atmosphereColor = glm::vec3(0.2f, 0.4f, 1.0f);
+        glUniform3f(planetColorLoc, atmosphereColor.r, atmosphereColor.g, atmosphereColor.b);
+    }
+
+    GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
+    if(emissiveStrengthLoc != -1) {
+        glUniform1f(emissiveStrengthLoc, 0.7f);
+    }
+    
+    GLuint isAtmosphereLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsAtmosphere");
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 1.0f);
+    }
+    
+    GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+    if(useTexLoc != -1) {
+        glUniform1i(useTexLoc, 0);
+    }
+    
+    glDrawElements(
+        GL_TRIANGLES,
+        indexCounts[planetBuffer.data.shape],
+        GL_UNSIGNED_INT,
+        0
+    );
+
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 0.0f);
+    }
+    if(emissiveStrengthLoc != -1) {
+        float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
+        glUniform1f(emissiveStrengthLoc, originalEmissive);
+    }
+    glDepthMask(depthMask);
+    if(!blendEnabled) {
+        glDisable(GL_BLEND);
+    }
+}
+
+/**
+ * Render Clouds
+ */
+void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
+    GLboolean depthMask;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+    GLboolean blendEnabled = glIsEnabled(GL_BLEND);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    
+    if(planetBuffer.isPreview) {
+        float screenX = -0.5f;
+        float screenY = 0.0f;
+        model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
+        
+        static float previewRotation = 0.0f;
+        previewRotation += 0.5f;
+        
+        if(planetBuffer.data.rotationDir == RotationAxis::X) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Y) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 1.0f, 0.0f));
+        } else if(planetBuffer.data.rotationDir == RotationAxis::Z) {
+            model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+    } else {
+        float orbitRadius = planetBuffer.data.distanceFromCenter;
+        float orbitAngle = planetBuffer.data.orbitAngle.y;
+        glm::vec3 worldPos = glm::vec3(
+            orbitRadius * cos(glm::radians(orbitAngle)),
+            0.0f,
+            orbitRadius * sin(glm::radians(orbitAngle))
+        );
+        
+        model = glm::translate(model, worldPos);
+        model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    
+    float atmosphereScale = planetBuffer.data.size * 1.05f;
+    model = glm::scale(model, glm::vec3(atmosphereScale));
+
+    unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
+    if(planetColorLoc != -1) {
+        glm::vec3 atmosphereColor = glm::vec3(0.2f, 0.4f, 1.0f);
+        glUniform3f(planetColorLoc, atmosphereColor.r, atmosphereColor.g, atmosphereColor.b);
+    }
+
+    GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
+    if(emissiveStrengthLoc != -1) {
+        glUniform1f(emissiveStrengthLoc, 0.7f);
+    }
+    
+    GLuint isAtmosphereLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsAtmosphere");
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 1.0f);
+    }
+    
+    GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+    if(useTexLoc != -1) {
+        glUniform1i(useTexLoc, 0);
+    }
+    
+    glDrawElements(
+        GL_TRIANGLES,
+        indexCounts[planetBuffer.data.shape],
+        GL_UNSIGNED_INT,
+        0
+    );
+
+    if(isAtmosphereLoc != -1) {
+        glUniform1f(isAtmosphereLoc, 0.0f);
+    }
+    if(emissiveStrengthLoc != -1) {
+        float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
+        glUniform1f(emissiveStrengthLoc, originalEmissive);
+    }
+    glDepthMask(depthMask);
+    if(!blendEnabled) {
+        glDisable(GL_BLEND);
+    }
 }
 
 /**

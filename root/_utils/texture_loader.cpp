@@ -211,7 +211,7 @@ GLuint TextureLoader::loadTextureFromFile(const std::string& name, const std::st
  * Preload Texture
  */
 void TextureLoader::preloadTexture() {
-    loadTextureFromFile("clouds", "/_resource/texture/clouds.png");
+    loadTextureFromFile("clouds", "clouds.png");
 }
 
 /**

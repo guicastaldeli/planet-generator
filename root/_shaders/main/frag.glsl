@@ -88,13 +88,18 @@ void main() {
             }
             //Clouds
             if(uEffectType > 2.5 && uEffectType < 3.5) {
-                base = applyTurbulence(
+                vec4 cloudResult = applyClouds(
                     base,
                     normal,
                     vPos,
                     uPlanetSize,
                     uTime
                 );
+                base = cloudResult.rgb;
+                if(uIsClouds > 0.5) {
+                    gl_FragColor = vec4(base, cloudResult.a);
+                    return;
+                }
             }
             //Rings
             if(uEffectType > 3.5 && uEffectType < 4.5) {

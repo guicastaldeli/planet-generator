@@ -23,6 +23,12 @@ class TextureLoader {
             int height,
             int channels
         );
+        GLuint loadTextureFromFile(
+            const std::string& name,
+            const std::string& filePath
+        );
+
+        void preloadTexture();
         void unloadTexture(GLuint texId);
 
         bool texExists(const std::string& texName) const;

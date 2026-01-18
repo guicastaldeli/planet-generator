@@ -13,6 +13,8 @@ uniform float uEmissiveStrength;
 uniform float uEffectType;
 uniform float uPlanetSize;
 uniform float uIsAtmosphere;
+uniform float uIsClouds;
+uniform float uIsRings;
 varying float vPhase;
 
 #include "color.glsl"
@@ -24,6 +26,8 @@ varying float vPhase;
 #include "../effect/fresnel.glsl"
 #include "../effect/noise.glsl"
 #include "../effect/glow.glsl"
+#include "../effect/clouds.glsl"
+#include "../effect/rings.glsl"
 
 uniform int uNumPointLights;
 uniform PointLight uPointLights[15];

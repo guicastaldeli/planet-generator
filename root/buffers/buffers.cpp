@@ -318,16 +318,16 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
     }
     
-    float atmosphereScale = planetBuffer.data.size * 1.05f;
-    model = glm::scale(model, glm::vec3(atmosphereScale));
+    float ringScale = planetBuffer.data.size * 1.05f;
+    model = glm::scale(model, glm::vec3(ringScale));
 
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
     GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
     if(planetColorLoc != -1) {
-        glm::vec3 atmosphereColor = glm::vec3(0.2f, 0.4f, 1.0f);
-        glUniform3f(planetColorLoc, atmosphereColor.r, atmosphereColor.g, atmosphereColor.b);
+        glm::vec3 ringsColor = glm::vec3(0.2f, 0.4f, 1.0f);
+        glUniform3f(planetColorLoc, ringsColor.r, ringsColor.g, ringsColor.b);
     }
 
     GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
@@ -335,9 +335,9 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
         glUniform1f(emissiveStrengthLoc, 0.7f);
     }
     
-    GLuint isAtmosphereLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsAtmosphere");
-    if(isAtmosphereLoc != -1) {
-        glUniform1f(isAtmosphereLoc, 1.0f);
+    GLuint isRingsLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsRings");
+    if(isRingsLoc != -1) {
+        glUniform1f(isRingsLoc, 1.0f);
     }
     
     GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
@@ -352,8 +352,8 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
         0
     );
 
-    if(isAtmosphereLoc != -1) {
-        glUniform1f(isAtmosphereLoc, 0.0f);
+    if(isRingsLoc != -1) {
+        glUniform1f(isRingsLoc, 0.0f);
     }
     if(emissiveStrengthLoc != -1) {
         float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;
@@ -407,31 +407,39 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
     }
     
-    float atmosphereScale = planetBuffer.data.size * 1.05f;
-    model = glm::scale(model, glm::vec3(atmosphereScale));
+    float cloudScale = planetBuffer.data.size * 1.03f;
+    model = glm::scale(model, glm::vec3(cloudScale));
 
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
     GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
     if(planetColorLoc != -1) {
-        glm::vec3 atmosphereColor = glm::vec3(0.2f, 0.4f, 1.0f);
-        glUniform3f(planetColorLoc, atmosphereColor.r, atmosphereColor.g, atmosphereColor.b);
+        glm::vec3 cloudsColor = glm::vec3(1.0f, 1.0f, 1.0f);
+        glUniform3f(planetColorLoc, cloudsColor.r, cloudsColor.g, cloudsColor.b);
     }
 
     GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
     if(emissiveStrengthLoc != -1) {
-        glUniform1f(emissiveStrengthLoc, 0.7f);
+        glUniform1f(emissiveStrengthLoc, 1.0f);
     }
     
-    GLuint isAtmosphereLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsAtmosphere");
-    if(isAtmosphereLoc != -1) {
-        glUniform1f(isAtmosphereLoc, 1.0f);
+    GLuint isCloudsLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsClouds");
+    if(isCloudsLoc != -1) {
+        glUniform1f(isCloudsLoc, 1.0f);
     }
     
     GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+    bool hasCloudTex = bufferController->getTextureLoader()->texExists("clouds");
     if(useTexLoc != -1) {
         glUniform1i(useTexLoc, 0);
+    }
+    if(hasCloudTex) {
+        GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
+        GLuint texId = bufferController->getTextureLoader()->getTex("clouds");
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glUniform1i(texLoc, 0);
     }
     
     glDrawElements(
@@ -441,8 +449,8 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
         0
     );
 
-    if(isAtmosphereLoc != -1) {
-        glUniform1f(isAtmosphereLoc, 0.0f);
+    if(isCloudsLoc != -1) {
+        glUniform1f(isCloudsLoc, 0.0f);
     }
     if(emissiveStrengthLoc != -1) {
         float originalEmissive = planetBuffer.data.hasSunLight ? 1.5f : 0.0;

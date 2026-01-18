@@ -31,6 +31,9 @@ void BufferController::init() {
     initGenerator();
     initPreviewController();
 
+    if(textureLoader) {
+        textureLoader->preloadTexture();
+    }
     if(presetManager && presetManager->getPresetImporter()) {
         presetManager->getPresetImporter()->setImportCallback(
             [this](const PresetData& preset) {

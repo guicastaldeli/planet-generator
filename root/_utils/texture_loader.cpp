@@ -58,6 +58,10 @@ GLuint TextureLoader::loadTexture(
         return 0;
     }
 }
+
+/**
+ * Load Texture From Memory
+ */
 GLuint TextureLoader::loadTextureFromMemory(
     const unsigned char* data,
     int width,
@@ -171,6 +175,43 @@ GLuint TextureLoader::loadTextureFromMemory(
               << " (NPOT: " << (!isPowerOfTwo ? "yes" : "no") << ")" << std::endl;
     
     return texId;
+}
+
+/**
+ * Load texture from File
+ */
+GLuint TextureLoader::loadTextureFromFile(const std::string& name, const std::string& filePath) {
+    try {
+        int width;
+        int height;
+        int channels;
+        unsigned char* pixels = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+        if(!pixels) {
+            std::cerr << "stbi_load failed for file " << filePath << ": " << stbi_failure_reason() << std::endl;
+            return 0;
+        }
+
+        GLuint texId = loadTextureFromMemory(pixels, width, height, channels);
+        stbi_image_free(pixels);
+        if(texId != 0) {
+            textures[name] = texId;
+            std::cout << "Texture loaded from file: " << name << " (" << width << "x" << height << ")" << std::endl;
+        } else {
+            std::cerr << "Failed to create texture from file: " << name << std::endl;
+        }
+
+        return texId;
+    } catch(const std::exception& err) {
+        std::cerr << "error in loadTextureFromFile: " << err.what() << std::endl;
+        return 0;
+    }
+}
+
+/**
+ * Preload Texture
+ */
+void TextureLoader::preloadTexture() {
+    loadTextureFromFile("clouds", "/_resource/texture/clouds.png");
 }
 
 /**

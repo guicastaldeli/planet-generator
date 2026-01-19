@@ -272,6 +272,7 @@ extern "C" {
         str << "\"shape\":\"" << (
             defaultData.shape == BufferData::Type::SPHERE ? "SPHERE" : 
             defaultData.shape == BufferData::Type::CUBE ? "CUBE" : 
+            defaultData.shape == BufferData::Type::RING ? "RING" : 
             "TRIANGLE"
         ) << "\",";
         str << "\"size\":" << defaultData.size << ",";

@@ -58,6 +58,10 @@
             {
                 "id": 4,
                 "name": "Rings"
+            },
+            {
+                "id": 5,
+                "name": "Earth Orbit + Clouds"
             }
         ],
         "orbitPositions": [

@@ -196,6 +196,7 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         if(shapeStr == "SPHERE") data.shape = BufferData::Type::SPHERE;
         else if(shapeStr == "CUBE") data.shape = BufferData::Type::CUBE;
         else if(shapeStr == "TRIANGLE") data.shape = BufferData::Type::TRIANGLE;
+        else if(shapeStr == "RING") data.shape = BufferData::Type::RING;
         else data.shape = BufferData::Type::SPHERE;
     }
 
@@ -217,6 +218,7 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         else if(data.effects == "Noise") data.effectType = 2;
         else if(data.effects == "Clouds") data.effectType = 3;
         else if(data.effects == "Rings") data.effectType = 4;
+        else if(data.effects == "Earth Orbit + Clouds") data.effectType = 5;
     }
 
     /* Rotation */

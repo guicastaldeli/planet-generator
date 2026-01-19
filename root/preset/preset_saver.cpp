@@ -88,6 +88,8 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
             data.shape = BufferData::Type::CUBE;
         } else if(shapeStr == "TRIANGLE") {
             data.shape = BufferData::Type::TRIANGLE;
+        } else if(shapeStr == "RING") {
+            data.shape = BufferData::Type::RING;
         } else {
             data.shape = BufferData::Type::SPHERE;
         }

@@ -212,6 +212,7 @@ GLuint TextureLoader::loadTextureFromFile(const std::string& name, const std::st
  */
 void TextureLoader::preloadTexture() {
     loadTextureFromFile("clouds", "clouds.png");
+    loadTextureFromFile("rings", "rings.png");
 }
 
 /**

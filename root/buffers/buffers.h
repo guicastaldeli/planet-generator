@@ -49,5 +49,6 @@ class Buffers {
         void renderRings(const PlanetBuffer& planetBuffer);
         void renderClouds(const PlanetBuffer& planetBuffer);
         void renderAtmosphere(const PlanetBuffer& planetBuffer);
+        void renderOrbitAndClouds(const PlanetBuffer& planetBuffer);
         void init();
 };

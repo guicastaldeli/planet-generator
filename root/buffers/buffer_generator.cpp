@@ -68,7 +68,8 @@ BufferData::Type BufferGenerator::shapeToBufferType(const std::string& name) {
     static const std::unordered_map<std::string, BufferData::Type> map = {
         { "SPHERE", BufferData::Type::SPHERE },
         { "CUBE", BufferData::Type::CUBE },
-        { "TRIANGLE", BufferData::Type::TRIANGLE }
+        { "TRIANGLE", BufferData::Type::TRIANGLE },
+        { "RING", BufferData::Type::RING }
     };
 
     auto it = map.find(name);
@@ -96,7 +97,8 @@ std::string BufferGenerator::shapeToString(BufferData::Type type) {
     static const std::unordered_map<BufferData::Type, std::string> map = {
         { BufferData::Type::SPHERE, "SPHERE" },
         { BufferData::Type::CUBE, "CUBE", },
-        { BufferData::Type::TRIANGLE, "TRIANGLE" }
+        { BufferData::Type::TRIANGLE, "TRIANGLE" },
+        { BufferData::Type::RING, "RING" }
     };
 
     auto it = map.find(type);
@@ -233,7 +235,7 @@ bool BufferGenerator::replaceLastPlanet(
  * Generate
  */
 void BufferGenerator::generate(const char* data) {
-    try {//
+    try {
         std::string str(data);
 
         PlanetData newPlanet;

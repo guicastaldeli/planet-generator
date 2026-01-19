@@ -140,15 +140,25 @@ void Buffers::render() {
             }
 
             GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
-            bool hasTex = 
-                !planetBuffer.data.texture.empty() &&
-                bufferController->getTextureLoader()->texExists(planetBuffer.data.texture);
+            bool hasTex = false;
+            GLuint texId = 0;
+            if(!planetBuffer.data.texture.empty()) {
+                texId = bufferController->getTextureLoader()->texExists(planetBuffer.data.texture);
+                if(texId == 0) {
+                    std::string texName = planetBuffer.data.texture;
+                    size_t dotPos = texName.find_last_of('.');
+                    if(dotPos != std::string::npos) {
+                        texName = texName.substr(0, dotPos);
+                        texId = bufferController->getTextureLoader()->getTex(texName);
+                    }
+                }
+                hasTex = (texId != 0);
+            }
             if(useTexLoc != -1) {
                 glUniform1i(useTexLoc, hasTex ? 1 : 0);
             }
             if(hasTex) {
                 GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
-                GLuint texId = bufferController->getTextureLoader()->getTex(planetBuffer.data.texture);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, texId);
                 glUniform1i(texLoc, 0);
@@ -182,6 +192,7 @@ void Buffers::render() {
             if(planetBuffer.data.effectType == 1) renderAtmosphere(planetBuffer);
             if(planetBuffer.data.effectType == 3) renderClouds(planetBuffer);
             if(planetBuffer.data.effectType == 4) renderRings(planetBuffer);
+            if(planetBuffer.data.effectType == 5) renderOrbitAndClouds(planetBuffer);
         }
     }
     /* Preview Mesh */
@@ -270,10 +281,19 @@ void Buffers::render() {
             if(previewPlanet.data.effectType == 1) renderAtmosphere(previewPlanet);
             if(previewPlanet.data.effectType == 3) renderClouds(previewPlanet);
             if(previewPlanet.data.effectType == 4) renderRings(previewPlanet);
+            if(previewPlanet.data.effectType == 5) renderOrbitAndClouds(previewPlanet);
         }
     }
 
     glBindVertexArray(0);
+}
+
+/**
+ * Orbit and Clouds
+ */
+void Buffers::renderOrbitAndClouds(const PlanetBuffer& planetBuffer) {
+    renderAtmosphere(planetBuffer);
+    renderClouds(planetBuffer);
 }
 
 /**
@@ -287,6 +307,12 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
+
+    set(BufferData::Type::RING);
+    auto ringIt = vaos.find(BufferData::Type::RING);
+    if(ringIt == vaos.end()) return;
+    
+    glBindVertexArray(ringIt->second);
 
     glm::mat4 model = glm::mat4(1.0f);
     
@@ -318,15 +344,22 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
     }
     
-    float ringScale = planetBuffer.data.size * 1.05f;
+    float ringScale = planetBuffer.data.size * 1.5f;
     model = glm::scale(model, glm::vec3(ringScale));
 
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
+    static float totalTime = 0.0f;
+    totalTime += 0.016f;
+    GLuint timeLoc = glGetUniformLocation(shaderController->shaderProgram, "uTime");
+    if(timeLoc != -1) {
+        glUniform1f(timeLoc, totalTime);
+    }
+    
     GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
     if(planetColorLoc != -1) {
-        glm::vec3 ringsColor = glm::vec3(0.2f, 0.4f, 1.0f);
+        glm::vec3 ringsColor = glm::vec3(0.8f, 0.7f, 0.5f);
         glUniform3f(planetColorLoc, ringsColor.r, ringsColor.g, ringsColor.b);
     }
 
@@ -341,13 +374,26 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
     }
     
     GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
+    bool hasRingsTex = bufferController->getTextureLoader()->texExists("rings");
     if(useTexLoc != -1) {
-        glUniform1i(useTexLoc, 0);
+        glUniform1i(useTexLoc, hasRingsTex ? 1 : 0);
+    }
+    if(hasRingsTex) {
+        GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
+        GLuint texId = bufferController->getTextureLoader()->getTex("rings");
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glUniform1i(texLoc, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
     
     glDrawElements(
         GL_TRIANGLES,
-        indexCounts[planetBuffer.data.shape],
+        indexCounts[BufferData::Type::RING],
         GL_UNSIGNED_INT,
         0
     );
@@ -363,7 +409,13 @@ void Buffers::renderRings(const PlanetBuffer& planetBuffer) {
     if(!blendEnabled) {
         glDisable(GL_BLEND);
     }
+    
+    auto planetIt = vaos.find(planetBuffer.data.shape);
+    if(planetIt != vaos.end()) {
+        glBindVertexArray(planetIt->second);
+    }
 }
+
 
 /**
  * Render Clouds
@@ -385,7 +437,7 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
         model = glm::translate(model, glm::vec3(screenX, screenY, 0.0f));
         
         static float previewRotation = 0.0f;
-        previewRotation += 0.5f;
+        previewRotation += 0.8f;
         
         if(planetBuffer.data.rotationDir == RotationAxis::X) {
             model = glm::rotate(model, glm::radians(previewRotation * planetBuffer.data.rotationSpeedItself), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -405,6 +457,10 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
         
         model = glm::translate(model, worldPos);
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        static float cloudRotation = 0.0f;
+        cloudRotation += 0.8f;
+        model = glm::rotate(model, glm::radians(cloudRotation), glm::vec3(0.0f, 1.0f, 0.0f));
     }
     
     float cloudScale = planetBuffer.data.size * 1.03f;
@@ -412,6 +468,14 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
 
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    static float totalTime = 0.0f;
+    totalTime += 0.016f;
+    
+    GLuint timeLoc = glGetUniformLocation(shaderController->shaderProgram, "time");
+    if(timeLoc != -1) {
+        glUniform1f(timeLoc, totalTime);
+    }
     
     GLuint planetColorLoc = glGetUniformLocation(shaderController->shaderProgram, "pColor");
     if(planetColorLoc != -1) {
@@ -421,7 +485,7 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
 
     GLuint emissiveStrengthLoc = glGetUniformLocation(shaderController->shaderProgram, "uEmissiveStrength");
     if(emissiveStrengthLoc != -1) {
-        glUniform1f(emissiveStrengthLoc, 1.0f);
+        glUniform1f(emissiveStrengthLoc, 0.0f);
     }
     
     GLuint isCloudsLoc = glGetUniformLocation(shaderController->shaderProgram, "uIsClouds");
@@ -432,7 +496,7 @@ void Buffers::renderClouds(const PlanetBuffer& planetBuffer) {
     GLuint useTexLoc = glGetUniformLocation(shaderController->shaderProgram, "uUseTex");
     bool hasCloudTex = bufferController->getTextureLoader()->texExists("clouds");
     if(useTexLoc != -1) {
-        glUniform1i(useTexLoc, 0);
+        glUniform1i(useTexLoc, hasCloudTex ? 1 : 0);
     }
     if(hasCloudTex) {
         GLuint texLoc = glGetUniformLocation(shaderController->shaderProgram, "uTex");
@@ -509,7 +573,7 @@ void Buffers::renderAtmosphere(const PlanetBuffer& planetBuffer) {
         model = glm::rotate(model, planetBuffer.data.currentRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
     }
     
-    float atmosphereScale = planetBuffer.data.size * 1.05f;
+    float atmosphereScale = planetBuffer.data.size * 1.08f;
     model = glm::scale(model, glm::vec3(atmosphereScale));
 
     unsigned int modelLoc = glGetUniformLocation(shaderController->shaderProgram, "model");

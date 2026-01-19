@@ -13,8 +13,8 @@ var Module = {
             console.log('preRun executing');
             
             const files = [
-                'clouds.png',
-                'rings.png'
+                "clouds.png",
+                "rings.png",
             ];
             files.forEach(f => {
                 const filePath = `./_resource/texture/${f}`;

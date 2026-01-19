@@ -78,7 +78,7 @@ extern "C" {
         if(g_generatorWrapperController && g_generatorWrapperController->bufferController) {
             g_generatorWrapperController->
                 bufferController->
-                previewController->startGeneratorPreview();//
+                previewController->startGeneratorPreview();
         }
     }
 
@@ -154,6 +154,10 @@ extern "C" {
             if(container) {
                 container.style.display = 'none';
             }
+            const controlList = document.querySelector('.controls--container');
+            if(controlList) {
+                controlList.style.display = 'flex';
+            }
         });
         cleanupPreview();
     }
@@ -162,91 +166,100 @@ extern "C" {
      * Generate Planet
      */
     void generatePlanetParser(const char* planetData) {
-        cleanupPreview();
+    cleanupPreview();
 
-        printf("Received planet data: %s\n", planetData);
-        if(!planetData || strlen(planetData) == 0) {
-            printf("ERR: Empty planet data received\n");
-            return;
-        }
-        if(!g_generatorWrapperController) {
-            printf("ERR: Generator wrapper controller not initialized\n");
-            return;
-        }
-
-        try {
-            std::string str(planetData);
-            auto data = DataParser::Parser::parse(str);
-            PlanetData newPlanet;
-
-            g_generatorWrapperController->
-                bufferController->
-                    defaultData->init();
-        
-            g_generatorWrapperController->
-                bufferController->
-                    setDataToUpdate(newPlanet, data);
-
-            newPlanet.distanceFromCenter = 
-                g_generatorWrapperController->
-                bufferController->
-                bufferGenerator->calculateDistanceFromPosition(newPlanet.position);
-
-            auto& preset = g_generatorWrapperController->presetLoader->getCurrentPreset();
-
-            bool positionOccupied = false;
-            for(const auto& planet : preset.planets) {
-                if(planet.position == newPlanet.position && planet.position != 0) {
-                    positionOccupied = true;
-                    break;
-                }
-            }
-            
-            if(positionOccupied) {
-                newPlanet.position = g_generatorWrapperController->
-                    bufferController->
-                    bufferGenerator->findAvailablePosition(preset.planets);
-                if(newPlanet.position == -1) {
-                    g_generatorWrapperController->
-                        bufferController->
-                        bufferGenerator->replaceLastPlanet(preset.planets, newPlanet);
-                }
-            }
-
-            preset.planets.push_back(newPlanet);
-            g_generatorWrapperController->bufferController->currentPreset.planets.push_back(newPlanet);
-            
-            if(newPlanet.hasSunLight) {
-                g_generatorWrapperController->bufferController->createPointLight(newPlanet);
-            }
-            
-            PlanetBuffer newPlanetBuffer;
-            newPlanetBuffer.data = newPlanet;
-            newPlanetBuffer.isPreview = false;
-
-            float orbitRadius = newPlanet.distanceFromCenter;
-            float initialAngle = newPlanet.orbitAngle.y;
-            glm::vec3 planetPosition(
-                orbitRadius * cos(glm::radians(initialAngle)),
-                0.0f,
-                orbitRadius * sin(glm::radians(initialAngle))
-            );
-            newPlanetBuffer.worldPos = planetPosition;
-
-            g_generatorWrapperController->
-                bufferController->
-                buffers->createBufferForPlanet(newPlanetBuffer);
-            
-            g_generatorWrapperController->
-                bufferController->
-                buffers->
-                planetBuffers.push_back(std::move(newPlanetBuffer));
-
-            printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);
-        } catch(const std::exception& e) {
-            printf("Error generating planet: %s\n", e.what());
-        }
+    printf("Received planet data: %s\n", planetData);
+    if(!planetData || strlen(planetData) == 0) {
+        printf("ERR: Empty planet data received\n");
+        return;
     }
+    if(!g_generatorWrapperController) {
+        printf("ERR: Generator wrapper controller not initialized\n");
+        return;
+    }
+
+    try {
+        std::string str(planetData);
+        auto data = DataParser::Parser::parse(str);
+        PlanetData newPlanet;
+
+        g_generatorWrapperController->
+            bufferController->
+                defaultData->init();
+    
+        g_generatorWrapperController->
+            bufferController->
+                setDataToUpdate(newPlanet, data);
+
+        newPlanet.distanceFromCenter = 
+            g_generatorWrapperController->
+            bufferController->
+            bufferGenerator->calculateDistanceFromPosition(newPlanet.position);
+
+        auto& preset = g_generatorWrapperController->presetLoader->getCurrentPreset();
+
+        bool positionOccupied = false;
+        for(const auto& planet : preset.planets) {
+            if(planet.position == newPlanet.position && planet.position != 0) {
+                positionOccupied = true;
+                break;
+            }
+        }
+        
+        if(positionOccupied) {
+            newPlanet.position = g_generatorWrapperController->
+                bufferController->
+                bufferGenerator->findAvailablePosition(preset.planets);
+            if(newPlanet.position == -1) {
+                g_generatorWrapperController->
+                    bufferController->
+                    bufferGenerator->replaceLastPlanet(preset.planets, newPlanet);
+            }
+        }
+
+        preset.planets.push_back(newPlanet);
+        g_generatorWrapperController->bufferController->currentPreset.planets.push_back(newPlanet);
+        
+        if(newPlanet.hasSunLight) {
+            g_generatorWrapperController->bufferController->createPointLight(newPlanet);
+        }
+        
+        PlanetBuffer newPlanetBuffer;
+        newPlanetBuffer.data = newPlanet;
+        newPlanetBuffer.isPreview = false;
+
+        float orbitRadius = newPlanet.distanceFromCenter;
+        float initialAngle = newPlanet.orbitAngle.y;
+        glm::vec3 planetPosition(
+            orbitRadius * cos(glm::radians(initialAngle)),
+            0.0f,
+            orbitRadius * sin(glm::radians(initialAngle))
+        );
+        newPlanetBuffer.worldPos = planetPosition;
+
+        g_generatorWrapperController->
+            bufferController->
+            buffers->createBufferForPlanet(newPlanetBuffer);
+        
+        g_generatorWrapperController->
+            bufferController->
+            buffers->
+            planetBuffers.push_back(std::move(newPlanetBuffer));
+
+        printf("Generated planet: %s at position %d\n", newPlanet.name.c_str(), newPlanet.position);
+        
+        // Show controls after successful generation
+        EM_ASM({
+            const controlList = document.querySelector('.controls--container');
+            if(controlList) {
+                controlList.style.display = 'flex';
+            }
+        });
+        
+    } catch(const std::exception& e) {
+        printf("Error generating planet: %s\n", e.what());
+    }
+}
 
     /**
      * Get Default Data

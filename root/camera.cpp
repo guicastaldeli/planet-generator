@@ -70,7 +70,7 @@ void Camera::rotate(float deltaX, float deltaY) {
     if(rotationLocked) return;
 
     yaw += deltaX * rotationSpeed;
-    pitch -= deltaY * rotationSpeed;//
+    pitch -= deltaY * rotationSpeed;
 
     if(pitch > 89.0f) pitch = 89.0f;
     if(pitch < -89.0f) pitch = -89.0f;
@@ -101,7 +101,7 @@ void Camera::pan(float deltaX, float deltaY) {
         hitBoundary = true;
         newPosition.y = cubeMinBound.y;
     }
-    if (newPosition.y > cubeMaxBound.y) {
+    if(newPosition.y > cubeMaxBound.y) {
         hitBoundary = true;
         newPosition.y = cubeMaxBound.y;
     }
@@ -347,7 +347,7 @@ EM_BOOL mouseCallback(
     void* userData
 ) {
     Camera* camera = static_cast<Camera*>(userData);
-    if (!camera || !camera->main || !camera->bufferController) {
+    if(!camera || !camera->main || !camera->bufferController) {
         return EM_TRUE;
     }
     bool previewActive = camera->bufferController->isPreviewActive();

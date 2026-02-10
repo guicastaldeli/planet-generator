@@ -5,10 +5,10 @@ const canvas = document.getElementById('ctx') as HTMLCanvasElement;
  */
 function waitForEmscripten(): Promise<any> {
     return new Promise((resolve, reject) => {
-        if (window.Module) {
+        if(window.Module) {
             const originalCallback = window.Module.onRuntimeInitialized;
             window.Module.onRuntimeInitialized = () => {
-                if (originalCallback) originalCallback();
+                if(originalCallback) originalCallback();
                 console.log('Emscripten runtime initialized');
                 resolve(window.Module);
             };
@@ -41,7 +41,7 @@ async function initApp(): Promise<void> {
         window.appController = appController;
         
         console.log('AppController initialized successfully');
-    } catch (error) {
+    } catch(error) {
         console.error('Failed to initialize app:', error);
     }
 }

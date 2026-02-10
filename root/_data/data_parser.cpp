@@ -34,7 +34,7 @@ namespace DataParser {
         cleanup();
     }
     
-    void Value::cleanup() {//
+    void Value::cleanup() {
         switch (type) {
             case ValueType::String:
                 delete string_value;
@@ -522,7 +522,7 @@ namespace DataParser {
         try {
             double value = std::stod(numStr);
             return Value(value);
-        } catch (...) {
+        } catch(...) {
             throw ParseException("Invalid number format", start);
         }
     }

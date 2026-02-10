@@ -20,7 +20,7 @@ GeneratorWrapperController::GeneratorWrapperController(
     presetLoader(presetLoader),
     bufferController(bufferController) 
 {
-    if (!presetLoader || !bufferController) {
+    if(!presetLoader || !bufferController) {
         std::cerr << "GeneratorWrapperController: Invalid pointers provided!" << std::endl;
     }
     g_generatorWrapperController = this;

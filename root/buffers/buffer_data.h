@@ -113,8 +113,8 @@ class BufferData {
                 glm::vec3(0.5f, 0.5f, 0.5f)
             });
             
-            /* Sphere - Now using Icosphere with proper UV seam handling */
-            auto sphereData = generateIcosphere(3);
+            /* Sphere */
+            auto sphereData = generateIcosphere(4);
             map.emplace(Type::SPHERE, std::move(sphereData));
 
             /* Ring */
@@ -132,7 +132,6 @@ class BufferData {
             std::vector<glm::vec3> positions;
             std::vector<GLuint> indices;
             
-            // Create icosahedron base
             const float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
             
             positions = {
@@ -159,14 +158,13 @@ class BufferData {
                 4, 9, 5,    2, 4, 11,   6, 2, 10,   8, 6, 7,    9, 8, 1
             };
             
-            // Subdivide
             std::map<std::pair<GLuint, GLuint>, GLuint> midpointCache;
             
             auto getMidpoint = [&](GLuint i1, GLuint i2) -> GLuint {
                 std::pair<GLuint, GLuint> key = i1 < i2 ? std::make_pair(i1, i2) : std::make_pair(i2, i1);
                 
                 auto it = midpointCache.find(key);
-                if (it != midpointCache.end()) {
+                if(it != midpointCache.end()) {
                     return it->second;
                 }
                 
@@ -181,10 +179,10 @@ class BufferData {
                 return index;
             };
             
-            for (int i = 0; i < subdivisions; ++i) {
+            for(int i = 0; i < subdivisions; ++i) {
                 std::vector<GLuint> newIndices;
                 
-                for (size_t j = 0; j < indices.size(); j += 3) {
+                for(size_t j = 0; j < indices.size(); j += 3) {
                     GLuint v1 = indices[j];
                     GLuint v2 = indices[j + 1];
                     GLuint v3 = indices[j + 2];
@@ -203,32 +201,29 @@ class BufferData {
                 midpointCache.clear();
             }
             
-            // Build final vertex data with per-triangle vertices to handle UV seams
             std::vector<float> vertices;
             std::vector<GLuint> finalIndices;
             
-            for (size_t i = 0; i < indices.size(); i += 3) {
+            for(size_t i = 0; i < indices.size(); i += 3) {
                 glm::vec3 v0 = positions[indices[i]];
                 glm::vec3 v1 = positions[indices[i + 1]];
                 glm::vec3 v2 = positions[indices[i + 2]];
                 
-                // Calculate UVs for each vertex
-                float u0 = 0.5f + atan2(v0.z, v0.x) / (2.0f * glm::pi<float>());
-                float v0_coord = 0.5f - asin(v0.y) / glm::pi<float>();
+                float u0 = 0.5f + atan2(v0.x, v0.z) / (2.0f * glm::pi<float>());
+                float v0Coord = 0.5f + asin(v0.y) / glm::pi<float>();
+
+                float u1 = 0.5f + atan2(v1.x, v1.z) / (2.0f * glm::pi<float>());
+                float v1Coord = 0.5f + asin(v1.y) / glm::pi<float>();
+
+                float u2 = 0.5f + atan2(v2.x, v2.z) / (2.0f * glm::pi<float>());
+                float v2Coord = 0.5f + asin(v2.y) / glm::pi<float>();
                 
-                float u1 = 0.5f + atan2(v1.z, v1.x) / (2.0f * glm::pi<float>());
-                float v1_coord = 0.5f - asin(v1.y) / glm::pi<float>();
-                
-                float u2 = 0.5f + atan2(v2.z, v2.x) / (2.0f * glm::pi<float>());
-                float v2_coord = 0.5f - asin(v2.y) / glm::pi<float>();
-                
-                // Fix UV seam (when triangle crosses 0/1 boundary)
                 float uvs[3] = {u0, u1, u2};
-                for (int j = 0; j < 3; ++j) {
-                    for (int k = j + 1; k < 3; ++k) {
-                        if (std::abs(uvs[j] - uvs[k]) > 0.5f) {
-                            if (uvs[j] < 0.5f) uvs[j] += 1.0f;
-                            else if (uvs[k] < 0.5f) uvs[k] += 1.0f;
+                for(int j = 0; j < 3; ++j) {
+                    for(int k = j + 1; k < 3; ++k) {
+                        if(std::abs(uvs[j] - uvs[k]) > 0.5f) {
+                            if(uvs[j] < 0.5f) uvs[j] += 1.0f;
+                            else if(uvs[k] < 0.5f) uvs[k] += 1.0f;
                         }
                     }
                 }
@@ -238,7 +233,6 @@ class BufferData {
                 
                 GLuint baseIdx = vertices.size() / 8;
                 
-                // Vertex 0
                 vertices.push_back(v0.x * 0.5f);
                 vertices.push_back(v0.y * 0.5f);
                 vertices.push_back(v0.z * 0.5f);
@@ -246,9 +240,8 @@ class BufferData {
                 vertices.push_back(v0.y);
                 vertices.push_back(v0.z);
                 vertices.push_back(u0);
-                vertices.push_back(v0_coord);
+                vertices.push_back(v0Coord);
                 
-                // Vertex 1
                 vertices.push_back(v1.x * 0.5f);
                 vertices.push_back(v1.y * 0.5f);
                 vertices.push_back(v1.z * 0.5f);
@@ -256,9 +249,8 @@ class BufferData {
                 vertices.push_back(v1.y);
                 vertices.push_back(v1.z);
                 vertices.push_back(u1);
-                vertices.push_back(v1_coord);
+                vertices.push_back(v1Coord);
                 
-                // Vertex 2
                 vertices.push_back(v2.x * 0.5f);
                 vertices.push_back(v2.y * 0.5f);
                 vertices.push_back(v2.z * 0.5f);
@@ -266,7 +258,7 @@ class BufferData {
                 vertices.push_back(v2.y);
                 vertices.push_back(v2.z);
                 vertices.push_back(u2);
-                vertices.push_back(v2_coord);
+                vertices.push_back(v2Coord);
                 
                 finalIndices.push_back(baseIdx);
                 finalIndices.push_back(baseIdx + 1);

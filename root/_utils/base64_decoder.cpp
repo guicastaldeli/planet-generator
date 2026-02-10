@@ -16,13 +16,11 @@ bool Base64Decoder::isBase64(unsigned char c) {
 std::vector<unsigned char> Base64Decoder::decode(const std::string& encoded_string) {
     std::string encoded = encoded_string;
     
-    // Remove data URL prefix if present
     size_t base64_start = encoded.find("base64,");
     if(base64_start != std::string::npos) {
         encoded = encoded.substr(base64_start + 7);
     }
     
-    // Remove whitespace
     encoded.erase(std::remove_if(encoded.begin(), encoded.end(), 
                    [](unsigned char c) { return std::isspace(c); }), 
                    encoded.end());
@@ -34,8 +32,6 @@ std::vector<unsigned char> Base64Decoder::decode(const std::string& encoded_stri
     unsigned char char_array_4[4], char_array_3[3];
     std::vector<unsigned char> ret;
     
-    std::cout << "Base64 decode - input length: " << in_len << std::endl;
-    std::cout << "First few chars: ";
     for(int k = 0; k < std::min(20, in_len); k++) {
         std::cout << encoded[k];
     }
@@ -68,13 +64,10 @@ std::vector<unsigned char> Base64Decoder::decode(const std::string& encoded_stri
     
     std::cout << "Decoded " << ret.size() << " bytes so far" << std::endl;
     
-    // Handle padding
     if(i) {
         for(j = i; j < 4; j++) {
             char_array_4[j] = 0;
         }
-        
-        // Handle '=' characters
         for(j = 0; j < 4; j++) {
             if(in_ < encoded.size() && encoded[in_] == '=') {
                 char_array_4[j] = 0;

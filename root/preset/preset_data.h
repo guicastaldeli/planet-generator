@@ -38,6 +38,7 @@ struct PlanetData {
     std::string textureData = "";
     int textureWidth = 0;
     int textureHeight = 0;
+    GLuint textureId = 0;
 };
 
 struct PresetData {

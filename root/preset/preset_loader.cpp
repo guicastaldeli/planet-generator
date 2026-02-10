@@ -44,19 +44,14 @@ bool PresetLoader::loadPreset(const std::string& path) {
 
 bool PresetLoader::loadDefaultPreset() {
     if(presetManager->getPresetSaver()->hasSavedPreset()) {
-        PresetData localStorageData;
-        if(presetManager->getPresetSaver()->loadFromLocalStorage(localStorageData)) {
-            currentPreset = localStorageData;
-            return true;
-        } else {
-            std::cout << "Failed to load from localStorage, falling back to file" << std::endl;
-        }
+        std::cout << "Found saved preset in localStorage, loading..." << std::endl;
+        return presetManager->getPresetSaver()->load();
     } else {
-        std::cout << "No saved preset in localStorage" << std::endl;
+        std::cout << "No saved preset in localStorage, loading from file" << std::endl;
     }
 
-    std::cout << "Loading default preset from file: " << defaultPresetPath << std::endl;
-    return loadPreset(defaultPresetPath);
+    std::string path = "/_data/default_preset.json";
+    return loadPreset(path);
 }
 
 
@@ -182,6 +177,23 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         data.colorRgb = ColorConverter::parseColor(data.color);
     }
     if(val.hasKey("texture")) data.texture = val["texture"].asString();
+    if(val.hasKey("textureData")) {
+        data.textureData = val["textureData"].asString();
+        if(val.hasKey("textureWidth")) {
+            data.textureWidth = val["textureWidth"].asInt();
+        } else {
+            data.textureWidth = 0;
+        }
+        if(val.hasKey("textureHeight")) {
+            data.textureHeight = val["textureHeight"].asInt();
+        } else {
+            data.textureHeight = 0;
+        }
+    } else {
+        data.textureData = "";
+        data.textureWidth = 0;
+        data.textureHeight = 0;
+    }
     if(val.hasKey("position")) data.position = val["position"].asInt();
     if(val.hasKey("distanceFromCenter")) 
         data.distanceFromCenter = val["distanceFromCenter"].asFloat();

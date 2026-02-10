@@ -119,7 +119,7 @@ export class GeneratorConfig {
                 
                 const valElId = 'size-value';
                 const valEl = document.getElementById(valElId);
-                if (valEl) {
+                if(valEl) {
                     valEl.textContent = range.default.toFixed(2);
                 }
             }
@@ -136,7 +136,7 @@ export class GeneratorConfig {
                 
                 const valElId = `${element.id}-value`;
                 const valEl = document.getElementById(valElId);
-                if (valEl) {
+                if(valEl) {
                     valEl.textContent = range.default.toFixed(3);
                 }
             }
@@ -153,7 +153,7 @@ export class GeneratorConfig {
                 
                 const valElId = `${element.id}-value`;
                 const valEl = document.getElementById(valElId);
-                if (valEl) {
+                if(valEl) {
                     valEl.textContent = range.default.toFixed(3);
                 }
             }

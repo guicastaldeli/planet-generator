@@ -304,7 +304,7 @@ int BufferController::getSelectedPlanetIndex() const {
 void BufferController::setCamera(Camera* cam) {
     camera = cam;
     if(camera && buffers && shaderLoader) {
-        if (raycaster) {
+        if(raycaster) {
             delete raycaster;
             raycaster = nullptr;
         }

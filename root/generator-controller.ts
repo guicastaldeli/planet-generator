@@ -218,7 +218,7 @@ export class GeneratorController {
      */
     private uploadTexture(data: any): void {
         console.log('Uploading texture:', data);
-        if (!data.name || !data.data || !data.width || !data.height) {
+        if(!data.name || !data.data || !data.width || !data.height) {
             console.error('Invalid texture data:', data);
             return;
         }
@@ -237,7 +237,7 @@ export class GeneratorController {
                         data.height
                     ]
                 );
-            } catch (err) {
+            } catch(err) {
                 console.error('ccall uploadTexture failed:', err);
             }
         } else {
@@ -291,7 +291,7 @@ export class GeneratorController {
                     (this.container as HTMLElement).style.display = 'none';
                     return;
                 }
-            } catch (err) {
+            } catch(err) {
                 console.error('Manual allocation failed:', err);
             }
         }
@@ -305,7 +305,7 @@ export class GeneratorController {
                 );
                 (this.container as HTMLElement).style.display = 'none';
                 return;
-            } catch (err) {
+            } catch(err) {
                 console.error('ccall failed:', err);
             }
         }

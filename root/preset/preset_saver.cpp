@@ -3,6 +3,8 @@
 #include "../buffers/buffers.h"
 #include "preset_manager.h"
 #include "../_utils/color_converter.h"
+#include "../buffers/buffer_controller.h"
+#include "preset_manager.h"  
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <iostream>
@@ -36,12 +38,9 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["color"] = Value(data.color);
     result["colorRgb"] = colorRgb;
     result["texture"] = Value(data.texture);
-    
-    if(!data.textureData.empty()) {
-        result["textureData"] = Value(data.textureData);
-        result["textureWidth"] = Value(static_cast<double>(data.textureWidth));
-        result["textureHeight"] = Value(static_cast<double>(data.textureHeight));
-    }
+    result["textureData"] = Value(data.textureData);
+    result["textureWidth"] = Value(static_cast<double>(data.textureWidth));
+    result["textureHeight"] = Value(static_cast<double>(data.textureHeight));
     
     result["position"] = Value(static_cast<double>(data.position));
     result["lightning"] = Value(data.lightning);
@@ -83,7 +82,6 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
         } else {
             data.texture = "";
         }
-        
         if(value.hasKey("textureData") && value.hasKey("textureWidth") && value.hasKey("textureHeight")) {
             data.textureData = value["textureData"].asString();
             data.textureWidth = value["textureWidth"].asInt();
@@ -330,13 +328,13 @@ bool PresetSaver::save() {
     updatePresetFromBuffers();
 
     PresetData currentPreset = bufferController->getCurrentPreset();
-    if (currentPreset.planets.empty()) {
+    if(currentPreset.planets.empty()) {
         std::cerr << "Cannot save: preset has no planets" << std::endl;
         return false;
     }
 
     bool success = saveToLocalStorage(bufferController->currentPreset);
-    if (success) {
+    if(success) {
         std::cout << "Preset saved to localStorage successfully!" << std::endl;
     } else {
         std::cerr << "Failed to save preset to localStorage" << std::endl;
@@ -351,7 +349,7 @@ bool PresetSaver::save() {
  * 
  */
 bool PresetSaver::load() {
-     if (!bufferController) {
+    if(!bufferController) {
         std::cerr << "No bufferController!, ERR. **load" << std::endl;
         return false;
     }

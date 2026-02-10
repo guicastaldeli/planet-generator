@@ -143,7 +143,7 @@ void Buffers::render() {
             bool hasTex = false;
             GLuint texId = 0;
             if(!planetBuffer.data.texture.empty()) {
-                texId = bufferController->getTextureLoader()->texExists(planetBuffer.data.texture);
+                texId = bufferController->getTextureLoader()->getTex(planetBuffer.data.texture);
                 if(texId == 0) {
                     std::string texName = planetBuffer.data.texture;
                     size_t dotPos = texName.find_last_of('.');

@@ -178,7 +178,7 @@ GLuint TextureLoader::loadTextureFromMemory(
 }
 
 /**
- * Load texture from File
+ * Load Texture from File
  */
 GLuint TextureLoader::loadTextureFromFile(const std::string& name, const std::string& filePath) {
     try {

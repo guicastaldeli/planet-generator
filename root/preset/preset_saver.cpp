@@ -36,6 +36,14 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["color"] = Value(data.color);
     result["colorRgb"] = colorRgb;
     result["texture"] = Value(data.texture);
+    
+    // NEW: Export texture data if available
+    if(!data.textureData.empty()) {
+        result["textureData"] = Value(data.textureData);
+        result["textureWidth"] = Value(static_cast<double>(data.textureWidth));
+        result["textureHeight"] = Value(static_cast<double>(data.textureHeight));
+    }
+    
     result["position"] = Value(static_cast<double>(data.position));
     result["lightning"] = Value(data.lightning);
     result["hasSunLight"] = Value(data.hasSunLight);
@@ -76,6 +84,17 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
         } else {
             data.texture = "";
         }
+        
+        // NEW: Load texture data if available
+        if(value.hasKey("textureData") && value.hasKey("textureWidth") && value.hasKey("textureHeight")) {
+            data.textureData = value["textureData"].asString();
+            data.textureWidth = value["textureWidth"].asInt();
+            data.textureHeight = value["textureHeight"].asInt();
+            
+            std::cout << "Loaded texture data for planet: " << data.name 
+                      << " (" << data.textureWidth << "x" << data.textureHeight << ")" << std::endl;
+        }
+        
         data.position = value["position"].asInt();
         data.distanceFromCenter = value["distanceFromCenter"].asFloat();
         data.rotationSpeedItself = value["rotationSpeedItself"].asFloat();

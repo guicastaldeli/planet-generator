@@ -413,6 +413,27 @@ void BufferController::loadPresetData(PresetData& preset) {
         buffers->clearBuffers();
     }
 
+    // NEW: Reload textures from preset data
+    if(textureLoader) {
+        for(auto& planet : preset.planets) {
+            if(!planet.texture.empty() && !planet.textureData.empty()) {
+                std::cout << "Reloading texture for planet: " << planet.name << std::endl;
+                GLuint texId = textureLoader->loadTexture(
+                    planet.texture,
+                    planet.textureData,
+                    planet.textureWidth,
+                    planet.textureHeight
+                );
+                if(texId != 0) {
+                    std::cout << "Successfully reloaded texture: " << planet.texture << std::endl;
+                } else {
+                    std::cerr << "Failed to reload texture: " << planet.texture << std::endl;
+                    planet.texture = "";  // Clear invalid texture
+                }
+            }
+        }
+    }
+
     createPointLight();
 
     std::vector<PlanetBuffer> newPlanetBuffers = bufferGenerator->generateFromPreset(currentPreset);

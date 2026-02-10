@@ -191,6 +191,30 @@ extern "C" {
                 bufferController->
                     setDataToUpdate(newPlanet, data);
 
+            char* texDataJson = (char*)EM_ASM_INT({
+                if(window.pendingTextureData) { var json = JSON.stringify(window.pendingTextureData); var lengthBytes = lengthBytesUTF8(json) + 1; var strPtr = _malloc(lengthBytes); stringToUTF8(json, strPtr, lengthBytes); window.pendingTextureData = null; return strPtr; }
+                return 0;
+            });
+            
+            if(texDataJson != 0) {
+                try {
+                    std::string texJsonStr(texDataJson);
+                    auto texData = DataParser::Parser::parse(texJsonStr);
+                    
+                    if(texData.hasKey("name") && texData.hasKey("data")) {
+                        newPlanet.textureData = texData["data"].asString();
+                        newPlanet.textureWidth = texData["width"].asInt();
+                        newPlanet.textureHeight = texData["height"].asInt();
+                        
+                        std::cout << "Attached texture data to planet: " << newPlanet.name 
+                                << " (" << newPlanet.textureWidth << "x" << newPlanet.textureHeight << ")" << std::endl;
+                    }
+                } catch(const std::exception& e) {
+                    std::cerr << "Error parsing texture data: " << e.what() << std::endl;
+                }
+                free(texDataJson);
+            }
+
             newPlanet.distanceFromCenter = 
                 g_generatorWrapperController->
                 bufferController->
@@ -250,9 +274,7 @@ extern "C" {
             
             EM_ASM({
                 const controlList = document.querySelector('.controls--container');
-                if(controlList) {
-                    controlList.style.display = 'flex';
-                }
+                if(controlList) { controlList.style.display = 'flex'; }
             });
             
         } catch(const std::exception& e) {
@@ -346,6 +368,19 @@ extern "C" {
         );
         if(texId != 0) {
             printf("Texture uploaded successfully: %s (%dx%d)\n", name, width, height);
+            
+            EM_ASM({
+                var nameStr = UTF8ToString($0);
+                var dataStr = UTF8ToString($1);
+                var w = $2;
+                var h = $3;
+                var obj = {};
+                obj['name'] = nameStr;
+                obj['data'] = dataStr;
+                obj['width'] = w;
+                obj['height'] = h;
+                window.pendingTextureData = obj;
+            }, name, data, width, height);
         } else {
             printf("Failed to upload texture: %s\n", name);
         }

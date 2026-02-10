@@ -37,7 +37,6 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["colorRgb"] = colorRgb;
     result["texture"] = Value(data.texture);
     
-    // NEW: Export texture data if available
     if(!data.textureData.empty()) {
         result["textureData"] = Value(data.textureData);
         result["textureWidth"] = Value(static_cast<double>(data.textureWidth));
@@ -85,7 +84,6 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
             data.texture = "";
         }
         
-        // NEW: Load texture data if available
         if(value.hasKey("textureData") && value.hasKey("textureWidth") && value.hasKey("textureHeight")) {
             data.textureData = value["textureData"].asString();
             data.textureWidth = value["textureWidth"].asInt();

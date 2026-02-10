@@ -413,7 +413,6 @@ void BufferController::loadPresetData(PresetData& preset) {
         buffers->clearBuffers();
     }
 
-    // NEW: Reload textures from preset data
     if(textureLoader) {
         for(auto& planet : preset.planets) {
             if(!planet.texture.empty() && !planet.textureData.empty()) {
@@ -428,7 +427,7 @@ void BufferController::loadPresetData(PresetData& preset) {
                     std::cout << "Successfully reloaded texture: " << planet.texture << std::endl;
                 } else {
                     std::cerr << "Failed to reload texture: " << planet.texture << std::endl;
-                    planet.texture = "";  // Clear invalid texture
+                    planet.texture = "";
                 }
             }
         }

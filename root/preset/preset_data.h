@@ -35,8 +35,7 @@ struct PlanetData {
     std::string effects = "None";
     int effectType = 0;
     
-    // NEW: Store texture data for export/import
-    std::string textureData = "";  // Base64 encoded texture data
+    std::string textureData = "";
     int textureWidth = 0;
     int textureHeight = 0;
 };

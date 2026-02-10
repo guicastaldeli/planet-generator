@@ -29,7 +29,7 @@ void SkyboxRenderer::init() {
 }
 
 /**
- * Create Mesh//
+ * Create Mesh
  */
 void SkyboxRenderer::createMesh() {
     const auto& sphereData = BufferData::GetMeshData(BufferData::Type::SPHERE);

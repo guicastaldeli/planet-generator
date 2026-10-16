@@ -1,6 +1,6 @@
 #include "main.h"
 #include "buffers/buffer_data.h"
-#include "lightning/point_light.h"
+#include "lighting/point_light.h"
 #include "buffers/buffers.h"
 
 static Main* g_app = nullptr;

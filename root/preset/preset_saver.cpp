@@ -43,7 +43,7 @@ DataParser::Value PresetSaver::planetToValue(const PlanetData& data) {
     result["textureHeight"] = Value(static_cast<double>(data.textureHeight));
     
     result["position"] = Value(static_cast<double>(data.position));
-    result["lightning"] = Value(data.lightning);
+    result["lighting"] = Value(data.lighting);
     result["hasSunLight"] = Value(data.hasSunLight);
     result["effects"] = Value(data.effects);
     result["effectType"] = Value(static_cast<double>(data.effectType));
@@ -109,15 +109,15 @@ bool PresetSaver::valueToPlanet(const DataParser::Value& value, PlanetData& data
             data.shape = BufferData::Type::SPHERE;
         }
 
-        if(value.hasKey("lightning")) {
-            data.lightning = value["lightning"].asString();
+        if(value.hasKey("lighting")) {
+            data.lighting = value["lighting"].asString();
         } else {
-            data.lightning = "None";
+            data.lighting = "None";
         }
         if(value.hasKey("hasSunLight")) {
             data.hasSunLight = value["hasSunLight"].asBoolean();
         } else {
-            data.hasSunLight = (data.lightning == "Sun Light");
+            data.hasSunLight = (data.lighting == "Sun Light");
         }
         
         if(value.hasKey("effects")) {

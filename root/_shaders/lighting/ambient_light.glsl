@@ -53,7 +53,7 @@ vec3 calcSpecular(
     return material.specular * spec * lightColor * intensity;
 }
 
-vec3 calcPhongLightning(
+vec3 calcPhongLighting(
     vec3 position,
     vec3 normal,
     vec3 viewDir,

@@ -1,7 +1,7 @@
 #pragma once
 #include "../camera.h"
 #include "buffer_controller.h"
-#include "../lightning/light_manager.h"
+#include "../lighting/light_manager.h"
 
 class PreviewController {
     private:

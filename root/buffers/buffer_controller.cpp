@@ -129,15 +129,15 @@ void BufferController::setDataToUpdate(PlanetData& uData, const DataParser::Valu
         pData["texture"].asString() : 
         dData.texture;
 
-    uData.lightning =
-        pData.hasKey("lightning") ?
-        pData["lightning"].asString() :
-        dData.lightning;
+    uData.lighting =
+        pData.hasKey("lighting") ?
+        pData["lighting"].asString() :
+        dData.lighting;
     if(pData.hasKey("hasSunLight")) {
         uData.hasSunLight = pData["hasSunLight"].asBoolean();
-    } else if(pData.hasKey("lightning")) {
-        std::string lightningStr = pData["lightning"].asString();
-        uData.hasSunLight = (lightningStr == "Sun Light");
+    } else if(pData.hasKey("lighting")) {
+        std::string lightingStr = pData["lighting"].asString();
+        uData.hasSunLight = (lightingStr == "Sun Light");
     } else {
         uData.hasSunLight = dData.hasSunLight;
     }
@@ -541,7 +541,7 @@ void BufferController::render(float deltaTime) {
             std::cout << "Loaded preset with " << currentPreset.planets.size() << " planets" << std::endl;
             for(const auto& planet : currentPreset.planets) {
                 std::cout << "  Planet: " << planet.name 
-                          << ", Lightning: " << planet.lightning
+                          << ", Lighting: " << planet.lighting
                           << ", hasSunLight: " << (planet.hasSunLight ? "true" : "false") << std::endl;
             }
 

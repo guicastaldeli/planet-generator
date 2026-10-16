@@ -2,7 +2,7 @@
 #include "preset_data.h"
 #include "../_data/data_parser.h"
 #include "../_utils/color_converter.h"
-#include "../lightning/light_manager.h"
+#include "../lighting/light_manager.h"
 #include "preset_manager.h"
 #include <fstream>
 #include <iostream>
@@ -212,13 +212,13 @@ void PresetLoader::parseData(const DataParser::Value& val, PlanetData& data) {
         else data.shape = BufferData::Type::SPHERE;
     }
 
-    /* Lightning */
-    if(val.hasKey("lightning")) {
-        std::string lightningStr = val["lightning"].asString();
-        data.lightning = lightningStr;
-        data.hasSunLight = (lightningStr == "Sun Light");
+    /* Lighting */
+    if(val.hasKey("lighting")) {
+        std::string lightingStr = val["lighting"].asString();
+        data.lighting = lightingStr;
+        data.hasSunLight = (lightingStr == "Sun Light");
     } else {
-        data.lightning = "None";
+        data.lighting = "None";
         data.hasSunLight = false;
     }
 

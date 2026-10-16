@@ -1,0 +1,10 @@
+services:
+  planet-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: planet-generator
+    restart: unless-stopped
+    x-url: https://planet-generator.de5.net
+    ports:
+      - "3012:80"

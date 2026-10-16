@@ -28,7 +28,7 @@
                 "name": "Z Axis"
             }
         ],
-        "lightning": [
+        "lighting": [
             {
                 "id": 0,
                 "name": "None"

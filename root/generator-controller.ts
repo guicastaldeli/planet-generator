@@ -11,7 +11,7 @@ interface GeneratorOptions {
         id: string;
         name: string;
     }>;
-    lightning: Array<{ 
+    lighting: Array<{ 
         id: number; 
         name: string; 
     }>;
@@ -263,8 +263,8 @@ export class GeneratorController {
             colorRgb: data.color,
             texture: data.texture || data.texture.name,
             position: Number(data.position),
-            lightning: data.lightning,
-            hasSunLight: this.generatorConfig!.setLightning(data.lightning),
+            lighting: data.lighting,
+            hasSunLight: this.generatorConfig!.setLighting(data.lighting),
             effects: data.effects,
             effectType: this.generatorConfig!.setEffects(data.effects),
             rotationDir: data.rotationDir,
@@ -521,7 +521,7 @@ export class GeneratorController {
             console.log('Setting texture in data:', data.texture);
         }
 
-        data.hasSunLight = data.lightning === "Sun Light";
+        data.hasSunLight = data.lighting === "Sun Light";
         return data;
     }
 

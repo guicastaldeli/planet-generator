@@ -7,7 +7,7 @@
 #include "../buffers/preview_controller.h"
 #include "../buffers/buffers.h"
 #include "../_utils/color_converter.h"
-#include "../lightning/point_light.h"
+#include "../lighting/point_light.h"
 #include <iostream>
 #include <sstream>
 
@@ -318,7 +318,7 @@ extern "C" {
         str << "},";
         str << "\"texture\":\"" << defaultData.texture << "\",";
         str << "\"position\":" << defaultData.position << ",";
-        str << "\"lightning\":\"None\",";
+        str << "\"lighting\":\"None\",";
         str << "\"effects\":\"" << defaultData.effects << "\",";
         str << "\"effectType\":\"" << defaultData.effectType << "\",";
         str << "\"rotationDir\":\"" << (

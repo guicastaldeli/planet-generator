@@ -21,8 +21,8 @@ varying float vPhase;
 #include "texture.glsl"
 #include "../skybox/skybox_frag.glsl"
 #include "../skybox/star_color.glsl"
-#include "../lightning/ambient_light.glsl"
-#include "../lightning/point_light.glsl"
+#include "../lighting/ambient_light.glsl"
+#include "../lighting/point_light.glsl"
 #include "../effect/fresnel.glsl"
 #include "../effect/noise.glsl"
 #include "../effect/glow.glsl"
@@ -137,9 +137,9 @@ void main() {
             ambientLightUniform.intensity = uAmbientLight.intensity;
             ambientLightUniform.enabled = bool(uAmbientLight.enabled);
 
-            vec3 lightning;
+            vec3 lighting;
             if(ambientLightUniform.enabled == true) {
-                lightning = calcPhongLightning(
+                lighting = calcPhongLighting(
                     vPos,
                     normal,
                     viewDir,
@@ -151,7 +151,7 @@ void main() {
 
             for(int i = 0; i < 15; i++) {
                 if(i >= uNumPointLights) break;
-                lightning += calcPointLight(
+                lighting += calcPointLight(
                     uPointLights[i],
                     material,
                     vPos,
@@ -162,7 +162,7 @@ void main() {
 
             vec3 hoverColor = vec3(1.0, 1.0, 1.0);
 
-            vec3 litColor = lightning + material.emissive;
+            vec3 litColor = lighting + material.emissive;
             vec3 finalColor = mix(litColor, hoverColor, isHovered * 0.3);
             finalColor = min(finalColor, vec3(1.0));
 

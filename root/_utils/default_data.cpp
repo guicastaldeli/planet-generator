@@ -49,7 +49,7 @@ bool DefaultData::setData() {
             data.colorRgb = planet.colorRgb;
             data.texture = planet.texture;
             data.position = planet.position;
-            data.lightning = planet.lightning;
+            data.lighting = planet.lighting;
             data.hasSunLight = planet.hasSunLight;
             data.effects = planet.effects;
             data.effectType = planet.effectType;
@@ -81,7 +81,7 @@ PlanetData DefaultData::Data::toPlanetData() const {
     data.colorRgb = this->colorRgb;
     data.texture = this->texture;
     data.position = this->position;
-    data.lightning = this->lightning;
+    data.lighting = this->lighting;
     data.hasSunLight = this->hasSunLight;
     data.effects = this->effects;
     data.effectType = this->effectType;

@@ -1,7 +1,7 @@
 #pragma once
 #include "preset_data.h"
 #include "../_data/data_parser.h"
-#include "../lightning/light_manager.h"
+#include "../lighting/light_manager.h"
 #include <glm/glm.hpp>
 
 class PresetManager;

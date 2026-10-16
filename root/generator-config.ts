@@ -35,9 +35,9 @@ export class GeneratorConfig {
             outputKey: 'position',
             transform: (value: string) => Number(value) || this.defaultData.position
         },
-        'planet-lightning': {
-            outputKey: 'lightning',
-            transform: (value: string) => value || this.defaultData.lightning || "None"
+        'planet-lighting': {
+            outputKey: 'lighting',
+            transform: (value: string) => value || this.defaultData.lighting || "None"
         },
         'planet-effects': {
             outputKey: 'effects',
@@ -78,9 +78,9 @@ export class GeneratorConfig {
             })
         },
         {
-            id: 'planet-lightning',
+            id: 'planet-lighting',
             type: 'select',
-            dataPath: 'lightning',
+            dataPath: 'lighting',
             createOption: (item: any) => ({
                 value: item.name,
                 text: item.name,
@@ -191,9 +191,9 @@ export class GeneratorConfig {
             defaultValue: () => this.defaultData.position?.toString()
         },
         { 
-            id: 'planet-lightning',
+            id: 'planet-lighting',
             type: 'select', 
-            defaultValue: () => this.defaultData.lightning || "None"
+            defaultValue: () => this.defaultData.lighting || "None"
         },
         { 
             id: 'planet-effects',
@@ -351,8 +351,8 @@ export class GeneratorConfig {
         }
     }
 
-    public setLightning(data: string): boolean {
-        const option = this.data?.generatorOptions?.lightning.find(
+    public setLighting(data: string): boolean {
+        const option = this.data?.generatorOptions?.lighting.find(
             (item: any) => item.name === data
         );
         return option ? option.id === 1 : false;

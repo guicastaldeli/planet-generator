@@ -1,6 +1,6 @@
 #pragma once
 #include "../preset/preset_data.h"
-#include "../lightning/point_light.h"
+#include "../lighting/point_light.h"
 #include <glm/glm.hpp>
 
 class PresetManager;
@@ -22,7 +22,7 @@ class DefaultData {
             glm::vec3 currentRotation;
             glm::vec3 orbitAngle;
 
-            std::string lightning = "None";
+            std::string lighting = "None";
             bool hasSunLight = false;
             PointLight sunLight;
 
